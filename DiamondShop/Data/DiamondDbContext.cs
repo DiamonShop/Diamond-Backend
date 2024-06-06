@@ -51,20 +51,33 @@ namespace FAMS.Entities.Data
 		{
 			modelBuilder.Entity<User>(e =>
 			{
-				e.ToTable("User");
-				e.HasKey(x => x.UserId);
-				e.Property(x => x.Username);
-				e.Property(x => x.Password);
-				e.Property(x => x.Email);
-				e.Property(x => x.FullName);
-				e.Property(x => x.Status);
-				e.Property(x => x.RoleId);
+                e.ToTable("User");
+                e.HasKey(x => x.UserId);
+                e.Property(x => x.Username)
+                    .IsRequired()
+                    .HasMaxLength(30);
+                e.Property(x => x.Password)
+                    .IsRequired()
+                    .HasMaxLength(50);
+                e.Property(x => x.Email)
+                    .IsRequired()
+                    .HasMaxLength(100);
+                e.Property(x => x.FullName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+                e.Property(x => x.Status)
+                    .IsRequired()
+                    .HasMaxLength(20);
+                e.Property(x => x.IsActive)
+                    .IsRequired();
+                e.Property(x => x.RoleId)
+                    .IsRequired();
 
-				e.HasOne(x => x.Role)
-					.WithMany(x => x.Users)
-					.HasForeignKey(x => x.RoleId);
+                e.HasOne(x => x.Role)
+                    .WithMany(x => x.Users)
+                    .HasForeignKey(x => x.RoleId);
 
-			});
+            });
 
 			modelBuilder.Entity<Role>(e =>
 			{
