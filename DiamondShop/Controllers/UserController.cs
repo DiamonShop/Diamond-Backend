@@ -83,6 +83,11 @@ namespace DiamondShop.Controllers
             {
 				return BadRequest(ModelState);
 			}
+
+            var objUser = _context.Users.FirstOrDefault(x => x.Email == userDTO.Email);
+            var objUser2 = _context.Users.FirstOrDefault(o => o.Username == userDTO.Username);
+
+			if (objUser == null && objUser2 == null) { 
             _context.Users.Add(new User
             {
                 
@@ -95,8 +100,12 @@ namespace DiamondShop.Controllers
             });
             _context.SaveChanges();
             return Ok("User registered");
-            
-        }
+            }
+            else
+            {
+                return BadRequest("User already existed.");
+            }
+		}
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
