@@ -62,9 +62,7 @@ namespace DiamondShop.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
-            var user = await _context.Users
-                .Where(u => u.UserId == id && !u.IsActive)
-                .FirstOrDefaultAsync();
+            var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
