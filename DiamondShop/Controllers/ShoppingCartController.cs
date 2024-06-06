@@ -21,7 +21,6 @@ namespace DiamondShop.Controllers
 		public async Task<IActionResult> GetAllShoppingCarts()
 		{
 			var shoppingcarts = await _context.ShoppingCarts
-				.Include(s => s.Product)
 				.Include(s => s.User)
 				.ToListAsync();
 			return Ok(shoppingcarts);
@@ -31,11 +30,10 @@ namespace DiamondShop.Controllers
 		public async Task<IActionResult> GetShoppingCartById(int id)
 		{
 			var shoppingcart = await _context.ShoppingCarts
-				.Include(s => s.Product)
 				.Include(s => s.User)
 				.FirstOrDefaultAsync(s => s.CartId == id);
 
-			if(shoppingcart == null)
+			if (shoppingcart == null)
 			{
 				return NotFound();
 			}
@@ -43,21 +41,21 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> CreateShoppingCart([FromBody]ShoppingCart shoppingcart)
+		public async Task<IActionResult> CreateShoppingCart([FromBody] ShoppingCart shoppingcart)
 		{
-			if(ModelState.IsValid)
+			if (ModelState.IsValid)
 			{
 				_context.ShoppingCarts.Add(shoppingcart);
 				await _context.SaveChangesAsync();
-				return CreatedAtAction(nameof(GetShoppingCartById), new {id = shoppingcart.CartId}, shoppingcart);
+				return CreatedAtAction(nameof(GetShoppingCartById), new { id = shoppingcart.CartId }, shoppingcart);
 			}
 			return BadRequest();
 		}
 
 		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdateShoppingCart(int id, [FromBody]ShoppingCart shoppingcart)
+		public async Task<IActionResult> UpdateShoppingCart(int id, [FromBody] ShoppingCart shoppingcart)
 		{
-			if(id != shoppingcart.CartId)
+			if (id != shoppingcart.CartId)
 			{
 				return BadRequest();
 			}
@@ -69,7 +67,7 @@ namespace DiamondShop.Controllers
 			}
 			catch (DbUpdateConcurrencyException)
 			{
-				if(!_context.ShoppingCarts.Any(s => s.CartId == id))
+				if (!_context.ShoppingCarts.Any(s => s.CartId == id))
 				{
 					return NotFound();
 				}
@@ -85,7 +83,7 @@ namespace DiamondShop.Controllers
 		public async Task<IActionResult> DeleteShoppingCart(int id)
 		{
 			var shoppingcart = await _context.ShoppingCarts.FindAsync(id);
-			if(shoppingcart == null) 
+			if (shoppingcart == null)
 			{
 				return NotFound();
 			}

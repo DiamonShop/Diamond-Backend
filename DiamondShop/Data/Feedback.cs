@@ -3,17 +3,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DiamondShop.Data
 {
-    public class Feedback
-    {
-        [Key]
-        [Required]
-        public int FeedbackId { get; set; }
+	public class Feedback
+	{
+		[Key]
+		[Required]
+		public int FeedbackId { get; set; }
 
-        [ForeignKey("User")]
-        public string UserId { get; set; }
+		[ForeignKey("User")]
+		public int UserId { get; set; }
 
-        [ForeignKey("Product")]
-        public int ProductId { get; set; }
+		[ForeignKey("Product")]
+		public int ProductId { get; set; }
 		[StringLength(200)]
 		public string? Description { get; set; }
 

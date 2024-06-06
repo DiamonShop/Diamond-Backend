@@ -59,20 +59,19 @@ namespace DiamondShop.Controllers
 
             return Ok(userViewModels);
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(string id)
-        {
-            var user = await _context.Users
-                .Where(u => u.UserId == id && !u.IsActive)
-                .FirstOrDefaultAsync();
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return Ok(user);
-        }
 
-        [HttpPost]
+		[HttpGet("{id}")]
+		public async Task<IActionResult> GetUserById(int id)
+		{
+			var user = await _context.Users.FindAsync(id);
+			if (user == null)
+			{
+				return NotFound("User not found");
+			}
+			return Ok(user);
+		}
+
+		[HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] User user)
         {
             if (ModelState.IsValid)
@@ -85,7 +84,7 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] User user)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
         {
             if (id != user.UserId)
             {

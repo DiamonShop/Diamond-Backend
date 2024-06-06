@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DiamondShop.Data
 {
-    public class ProductDetail
-    {
-        [Key]
-        [Required]
+	public class ProductDetail
+	{
+		[Key]
+		[Required]
 		public int ProductDetailId { get; set; }
 		[ForeignKey("Product")]
 		[Required]
@@ -24,5 +24,5 @@ namespace DiamondShop.Data
 		public string? Color { get; set; }
 
 		public virtual Product Product { get; set; } = null!;
-    }
+	}
 }

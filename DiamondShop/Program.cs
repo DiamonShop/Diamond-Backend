@@ -36,6 +36,18 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<DiamondShop.Repositories.Interfaces.IGenericRepository<User>, DiamondShop.Repositories.GenericRepository<User>>();
 
+//Add CORS to allow two different origin(IP:Port) connect together
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowSpecificOrigin",
+	builder =>
+	{
+		builder.WithOrigins("http://localhost:3000")
+	.AllowAnyHeader()
+	.AllowAnyMethod();
+	});
+});
+
 // Đăng ký JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
 var key = Encoding.ASCII.GetBytes(jwtSettings.SecretKey);
@@ -95,6 +107,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//Use CORS to connect front-end
+app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

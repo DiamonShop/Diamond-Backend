@@ -3,16 +3,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DiamondShop.Data
 {
-    public class OrderDetail
-    {
-        [Key]
-        [Required]
-        public int OrderDetailId { get; set; }
-
-        [ForeignKey("Order")]
-        public int OrderId { get; set; }
-        [ForeignKey("Product")]
-        public int ProductId { get; set; }
+	public class CartItem
+	{
+		[Key]
+		[Required]
+		public int CartItemId { get; set; }
+		[ForeignKey("Order")]
+		public int OrderId { get; set; }
+		[ForeignKey("Product")]
+		public int ProductId { get; set; }
+		[ForeignKey("ShoppingCart")]
+		public int CartId { get; set; }
 		[Required]
 		public decimal Price { get; set; }
 		[Required]
@@ -20,5 +21,6 @@ namespace DiamondShop.Data
 
 		public virtual Order Order { get; set; } = null!;
 		public virtual Product Product { get; set; } = null!;
+		public virtual ShoppingCart ShoppingCart { get; set; } = null!;
 	}
 }
