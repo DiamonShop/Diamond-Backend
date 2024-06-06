@@ -85,7 +85,7 @@ namespace DiamondShop.Controllers
 			}
             _context.Users.Add(new User
             {
-                UserId = userDTO.UserId,
+                
                 FullName = userDTO.Fullname,
                 Username = userDTO.Username,
                 Password = userDTO.Password,
