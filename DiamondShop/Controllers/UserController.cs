@@ -84,10 +84,10 @@ namespace DiamondShop.Controllers
 				return BadRequest(ModelState);
 			}
 
-            var objUser = _context.Users.FirstOrDefault(x => x.Email == userDTO.Email);
-            var objUser2 = _context.Users.FirstOrDefault(o => o.Username == userDTO.Username);
+            var objUser = _context.Users.FirstOrDefault(x => x.Email == userDTO.Email &&
+            x.Username == userDTO.Username);
 
-			if (objUser == null && objUser2 == null) { 
+			if (objUser == null) { 
             _context.Users.Add(new User
             {
                 
@@ -153,33 +153,30 @@ namespace DiamondShop.Controllers
         }
 
 
-        [HttpPost("login")]
-        /*public async Task<IActionResult> Login(LoginModel model)
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login(LoginModel model)
         {
-            if (ModelState.IsValid)
+            var user = _context.Users.FirstOrDefault(x => 
+            x.Username == model.UserName &&
+            x.Password == model.Password);
+            if(user != null)
             {
-               var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password,
-                    lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    return Ok(new ApiResponse
-                    {
-                        Success = true,
-                        Message = "Login successful"
-                    });
-                }
-                else
-                {
-                    return Ok(new ApiResponse
-                    {
-                        Success = false,
-                        Message = "Invalid login attempt"
-                    });
-                }
-            }
-
-            return BadRequest("Invalid login request");
-        }*/
+				return Ok(new ApiResponse
+				{
+					Success = true,
+					Message = "Login successful"
+				});
+			}
+            else
+            {
+				return Ok(new ApiResponse
+				{
+					Success = false,
+					Message = "Invalid login attempt"
+				});
+			}
+        }
 
         [HttpGet("google-login")]
         public IActionResult GoogleLogin()
