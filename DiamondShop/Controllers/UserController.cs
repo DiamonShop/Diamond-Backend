@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Google;
+using DiamondShop.Repositories.Interfaces;
 
 namespace DiamondShop.Controllers
 {
@@ -31,15 +32,33 @@ namespace DiamondShop.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly DiamondDbContext _context;
         private readonly JwtSettings _jwtSettings;
+        private readonly IUserRepository _userRepository;
 
-        public UserController(DiamondDbContext context, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IOptions<JwtSettings> jwtSettings)
+        public UserController(DiamondDbContext context, SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser> userManager, IOptions<JwtSettings> jwtSettings, IUserRepository userRepository)
         {
             _context = context;
             _signInManager = signInManager;
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
+            _userRepository = userRepository;
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _userRepository.GetAllUsersAsync();
 
+            // Chuyển đổi danh sách người dùng sang UserViewModel để trả về
+            var userViewModels = users.Select(user => new UserViewModel
+            {
+                UserId = user.UserId,
+                FullName = user.FullName,
+                Email = user.Email,
+                RoleName = user.Role?.RoleName // Lấy tên vai trò của người dùng nếu có
+            }).ToList();
+
+            return Ok(userViewModels);
+        }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
