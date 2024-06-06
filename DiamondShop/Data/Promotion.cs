@@ -1,4 +1,4 @@
-﻿	using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DiamondShop.Data
@@ -9,7 +9,7 @@ namespace DiamondShop.Data
 		[Required]
 		public string PromotionId { get; set; }
 		[ForeignKey("User")]
-		public string UserId { get; set; }
+		public int UserId { get; set; }
 		public string UserName { get; set; }
 		public int DiscountPercentage { get; set; }
 		[Required]
@@ -20,6 +20,6 @@ namespace DiamondShop.Data
 		public string Conditions { get; set; }
 
 		public virtual User User { get; set; }
-        public bool IsActive { get; set; }
-    }
+		public bool IsActive { get; set; }
+	}
 }

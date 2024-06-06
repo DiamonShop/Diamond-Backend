@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DiamondShop.Data
 {
-    public class Product
-    {
-        [Key]
-        [Required]
-        public int ProductId { get; set; }
+	public class Product
+	{
+		[Key]
+		[Required]
+		public int ProductId { get; set; }
 
-        [ForeignKey("Category")]
-        public int CategoryId { get; set; }
+		[ForeignKey("Category")]
+		public int CategoryId { get; set; }
 
 		[StringLength(300)]
 		public string? Description { get; internal set; }
@@ -22,9 +22,9 @@ namespace DiamondShop.Data
 		public Category Category { get; set; } = null!;
 		public ProductDetail ProductDetail { get; set; } = null!;
 		public Certificate Certificate { get; set; } = null!;
+		public Warranty Warranty { get; set; } = null!;
 
-		public ICollection<OrderDetail> OrderDetails { get; } = new List<OrderDetail>();
-        public ICollection<Warranty> Warranties { get; } = new List<Warranty>();
-        public ICollection<Feedback> Feedbacks { get; } = new List<Feedback>();
-    }
+		public ICollection<CartItem> CartItems { get; } = new List<CartItem>();
+		public ICollection<Feedback> Feedbacks { get; } = new List<Feedback>();
+	}
 }

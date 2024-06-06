@@ -17,67 +17,38 @@ namespace FAMS.Entities.Data
 		public DiamondDbContext(DbContextOptions<DiamondDbContext> options) : base(options)
 		{
 		}
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			if (!optionsBuilder.IsConfigured)
-			{
-				optionsBuilder.UseSqlServer(GetConnectionString());
-			}
-		}
-		private string GetConnectionString()
-		{
-			IConfiguration config = new ConfigurationBuilder()
-			 .SetBasePath(Directory.GetCurrentDirectory())
-			.AddJsonFile("appsettings.json", true, true)
-			.Build();
-			var strConn = /*config["ConnectionStrings:DB"]*/ config.GetConnectionString("EFDataContext");
-
-			return strConn;
-		}
 
 		public DbSet<User> Users { get; set; }
 		public DbSet<Role> Roles { get; set; }
 		public DbSet<ShoppingCart> ShoppingCarts { get; set; }
 		public DbSet<Category> Categories { get; set; }
 		public DbSet<Product> Products { get; set; }
-		public DbSet<OrderDetail> OrderDetails { get; set; }
+		public DbSet<CartItem> CartItems { get; set; }
 		public DbSet<Order> Orders { get; set; }
 		public DbSet<Certificate> Certificates { get; set; }
 		public DbSet<ProductDetail> ProductDetails { get; set; }
 		public DbSet<Warranty> Warranties { get; set; }
 		public DbSet<Feedback> Feedbacks { get; set; }
 
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.Entity<User>(e =>
 			{
-                e.ToTable("User");
-                e.HasKey(x => x.UserId);
-                e.Property(x => x.Username)
-                    .IsRequired()
-                    .HasMaxLength(30);
-                e.Property(x => x.Password)
-                    .IsRequired()
-                    .HasMaxLength(50);
-                e.Property(x => x.Email)
-                    .IsRequired()
-                    .HasMaxLength(100);
-                e.Property(x => x.FullName)
-                    .IsRequired()
-                    .HasMaxLength(50);
-                e.Property(x => x.Status)
-                    .IsRequired()
-                    .HasMaxLength(20);
-                e.Property(x => x.IsActive)
-                    .IsRequired();
-                e.Property(x => x.RoleId)
-                    .IsRequired();
+				e.ToTable("User");
+				e.HasKey(x => x.UserId);
+				e.Property(x => x.Username);
+				e.Property(x => x.Password);
+				e.Property(x => x.Email);
+				e.Property(x => x.FullName);
+				e.Property(x => x.Status);
+				e.Property(x => x.RoleId);
+				e.Property(x => x.IsActive);
 
-                e.HasOne(x => x.Role)
-                    .WithMany(x => x.Users)
-                    .HasForeignKey(x => x.RoleId);
-
-            });
+				e.HasOne(x => x.Role)
+					.WithMany(x => x.Users)
+					.HasForeignKey(x => x.RoleId);
+			});
 
 			modelBuilder.Entity<Role>(e =>
 			{
@@ -106,7 +77,6 @@ namespace FAMS.Entities.Data
 				e.ToTable("Order");
 				e.HasKey(x => x.OrderId);
 				e.Property(x => x.OrderDate);
-				e.Property(x => x.TotalPrice);
 				e.Property(x => x.Status);
 				e.Property(e => e.TotalPrice).HasColumnType("decimal(18,2)"); ;
 				e.Property(x => x.UserId);
@@ -116,12 +86,29 @@ namespace FAMS.Entities.Data
 					.HasForeignKey(x => x.UserId);
 			});
 
-			modelBuilder.Entity<OrderDetail>(e =>
+			modelBuilder.Entity<CartItem>(e =>
 			{
-				e.ToTable("OrderDetail");
-				e.HasKey(x => x.OrderDetailId);
+				e.ToTable("CartItem");
+				e.HasKey(x => x.CartItemId);
+				e.Property(e => e.OrderId);
+				e.Property(e => e.CartId);
+				e.Property(e => e.ProductId);
 				e.Property(e => e.Price).HasColumnType("decimal(18,2)");
 
+				e.HasOne(x => x.ShoppingCart)
+					.WithMany(x => x.CartItems)
+					.HasForeignKey(x => x.CartId)
+				.OnDelete(DeleteBehavior.NoAction);
+
+				e.HasOne(x => x.Product)
+					.WithMany(x => x.CartItems)
+					.HasForeignKey(x => x.ProductId)
+					.OnDelete(DeleteBehavior.NoAction);
+
+				e.HasOne(x => x.Order)
+					.WithMany(x => x.CartItems)
+					.HasForeignKey(x => x.OrderId)
+					.OnDelete(DeleteBehavior.NoAction);
 			});
 
 			modelBuilder.Entity<ProductDetail>(e =>
@@ -133,6 +120,7 @@ namespace FAMS.Entities.Data
 				e.Property(e => e.Cut);
 				e.Property(e => e.Color);
 				e.Property(e => e.Origin);
+				e.Property(e => e.ProductId);
 
 				e.HasOne(x => x.Product)
 					.WithOne(x => x.ProductDetail)
@@ -155,7 +143,7 @@ namespace FAMS.Entities.Data
 				e.Property(e => e.Status);
 				e.Property(e => e.Stock);
 				e.Property(e => e.CategoryId);
-				
+
 				e.HasOne(x => x.ProductDetail)
 					.WithOne(x => x.Product)
 					.HasForeignKey<ProductDetail>(x => x.ProductId);
@@ -167,6 +155,10 @@ namespace FAMS.Entities.Data
 				e.HasOne(x => x.Certificate)
 					.WithOne(x => x.Product)
 					.HasForeignKey<Certificate>(x => x.CertificateId);
+
+				e.HasOne(x => x.Warranty)
+					.WithOne(x => x.Product)
+					.HasForeignKey<Warranty>(x => x.WarrantyId);
 			});
 
 			modelBuilder.Entity<Warranty>(e =>
@@ -177,9 +169,6 @@ namespace FAMS.Entities.Data
 				e.Property(e => e.ProductId);
 				e.Property(e => e.UserId);
 
-				e.HasOne(x => x.Product)
-					.WithMany(x => x.Warranties)
-					.HasForeignKey(x => x.ProductId);
 				e.HasOne(x => x.User)
 					.WithMany(x => x.Warranties)
 					.HasForeignKey(x => x.UserId);
@@ -202,21 +191,16 @@ namespace FAMS.Entities.Data
 					.HasForeignKey(x => x.UserId);
 			});
 
-			/*modelBuilder.Entity<Certificate>(e =>
+			modelBuilder.Entity<ShoppingCart>(e =>
 			{
-				e.ToTable("Certificate");
-				e.HasKey(x => x.CertificateId);
-				e.Property(e => e.Clarity);
-				e.Property(e => e.CaratWeight);
-				e.Property(e => e.Color);
-				e.Property(e => e.Cut);
-				e.Property(e => e.ProductId);
+				e.ToTable("ShoppingCart");
+				e.HasKey(x => x.CartId);
+				e.Property(e => e.UserId);
 
-				e.HasOne(x => x.Product)
-					.WithOne(x => x.Certificate)
-					.HasForeignKey<Certificate>(x => x.ProductId);
-
-			});*/
+				e.HasOne(x => x.User)
+					.WithMany(x => x.ShoppingCarts)
+					.HasForeignKey(x => x.UserId);
+			});
 		}
 	}
 }

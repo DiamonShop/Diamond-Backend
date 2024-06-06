@@ -3,22 +3,23 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DiamondShop.Data
 {
-    public class Order
-    {
-        [Key]
-        [Required]  
-        public int OrderId { get; set; }
+	public class Order
+	{
+		[Key]
+		[Required]
+		public int OrderId { get; set; }
 
-        [ForeignKey("User")]
-        public string UserId { get; set; }
+		[ForeignKey("User")]
+		public int UserId { get; set; }
 		[Required]
 		public decimal TotalPrice { get; set; }
 		[Required]
+		[StringLength(30)]
 		public string Status { get; set; }
 		[Required]
 		public DateTime OrderDate { get; set; }
 
 		public virtual User User { get; set; } = null!;
-		public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+		public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 	}
 }

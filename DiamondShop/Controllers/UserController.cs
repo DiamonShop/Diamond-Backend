@@ -61,18 +61,21 @@ namespace DiamondShop.Controllers
 
             return Ok(userViewModels);
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(string id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return Ok(user);
-        }
 
-        [HttpPost]
+
+
+		[HttpGet("{id}")]
+		public async Task<IActionResult> GetUserById(int id)
+		{
+			var user = await _context.Users.FindAsync(id);
+			if (user == null)
+			{
+				return NotFound("User not found");
+			}
+			return Ok(user);
+		}
+
+		[HttpPost]
         [Route("Registration")]
         public async Task<IActionResult> CreateUser(UserDTO userDTO)
         {
@@ -96,7 +99,7 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] User user)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
         {
             if (id != user.UserId)
             {
