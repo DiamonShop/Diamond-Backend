@@ -34,7 +34,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 
 // Đăng ký các dịch vụ
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<DiamondShop.Repositories.Interfaces.IGenericRepository<User>, DiamondShop.Repositories.GenericRepository<User>>();
+builder.Services.AddScoped<DiamondShop.Repositories.Interfaces
+    .IGenericRepository<User>, DiamondShop.Repositories.GenericRepository<User>>();
 
 // Đăng ký JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();

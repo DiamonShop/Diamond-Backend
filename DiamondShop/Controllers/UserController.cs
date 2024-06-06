@@ -35,7 +35,9 @@ namespace DiamondShop.Controllers
         private readonly IUserRepository _userRepository;
 
         public UserController(DiamondDbContext context, SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager, IOptions<JwtSettings> jwtSettings, IUserRepository userRepository)
+            UserManager<IdentityUser> userManager, 
+            IOptions<JwtSettings> jwtSettings, 
+            IUserRepository userRepository)
         {
             _context = context;
             _signInManager = signInManager;
@@ -71,15 +73,26 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] User user)
+        [Route("Registration")]
+        public async Task<IActionResult> CreateUser(UserDTO userDTO)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetUserById), new { id = user.UserId }, user);
-            }
-            return BadRequest(ModelState);
+				return BadRequest(ModelState);
+			}
+            _context.Users.Add(new User
+            {
+                UserId = userDTO.UserId,
+                FullName = userDTO.Fullname,
+                Username = userDTO.Username,
+                Password = userDTO.Password,
+                Email = userDTO.Email,
+                Status = userDTO.Status,
+                RoleId = userDTO.RoleId
+            });
+            _context.SaveChanges();
+            return Ok("User registered");
+            
         }
 
         [HttpPut("{id}")]
@@ -129,11 +142,12 @@ namespace DiamondShop.Controllers
 
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginModel model)
+        /*public async Task<IActionResult> Login(LoginModel model)
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+               var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password,
+                    lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     return Ok(new ApiResponse
@@ -153,7 +167,7 @@ namespace DiamondShop.Controllers
             }
 
             return BadRequest("Invalid login request");
-        }
+        }*/
 
         [HttpGet("google-login")]
         public IActionResult GoogleLogin()
