@@ -1,0 +1,6 @@
+﻿namespace DiamondShop.Model
+{
+    
+
+
+}
