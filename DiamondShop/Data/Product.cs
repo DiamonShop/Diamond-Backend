@@ -12,12 +12,15 @@ namespace DiamondShop.Data
 		[ForeignKey("Category")]
 		public int CategoryId { get; set; }
 
+		[StringLength(100)]
+		public string Name { get; internal set; }
+		public decimal Price { get; internal set; }
 		[StringLength(300)]
 		public string? Description { get; internal set; }
 		public int? Stock { get; set; }
 
 		[StringLength(50)]
-		public string? Status { get; set; } = null!;
+		public string Status { get; set; } = null!;
 
 		public Category Category { get; set; } = null!;
 		public ProductDetail ProductDetail { get; set; } = null!;
