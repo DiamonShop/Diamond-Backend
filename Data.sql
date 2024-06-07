@@ -13,17 +13,17 @@ INSERT INTO [dbo].[Role] (RoleName) VALUES ('Delivery');
 INSERT INTO [dbo].[Role] (RoleName) VALUES ('Staff');
 
 /* Insert User */
-INSERT INTO [dbo].[User] (RoleId, Email, Status, FullName, Username, Password, IsActive) 
-VALUES (1, 'admin@example.com', 'active', 'Admin User', 'admin', 'password123', 1);
+INSERT INTO [dbo].[User] (RoleId, Email, FullName, Username, Password, IsActive) 
+VALUES (1, 'admin@example.com', 'Admin User', 'admin', 'password123', 1);
 
-INSERT INTO [dbo].[User] (RoleId, Email, Status, FullName, Username, Password, IsActive) 
-VALUES (2, 'manager@example.com', 'active', 'Manager User', 'manager', 'password123', 1);
+INSERT INTO [dbo].[User] (RoleId, Email, FullName, Username, Password, IsActive) 
+VALUES (2, 'manager@example.com', 'Manager User', 'manager', 'password123', 1);
 
-INSERT INTO [dbo].[User] (RoleId, Email, Status, FullName, Username, Password, IsActive) 
-VALUES (3, 'member@example.com', 'inactive', 'Member User', 'member', 'password123', 0);
+INSERT INTO [dbo].[User] (RoleId, Email, FullName, Username, Password, IsActive) 
+VALUES (3, 'member@example.com', 'Member User', 'member', 'password123', 0);
 
-INSERT INTO [dbo].[User] (RoleId, Email, Status, FullName, Username, Password, IsActive) 
-VALUES (4, 'delivery@example.com', 'active', 'Delivery User', 'staff', 'password123', 1);
+INSERT INTO [dbo].[User] (RoleId, Email, FullName, Username, Password, IsActive) 
+VALUES (4, 'delivery@example.com', 'Delivery User', 'staff', 'password123', 1);
 
 /* Insert Product */
 INSERT INTO Product (CategoryID, Description, Stock, IsActive, Price, ProductName) 

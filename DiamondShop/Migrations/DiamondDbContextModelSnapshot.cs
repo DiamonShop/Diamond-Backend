@@ -180,8 +180,8 @@ namespace DiamondShop.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
+
                     b.Property<bool>("IsActive")
-                        .HasMaxLength(50)
                         .HasColumnType("bit");
 
                     b.Property<int?>("Price")
@@ -189,7 +189,6 @@ namespace DiamondShop.Migrations
 
                     b.Property<string>("ProductName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
