@@ -16,7 +16,7 @@ namespace DiamondShop.Data
 		public string? Email { get; set; }
 		[Required]
 		[StringLength(30)]
-		public bool IsActive { get; set; }
+		public string? Status { get; set; }
 		[Required]
 		[StringLength(50)]
 		public string? FullName { get; set; }
@@ -26,6 +26,7 @@ namespace DiamondShop.Data
 		[Required]
 		[StringLength(50)]
 		public string Password { get; set; }
+		public bool IsActive { get; set; }
 
 		public virtual Role Role { get; set; }
 		public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
