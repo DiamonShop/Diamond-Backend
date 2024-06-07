@@ -35,7 +35,9 @@ namespace DiamondShop.Controllers
         private readonly IUserRepository _userRepository;
 
         public UserController(DiamondDbContext context, SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager, IOptions<JwtSettings> jwtSettings, IUserRepository userRepository)
+            UserManager<IdentityUser> userManager, 
+            IOptions<JwtSettings> jwtSettings, 
+            IUserRepository userRepository)
         {
             _context = context;
             _signInManager = signInManager;
@@ -60,6 +62,8 @@ namespace DiamondShop.Controllers
             return Ok(userViewModels);
         }
 
+
+
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetUserById(int id)
 		{
@@ -72,16 +76,36 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] User user)
+        [Route("Registration")]
+        public async Task<IActionResult> CreateUser(UserDTO userDTO)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetUserById), new { id = user.UserId }, user);
+				return BadRequest(ModelState);
+			}
+
+            var objUser = _context.Users.FirstOrDefault(x => x.Email == userDTO.Email &&
+            x.Username == userDTO.Username);
+
+			if (objUser == null) { 
+            _context.Users.Add(new User
+            {
+                
+                FullName = userDTO.Fullname,
+                Username = userDTO.Username,
+                Password = userDTO.Password,
+                Email = userDTO.Email,
+                Status = userDTO.Status,
+                RoleId = userDTO.RoleId
+            });
+            _context.SaveChanges();
+            return Ok("User registered");
             }
-            return BadRequest(ModelState);
-        }
+            else
+            {
+                return BadRequest("User already existed.");
+            }
+		}
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
@@ -129,31 +153,29 @@ namespace DiamondShop.Controllers
         }
 
 
-        [HttpPost("login")]
+        [HttpPost]
+        [Route("Login")]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            if (ModelState.IsValid)
+            var user = _context.Users.FirstOrDefault(x => 
+            x.Username == model.UserName &&
+            x.Password == model.Password);
+            if(user != null)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    return Ok(new ApiResponse
-                    {
-                        Success = true,
-                        Message = "Login successful"
-                    });
-                }
-                else
-                {
-                    return Ok(new ApiResponse
-                    {
-                        Success = false,
-                        Message = "Invalid login attempt"
-                    });
-                }
-            }
-
-            return BadRequest("Invalid login request");
+				return Ok(new ApiResponse
+				{
+					Success = true,
+					Message = "Login successful"
+				});
+			}
+            else
+            {
+				return Ok(new ApiResponse
+				{
+					Success = false,
+					Message = "Invalid login attempt"
+				});
+			}
         }
 
         [HttpGet("google-login")]

@@ -1,14 +1,9 @@
 ﻿using DiamondShop.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using System.Data;
-using System.Reflection.Emit;
-using System.Security.Claims;
 
 namespace FAMS.Entities.Data
 {
-	public class DiamondDbContext : DbContext
+    public class DiamondDbContext : DbContext
 	{
 		public DiamondDbContext()
 		{
@@ -141,7 +136,7 @@ namespace FAMS.Entities.Data
 				e.Property(e => e.Name);
 				e.Property(e => e.Price).HasColumnType("decimal(18,2)");
 				e.Property(e => e.Description);
-				e.Property(e => e.Status);
+				e.Property(e => e.IsActive);
 				e.Property(e => e.Stock);
 				e.Property(e => e.CategoryId);
 

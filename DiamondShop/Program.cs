@@ -36,16 +36,16 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<DiamondShop.Repositories.Interfaces.IGenericRepository<User>, DiamondShop.Repositories.GenericRepository<User>>();
 
-//Add CORS to allow two different origin(IP:Port) connect together
+// Add CORS to allow specific origin
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("AllowSpecificOrigin",
-	builder =>
-	{
-		builder.WithOrigins("http://localhost:3000")
-	.AllowAnyHeader()
-	.AllowAnyMethod();
-	});
+    options.AddPolicy("AllowSpecificOrigin", builder =>
+    {
+        builder.WithOrigins("http://localhost:3000")
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials(); // Allow credentials if you're using cookies or other authentication methods
+    });
 });
 
 // Đăng ký JWT Authentication
@@ -76,8 +76,9 @@ builder.Services.AddAuthentication(options =>
 .AddCookie()
 .AddGoogle(options =>
 {
-    options.ClientId = "993387960773-r3cldf382hbgjghab16alb7qodolqumr.apps.googleusercontent.com";
-    options.ClientSecret = "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";
+    options.ClientId = "your-client-id";
+    options.ClientSecret = "your-client-secret";
+    options.CallbackPath = "/signin-google";
 });
 
 // Đăng ký các dịch vụ khác và cấu hình ứng dụng
@@ -107,10 +108,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//Use CORS to connect front-end
+// Use CORS to connect front-end
 app.UseCors("AllowSpecificOrigin");
+
 app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+
 app.Run();
