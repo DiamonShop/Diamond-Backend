@@ -142,8 +142,9 @@ namespace FAMS.Entities.Data
 				e.Property(e => e.CategoryId); 
 
 				e.Property(e => e.CategoryId);
-
-				e.HasOne(x => x.ProductDetail)
+                e.Property(e => e.Price);
+                e.Property(e => e.ProductName);
+                e.HasOne(x => x.ProductDetail)
 					.WithOne(x => x.Product)
 					.HasForeignKey<ProductDetail>(x => x.ProductId);
 

@@ -16,10 +16,10 @@ namespace DiamondShop.Data
 		public DateTime StartDate { get; set; }
 		[Required]
 		public DateTime EndDate { get; set; }
-		public bool Status { get; set; }
 		public string Conditions { get; set; }
 
 		public virtual User User { get; set; }
+		//check được
 		public bool IsActive { get; set; }
 	}
 }

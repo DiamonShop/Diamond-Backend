@@ -13,10 +13,7 @@ namespace DiamondShop.Data
 		public int RoleId { get; set; }
 		[Required]
 		[StringLength(200)]
-		public string? Email { get; set; }
-		[Required]
-		[StringLength(30)]
-		public string? Status { get; set; }
+		public string? Email { get; set; }		
 		[Required]
 		[StringLength(50)]
 		public string? FullName { get; set; }
