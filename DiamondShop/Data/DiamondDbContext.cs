@@ -36,9 +36,9 @@ namespace FAMS.Entities.Data
 				e.Property(x => x.Password);
 				e.Property(x => x.Email);
 				e.Property(x => x.FullName);
-				
 				e.Property(x => x.RoleId);
 				e.Property(x => x.IsActive);
+				e.Property(x => x.Status);
 
 				e.HasOne(x => x.Role)
 					.WithMany(x => x.Users)
@@ -134,9 +134,13 @@ namespace FAMS.Entities.Data
 			{
 				e.ToTable("Product");
 				e.HasKey(x => x.ProductId);
+				e.Property(e => e.ProductName);
+				e.Property(e => e.Price);
 				e.Property(e => e.Description);
 				e.Property(e => e.IsActive);
 				e.Property(e => e.Stock);
+				e.Property(e => e.CategoryId); 
+
 				e.Property(e => e.CategoryId);
                 e.Property(e => e.Price);
                 e.Property(e => e.ProductName);

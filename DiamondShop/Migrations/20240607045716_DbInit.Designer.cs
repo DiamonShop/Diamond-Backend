@@ -4,6 +4,7 @@ using FAMS.Entities.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiamondShop.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    partial class DiamondDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240607045716_DbInit")]
+    partial class DbInit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,6 +183,7 @@ namespace DiamondShop.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
+
                     b.Property<bool>("IsActive")
                         .HasMaxLength(50)
                         .HasColumnType("bit");
@@ -189,7 +193,6 @@ namespace DiamondShop.Migrations
 
                     b.Property<string>("ProductName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -306,6 +309,11 @@ namespace DiamondShop.Migrations
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Username")
                         .IsRequired()
