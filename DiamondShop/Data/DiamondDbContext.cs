@@ -38,8 +38,6 @@ namespace FAMS.Entities.Data
 				e.Property(x => x.FullName);
 				e.Property(x => x.RoleId);
 				e.Property(x => x.IsActive);
-				e.Property(x => x.Status);
-
 				e.HasOne(x => x.Role)
 					.WithMany(x => x.Users)
 					.HasForeignKey(x => x.RoleId);
