@@ -36,7 +36,7 @@ namespace FAMS.Entities.Data
 				e.Property(x => x.Password);
 				e.Property(x => x.Email);
 				e.Property(x => x.FullName);
-				e.Property(x => x.Status);
+				
 				e.Property(x => x.RoleId);
 				e.Property(x => x.IsActive);
 
@@ -138,8 +138,9 @@ namespace FAMS.Entities.Data
 				e.Property(e => e.IsActive);
 				e.Property(e => e.Stock);
 				e.Property(e => e.CategoryId);
-
-				e.HasOne(x => x.ProductDetail)
+                e.Property(e => e.Price);
+                e.Property(e => e.ProductName);
+                e.HasOne(x => x.ProductDetail)
 					.WithOne(x => x.Product)
 					.HasForeignKey<ProductDetail>(x => x.ProductId);
 

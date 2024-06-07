@@ -95,7 +95,7 @@ namespace DiamondShop.Controllers
                 Username = userDTO.Username,
                 Password = userDTO.Password,
                 Email = userDTO.Email,
-                Status = userDTO.Status,
+                IsActive = userDTO.IsActive,
                 RoleId = userDTO.RoleId
             });
             _context.SaveChanges();
