@@ -11,14 +11,16 @@ namespace DiamondShop.Data
 
 		[ForeignKey("Category")]
 		public int CategoryId { get; set; }
+
 		[StringLength(100)]
 		public string ProductName { get; set; }
 		[StringLength(300)]
 		public string? Description { get; internal set; }
 		public int? Stock { get; set; }
-    public int? Price { get; set; }     
-    public bool IsActive { get; set; }
-  
+
+		public int? Price { get; set; }
+		public bool IsActive { get; set; }
+
 
 		public Category Category { get; set; } = null!;
 		public ProductDetail ProductDetail { get; set; } = null!;

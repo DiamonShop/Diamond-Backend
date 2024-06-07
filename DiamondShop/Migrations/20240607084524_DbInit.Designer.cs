@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiamondShop.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    [Migration("20240607045716_DbInit")]
+    [Migration("20240607084524_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -185,7 +185,6 @@ namespace DiamondShop.Migrations
                         .HasColumnType("nvarchar(300)");
 
                     b.Property<bool>("IsActive")
-                        .HasMaxLength(50)
                         .HasColumnType("bit");
 
                     b.Property<int?>("Price")
@@ -309,11 +308,6 @@ namespace DiamondShop.Migrations
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Username")
                         .IsRequired()
