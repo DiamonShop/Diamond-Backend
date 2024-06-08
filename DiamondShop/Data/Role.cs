@@ -9,7 +9,7 @@ namespace DiamondShop.Data
 
 		[Required]
 		[StringLength(50)]
-		public string RoleName { get; set; } = null!;
+		public string RoleName { get; set; }
 
 		public virtual ICollection<User> Users { get; set; } = new List<User>();
 	}
