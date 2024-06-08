@@ -14,38 +14,44 @@ using FAMS.Entities.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Đọc cấu hình từ appsettings.json
+// Read configuration from appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json", optional: false);
 
-// Đăng ký DbContext
+// Register DbContext
 builder.Services.AddDbContext<DiamondDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DB"));
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
-// Đăng ký Identity
+// Register Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<DiamondDbContext>()
     .AddSignInManager<SignInManager<IdentityUser>>();
 
-// Đăng ký các dịch vụ
+// Register services
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<DiamondShop.Repositories.Interfaces.IGenericRepository<User>, DiamondShop.Repositories.GenericRepository<User>>();
+builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>(); // Using simplified namespace
 
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("AllowSpecificOrigin",
-		builder => builder.WithOrigins("https://localhost:7101/api/Login/GoogleLogin")
-						  .AllowAnyHeader()
-						  .AllowAnyMethod());
+
+    options.AddPolicy("AllowSpecificOrigin", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
 });
 
-// Đăng ký JWT Authentication
+// Register JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
 var key = Encoding.ASCII.GetBytes(jwtSettings.SecretKey);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -64,7 +70,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Đăng ký Google Authentication
+// Register Google Authentication
 builder.Services.AddAuthentication(options =>
 {
 	options.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
@@ -73,12 +79,17 @@ builder.Services.AddAuthentication(options =>
 .AddCookie()
 .AddGoogle(options =>
 {
-    options.ClientId = "993387960773-r3cldf382hbgjghab16alb7qodolqumr.apps.googleusercontent.com";
-    options.ClientSecret = "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";
-	options.SaveTokens = true;
+    options.ClientId = "993387960773-09fmlfavvp7d64eul2122uad7vk70n8f.apps.googleusercontent.com";
+    options.ClientSecret = "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";
+    options.CallbackPath = "/signin-google";
 });
 
-// Đăng ký các dịch vụ khác và cấu hình ứng dụng
+// Register other services and configure the application
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -89,14 +100,28 @@ builder.Services.AddSwaggerGen(options =>
         In = ParameterLocation.Header,
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
-        Scheme = "jwt", // Change scheme to "jwt" to avoid conflict with "Bearer"
+        Scheme = "Bearer",
         BearerFormat = "JWT"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "oauth2"
+                }
+            },
+            Array.Empty<string>()
+        }
     });
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
-// Cấu hình và xây dựng ứng dụng
+// Configure and build the application
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
