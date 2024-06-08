@@ -21,237 +21,170 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Google;
 using DiamondShop.Repositories.Interfaces;
+using NuGet.Protocol.Core.Types;
+using AutoMapper;
 
 namespace DiamondShop.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
-    {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly DiamondDbContext _context;
-        private readonly JwtSettings _jwtSettings;
-        private readonly IUserRepository _userRepository;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class UserController : ControllerBase
+	{
+		private readonly SignInManager<IdentityUser> _signInManager;
+		private readonly UserManager<IdentityUser> _userManager;
+		private readonly DiamondDbContext _context;
+		private readonly JwtSettings _jwtSettings;
+		private readonly IUserRepository _userRepository;
 
-        public UserController(DiamondDbContext context, SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager, 
-            IOptions<JwtSettings> jwtSettings, 
-            IUserRepository userRepository)
-        {
-            _context = context;
-            _signInManager = signInManager;
-            _userManager = userManager;
-            _jwtSettings = jwtSettings.Value;
-            _userRepository = userRepository;
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
-        {
-            var users = await _userRepository.GetAllUsersAsync();
+		public UserController(DiamondDbContext context, SignInManager<IdentityUser> signInManager,
+			UserManager<IdentityUser> userManager,
+			IOptions<JwtSettings> jwtSettings,
+			IUserRepository userRepository)
+		{
+			_context = context;
+			_signInManager = signInManager;
+			_userManager = userManager;
+			_jwtSettings = jwtSettings.Value;
+			_userRepository = userRepository;
+		}
 
-            // Chuyển đổi danh sách người dùng sang UserViewModel để trả về
-            var userViewModels = users.Select(user => new UserViewModel
-            {
-                UserId = user.UserId,
-                FullName = user.FullName,
-                Email = user.Email,
-                RoleName = user.Role?.RoleName // Lấy tên vai trò của người dùng nếu có
-            }).ToList();
+		[HttpGet("GetAllUsers")]
+		public async Task<IActionResult> GetAllUsers()
+		{
+			var users = await _userRepository.GetAllUsersAsync();
 
-            return Ok(userViewModels);
-        }
+			// Chuyển đổi danh sách người dùng sang UserViewModel để trả về
+			var userViewModels = users.Select(user => new UserViewModel
+			{
+				UserId = user.UserId,
+				Username = user.Username,
+				FullName = user.FullName,
+				Email = user.Email,
+				RoleName = user.Role?.RoleName // Lấy tên vai trò của người dùng nếu có
+			}).ToList();
 
-
+			return Ok(userViewModels);
+		}
 
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetUserById(int id)
 		{
-			var user = await _context.Users.FindAsync(id);
-			if (user == null)
+			var user = await _userRepository.GetByUserID(id);
+			UserViewModel userViewModel;
+
+			try
 			{
-				return NotFound("User not found");
+				if (user == null)
+				{
+					return NotFound("User not found");
+				}
+				else
+				{
+					userViewModel = new UserViewModel()
+					{
+						UserId = user.UserId,
+						Username = user.Username,
+						FullName = user.FullName,
+						Email = user.Email,
+						RoleName = user.Role?.RoleName
+					};
+				}
 			}
-			return Ok(user);
+			catch (Exception ex)
+			{
+				return StatusCode(500, "Internal server error");
+			}
+			return Ok(userViewModel);
 		}
 
-		[HttpPost]
-        [Route("Registration")]
-        public async Task<IActionResult> CreateUser(UserDTO userDTO)
-        {
-            if (!ModelState.IsValid)
-            {
+		[HttpPost("Registration")]
+		public async Task<IActionResult> CreateUser(UserDTO userDTO)
+		{
+			if (!ModelState.IsValid)
+			{
 				return BadRequest(ModelState);
 			}
 
-            var objUser = _context.Users.FirstOrDefault(x => x.Email == userDTO.Email &&
-            x.Username == userDTO.Username);
+			var objUser = _context.Users
+							.FirstOrDefault(x => x.Email == userDTO.Email && x.Username == userDTO.Username);
 
-			if (objUser == null) { 
-            _context.Users.Add(new User
-            {
-                
-                FullName = userDTO.Fullname,
-                Username = userDTO.Username,
-                Password = userDTO.Password,
-                Email = userDTO.Email,
-                IsActive = userDTO.IsActive,
-                RoleId = userDTO.RoleId
-            });
-            _context.SaveChanges();
-            return Ok("User registered");
-            }
-            else
-            {
-                return BadRequest("User already existed.");
-            }
+			if (objUser == null)
+			{
+				_context.Users.Add(new User
+				{
+
+					FullName = userDTO.Fullname,
+					Username = userDTO.Username,
+					Password = userDTO.Password,
+					Email = userDTO.Email,
+					IsActive = userDTO.IsActive,
+					RoleId = userDTO.RoleId
+				});
+				_context.SaveChanges();
+				return Ok("User registered");
+			}
+			else
+			{
+				return BadRequest("User already existed.");
+			}
 		}
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
-        {
-            if (id != user.UserId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Users.Any(u => u.UserId == id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            user.IsActive = true;
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-
-        [HttpPost]
-        [Route("Login")]
-        public async Task<IActionResult> Login(LoginModel model)
-        {
-            var user = _context.Users.FirstOrDefault(x => 
-            x.Username == model.UserName &&
-            x.Password == model.Password);
-            if(user != null)
-            {
-				return Ok(new ApiResponse
-				{
-					Success = true,
-					Message = "Login successful"
-				});
+		[HttpPut("{id}")]
+		public async Task<IActionResult> UpdateUser(int id, [FromBody] UserModel userModel)
+		{
+			var user = await _userRepository.GetByUserID(id);
+			if (id != user.UserId)
+			{
+				return BadRequest();
 			}
-            else
-            {
-				return Ok(new ApiResponse
+
+			try
+			{
+				if (user == null)
 				{
-					Success = false,
-					Message = "Invalid login attempt"
-				});
+					return NotFound("User not found");
+				}
+				else
+				{
+					user.Username = userModel.Username;
+					user.FullName = userModel.FullName;
+					user.Email = userModel.Email;
+					
+					_context.Users.Update(user);
+					_context.SaveChanges();
+					return Ok("Update Successfully!");
+				}
 			}
-        }
+			catch (Exception ex)
+			{
+				return StatusCode(500, "Internal server error");
+			}
 
-        [HttpGet("google-login")]
-        public IActionResult GoogleLogin()
-        {
-            var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleLoginCallback") };
-            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-        }
+		}
 
-        [HttpGet("google-login-callback")]
-        public async Task<IActionResult> GoogleLoginCallback()
-        {
-            var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteUser(int id)
+		{
+			var user = await _context.Users.FindAsync(id);
+			if (user == null)
+			{
+				return NotFound();
+			}
+			user.IsActive = true;
 
-            if (!authenticateResult.Succeeded)
-                return BadRequest("Google login failed");
+			_context.Users.Remove(user);
+			await _context.SaveChangesAsync();
 
-            var emailClaim = authenticateResult.Principal.FindFirst(ClaimTypes.Email);
-            if (emailClaim == null || string.IsNullOrEmpty(emailClaim.Value))
-                return BadRequest("Google login failed: Email claim not found");
+			return NoContent();
+		}
 
-            var user = await _userManager.FindByEmailAsync(emailClaim.Value);
-
-            if (user == null)
-            {
-                // Tạo một người dùng mới nếu chưa tồn tại
-                user = new IdentityUser
-                {
-                    UserName = emailClaim.Value,
-                    Email = emailClaim.Value
-                };
-                var result = await _userManager.CreateAsync(user);
-                if (!result.Succeeded)
-                    return BadRequest("Failed to create user account");
-            }
-
-            // Đăng nhập người dùng
-            await _signInManager.SignInAsync(user, isPersistent: false);
-
-            // Chuyển hướng hoặc trả về thông báo thành công
-            return Ok(new ApiResponse
-            {
-                Success = true,
-                Message = "Google login successful"
-            });
-        }
-        private string GenerateToken(User user)
-        {
-            var secretKeyBytes = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
-
-            var claims = new List<Claim>
-            {
-                new Claim("UserID", user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email)
-            };
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddMinutes(_jwtSettings.ExpirationMinutes),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.HmacSha512Signature)
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
-        }
-    }
+	}
 
 
 
 
-    
+
 }
 
 
-   
+

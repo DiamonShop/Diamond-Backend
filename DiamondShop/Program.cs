@@ -39,13 +39,10 @@ builder.Services.AddScoped<DiamondShop.Repositories.Interfaces.IGenericRepositor
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin", builder =>
-    {
-        builder.WithOrigins("http://localhost:3000")
-               .AllowAnyHeader()
-               .AllowAnyMethod()
-               .AllowCredentials(); // Allow credentials if you're using cookies or other authentication methods
-    });
+	options.AddPolicy("AllowSpecificOrigin",
+		builder => builder.WithOrigins("https://localhost:7101/api/Login/GoogleLogin")
+						  .AllowAnyHeader()
+						  .AllowAnyMethod());
 });
 
 // Đăng ký JWT Authentication
@@ -70,15 +67,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Đăng ký Google Authentication
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+	options.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
+	options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
 })
 .AddCookie()
 .AddGoogle(options =>
 {
-    options.ClientId = "your-client-id";
-    options.ClientSecret = "your-client-secret";
-    options.CallbackPath = "/signin-google";
+    options.ClientId = "993387960773-r3cldf382hbgjghab16alb7qodolqumr.apps.googleusercontent.com";
+    options.ClientSecret = "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";
+	options.SaveTokens = true;
 });
 
 // Đăng ký các dịch vụ khác và cấu hình ứng dụng
