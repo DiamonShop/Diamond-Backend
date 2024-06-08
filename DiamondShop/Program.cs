@@ -14,6 +14,7 @@ using FAMS.Entities.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,8 +34,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddSignInManager<SignInManager<IdentityUser>>();
 
 // Register services
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<DiamondShop.Repositories.Interfaces.IGenericRepository<User>, DiamondShop.Repositories.GenericRepository<User>>();
+builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>(); // Using simplified namespace
 
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
@@ -82,6 +84,11 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Register other services and configure the application
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -94,6 +101,20 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "oauth2"
+                }
+            },
+            Array.Empty<string>()
+        }
     });
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
