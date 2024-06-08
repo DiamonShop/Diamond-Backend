@@ -41,6 +41,7 @@ builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
 {
+
     options.AddPolicy("AllowSpecificOrigin", policy =>
     {
         policy.WithOrigins("http://localhost:3000")
@@ -72,8 +73,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Register Google Authentication
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+	options.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
+	options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
 })
 .AddCookie()
 .AddGoogle(options =>
