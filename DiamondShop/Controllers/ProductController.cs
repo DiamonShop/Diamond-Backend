@@ -16,7 +16,7 @@ namespace DiamondShop.Controllers
         {
             _context = context;
         }
-
+        //lay all thong tin
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
@@ -26,7 +26,7 @@ namespace DiamondShop.Controllers
                 .ToListAsync();
             return Ok(products);
         }
-
+        //lay thong tin  theo IDproduct
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
@@ -42,7 +42,7 @@ namespace DiamondShop.Controllers
 
             return Ok(product);
         }
-
+        //tao product moi
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] Product product)
         {
@@ -54,7 +54,7 @@ namespace DiamondShop.Controllers
             }
             return BadRequest(ModelState);
         }
-
+        //update product 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
@@ -83,7 +83,7 @@ namespace DiamondShop.Controllers
 
             return NoContent();
         }
-
+        // xoa product 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -92,13 +92,95 @@ namespace DiamondShop.Controllers
             {
                 return NotFound();
             }
-
-            _context.Products.Remove(product);
+            product.IsActive = false;
+            _context.Entry(product).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
+        // tìm product theo category
+        [HttpGet("category/{categoryName}")]
+        public async Task<IActionResult> GetProductsByCategory(string categoryName)
+        {
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductDetail)
+                .Where(p => p.Category.CategoryName == categoryName)
+                .ToListAsync();
+            if (products == null || products.Count == 0)
+                    { 
+                return NotFound();
+            }
+            return Ok(products);    
+        }
+        [HttpGet("search/{productName}")]
+        public async Task<IActionResult> GetProductsByName(string productName)
+        {
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductDetail)
+                .Where(p => p.ProductName.Contains(productName))
+                .ToListAsync();
+
+            if (products == null || products.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(products);
+        }
+        [HttpGet("price/desc")]
+        public async Task<IActionResult> GetProductsByPriceDesc()
+        {
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductDetail)
+                .OrderByDescending(p => p.Price)
+                .ToListAsync();
+
+            if (products == null || products.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(products);
+        }
+
+        // Lọc sản phẩm theo giá từ thấp tới cao
+        [HttpGet("price/asc")]
+        public async Task<IActionResult> GetProductsByPriceAsc()
+        {
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductDetail)
+                .OrderBy(p => p.Price)
+                .ToListAsync();
+
+            if (products == null || products.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(products);
+        }
+        // Tìm product theo chữ cái contains của ProductName
+        [HttpGet("startswith/{letter}")]
+        public async Task<IActionResult> GetProductsByFirstLetter(char letter)
+        {
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductDetail)
+                .Where(p => p.ProductName.Contains(letter.ToString()))
+                .ToListAsync();
+
+            if (products == null || products.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(products);
+        }
     }
-    //kim product theo categoryname
 }
 

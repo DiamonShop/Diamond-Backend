@@ -75,37 +75,7 @@ namespace DiamondShop.Controllers
 			return Ok(user);
 		}
 
-		[HttpPost]
-        [Route("Registration")]
-        public async Task<IActionResult> CreateUser(UserDTO userDTO)
-        {
-            if (!ModelState.IsValid)
-            {
-				return BadRequest(ModelState);
-			}
-
-            var objUser = _context.Users.FirstOrDefault(x => x.Email == userDTO.Email &&
-            x.Username == userDTO.Username);
-
-			if (objUser == null) { 
-            _context.Users.Add(new User
-            {
-                
-                FullName = userDTO.Fullname,
-                Username = userDTO.Username,
-                Password = userDTO.Password,
-                Email = userDTO.Email,
-                IsActive = userDTO.IsActive,
-                RoleId = userDTO.RoleId
-            });
-            _context.SaveChanges();
-            return Ok("User registered");
-            }
-            else
-            {
-                return BadRequest("User already existed.");
-            }
-		}
+		
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
@@ -144,15 +114,48 @@ namespace DiamondShop.Controllers
             {
                 return NotFound();
             }
-            user.IsActive = true;
+            user.IsActive = false;
 
-            _context.Users.Remove(user);
+            _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
+        //Register user
+        [HttpPost]
+        [Route("Registration")]
+        public async Task<IActionResult> CreateUser(UserDTO userDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
+            var objUser = _context.Users.FirstOrDefault(x => x.Email == userDTO.Email &&
+            x.Username == userDTO.Username);
+
+            if (objUser == null)
+            {
+                _context.Users.Add(new User
+                {
+
+                    FullName = userDTO.Fullname,
+                    Username = userDTO.Username,
+                    Password = userDTO.Password,
+                    Email = userDTO.Email,
+                    IsActive = userDTO.IsActive,
+                    RoleId = userDTO.RoleId
+                });
+                _context.SaveChanges();
+                return Ok("User registered");
+            }
+            else
+            {
+                return BadRequest("User already existed.");
+            }
+        }
+        //login user
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login(LoginModel model)
