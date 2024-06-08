@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace DiamondShop.Data
 {
 	public class ShoppingCart
-	{
+    {
 		[Key]
 		[Required]
 		public int CartId { get; set; }

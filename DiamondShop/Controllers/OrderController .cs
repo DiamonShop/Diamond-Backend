@@ -16,110 +16,99 @@ namespace DiamondShop.Controllers
 			_context = context;
 		}
 
-		[HttpGet]
-		public async Task<IActionResult> GetAllOrders()
-		{
-			var orders = await _context.Orders
-				.Include(o => o.User)
-				.Include(o => o.CartItems)
-					.ThenInclude(od => od.Product)
-				.Select(o => new OrderViewModel
-				{
-					OrderId = o.OrderId,
-					UserName = o.User.FullName,
-					TotalPrice = o.TotalPrice,
-					Status = o.Status,
-					OrderDate = o.OrderDate,
-					OrderDetails = o.CartItems.Select(od => new OrderDetailViewModel
-					{
-						ProductId = od.ProductId,
-						ProductName = od.Product.Description,
-						Price = od.Price,
-						Quantity = od.Quantity
-					}).ToList()
-				})
-				.ToListAsync();
+        [HttpGet]
+        public async Task<ActionResult<List<OrderViewModel>>> GetAllOrders()
+        {
+            var orders = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.CartItems)
+                    .ThenInclude(od => od.Product)
+                .Select(o => new OrderViewModel
+                {
+                    OrderId = o.OrderId,
+                    UserName = o.User.FullName,
+                    TotalPrice = o.TotalPrice,
+                    Status = o.Status,
+                    OrderDate = o.OrderDate,
+                    CartItems = o.CartItems.Select(od => new CartItemModel
+                    {
+                        ProductId = od.ProductId,
+                        Price = od.Price,
+                        Quantity = od.Quantity
+                    }).ToList()
+                })
+                .ToListAsync();
 
-			return Ok(orders);
-		}
+            return Ok(orders);
+        }
 
-		[HttpGet("{id}")]
-		public async Task<IActionResult> GetOrderById(int id)
-		{
-			var order = await _context.Orders
-				.Include(o => o.User)
-				.Include(o => o.CartItems)
-					.ThenInclude(od => od.Product)
-				.Where(o => o.OrderId == id)
-				.Select(o => new OrderViewModel
-				{
-					OrderId = o.OrderId,
-					UserName = o.User.FullName,
-					TotalPrice = o.TotalPrice,
-					Status = o.Status,
-					OrderDate = o.OrderDate,
-					OrderDetails = o.CartItems.Select(od => new OrderDetailViewModel
-					{
-						ProductId = od.ProductId,
-						ProductName = od.Product.Description,
-						Price = od.Price,
-						Quantity = od.Quantity
-					}).ToList()
-				})
-				.FirstOrDefaultAsync();
+        [HttpGet("{id}")]
+        public async Task<ActionResult<OrderViewModel>> GetOrderById(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.CartItems)
+                    .ThenInclude(od => od.Product)
+                .Where(o => o.OrderId == id)
+                .Select(o => new OrderViewModel
+                {
+                    OrderId = o.OrderId,
+                    UserName = o.User.FullName,
+                    TotalPrice = o.TotalPrice,
+                    Status = o.Status,
+                    OrderDate = o.OrderDate,
+                    CartItems = o.CartItems.Select(od => new CartItemModel
+                    {
+                        ProductId = od.ProductId,
+                        ProductName = od.Product.Description,
+                        Price = od.Price,
+                        Quantity = od.Quantity
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
 
-			if (order == null)
-			{
-				return NotFound();
-			}
+            if (order == null)
+            {
+                return NotFound();
+            }
 
-			return Ok(order);
-		}
+            return Ok(order);
+        }
 
-		[HttpPost]
-		public async Task<IActionResult> CreateOrder([FromBody] Order order)
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
 
-			_context.Orders.Add(order);
-			await _context.SaveChangesAsync();
+        [HttpPost]
+        public async Task<ActionResult<OrderViewModel>> CreateOrder([FromBody] Order order)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-			return CreatedAtAction(nameof(GetOrderById), new { id = order.OrderId }, order);
-		}
+            // Thêm order vào cơ sở dữ liệu
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
 
-		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdateOrder(int id, [FromBody] Order order)
-		{
-			if (id != order.OrderId)
-			{
-				return BadRequest();
-			}
+            // Tạo OrderViewModel từ order vừa thêm vào
+            var orderViewModel = new OrderViewModel
+            {
+                OrderId = order.OrderId,
+                UserName = order.User.FullName,
+                TotalPrice = order.TotalPrice,
+                Status = order.Status,
+                OrderDate = order.OrderDate,
+                CartItems = order.CartItems.Select(od => new CartItemModel
+                {
+                    ProductId = od.ProductId,
+                    Price = od.Price,
+                    Quantity = od.Quantity
+                }).ToList()
+            };
 
-			_context.Entry(order).State = EntityState.Modified;
+            return CreatedAtAction(nameof(GetOrderById), new { id = order.OrderId }, orderViewModel);
+        }
 
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!_context.Orders.Any(e => e.OrderId == id))
-				{
-					return NotFound();
-				}
-				else
-				{
-					throw;
-				}
-			}
 
-			return NoContent();
-		}
-
-		[HttpDelete("{id}")]
+        [HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteOrder(int id)
 		{
 			var order = await _context.Orders.FindAsync(id);
