@@ -111,100 +111,7 @@ namespace DiamondShop.Controllers
 			if (objUser == null)
 			{
 				_context.Users.Add(new User
-
-		
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
-        {
-            if (id != user.UserId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Users.Any(u => u.UserId == id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            user.IsActive = false;
-
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        //Register user
-        [HttpPost]
-        [Route("Registration")]
-        public async Task<IActionResult> CreateUser(UserDTO userDTO)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var objUser = _context.Users.FirstOrDefault(x => x.Email == userDTO.Email &&
-            x.Username == userDTO.Username);
-
-            if (objUser == null)
-            {
-                _context.Users.Add(new User
-                {
-
-                    FullName = userDTO.Fullname,
-                    Username = userDTO.Username,
-                    Password = userDTO.Password,
-                    Email = userDTO.Email,
-                    IsActive = userDTO.IsActive,
-                    RoleId = userDTO.RoleId
-                });
-                _context.SaveChanges();
-                return Ok("User registered");
-            }
-            else
-            {
-                return BadRequest("User already existed.");
-            }
-        }
-        //login user
-        [HttpPost]
-        [Route("Login")]
-        public async Task<IActionResult> Login(LoginModel model)
-        {
-            var user = _context.Users.FirstOrDefault(x => 
-            x.Username == model.UserName &&
-            x.Password == model.Password);
-            if(user != null)
-            {
-				return Ok(new ApiResponse
 				{
-
 					FullName = userDTO.Fullname,
 					Username = userDTO.Username,
 					Password = userDTO.Password,
@@ -225,6 +132,7 @@ namespace DiamondShop.Controllers
 		public async Task<IActionResult> UpdateUser(int id, [FromBody] UserModel userModel)
 		{
 			var user = await _userRepository.GetByUserID(id);
+
 			if (id != user.UserId)
 			{
 				return BadRequest();
@@ -232,26 +140,18 @@ namespace DiamondShop.Controllers
 
 			try
 			{
-				if (user == null)
-				{
-					return NotFound("User not found");
-				}
-				else
-				{
-					user.Username = userModel.Username;
-					user.FullName = userModel.FullName;
-					user.Email = userModel.Email;
-					
-					_context.Users.Update(user);
-					_context.SaveChanges();
-					return Ok("Update Successfully!");
-				}
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, "Internal server error");
-			}
+				user.Username = userModel.Username;
+				user.FullName = userModel.FullName;
+				user.Email = userModel.Email;
 
+				_context.Users.Update(user);
+				_context.SaveChanges();
+				return Ok("Update Successfully!");
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				throw;
+			}
 		}
 
 		[HttpDelete("{id}")]
@@ -262,7 +162,7 @@ namespace DiamondShop.Controllers
 			{
 				return NotFound();
 			}
-			user.IsActive = true;
+			user.IsActive = false;
 
 			_context.Users.Remove(user);
 			await _context.SaveChangesAsync();
