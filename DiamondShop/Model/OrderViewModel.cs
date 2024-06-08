@@ -8,14 +8,8 @@ namespace DiamondShop.Model
 		public decimal TotalPrice { get; set; }
 		public string Status { get; set; } = null!;
 		public DateTime OrderDate { get; set; }
-		public List<OrderDetailViewModel> OrderDetails { get; set; } = new List<OrderDetailViewModel>();
-	}
+        public List<CartItemModel> CartItems { get; set; } = new List<CartItemModel>();
+    }
 
-	public class OrderDetailViewModel
-	{
-		public int ProductId { get; set; }
-		public string ProductName { get; set; } = null!;
-		public decimal Price { get; set; }
-		public int Quantity { get; set; }
-	}
+
 }

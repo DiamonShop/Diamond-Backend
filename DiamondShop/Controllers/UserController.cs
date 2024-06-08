@@ -48,25 +48,25 @@ namespace DiamondShop.Controllers
 			_userRepository = userRepository;
 		}
 
-		[HttpGet("GetAllUsers")]
-		public async Task<IActionResult> GetAllUsers()
-		{
-			var users = await _userRepository.GetAllUsersAsync();
+        		[HttpGet("GetAllUsers")]
+                public async Task<IActionResult> GetAllUsers()
+                {
+                    var users = await _userRepository.GetAllUsersAsync();
 
-			// Chuyển đổi danh sách người dùng sang UserViewModel để trả về
-			var userViewModels = users.Select(user => new UserViewModel
-			{
-				UserId = user.UserId,
-				Username = user.Username,
-				FullName = user.FullName,
-				Email = user.Email,
-				RoleName = user.Role?.RoleName // Lấy tên vai trò của người dùng nếu có
-			}).ToList();
+                    // Chuyển đổi danh sách người dùng sang UserViewModel để trả về
+                    var userViewModels = users.Select(user => new UserViewModel
+                    {
+                        UserId = user.UserId,
+                        Username = user.Username,
+                        FullName = user.FullName,
+                        Email = user.Email,
+                        RoleName = user.Role?.RoleName // Lấy tên vai trò của người dùng nếu có
+                    }).ToList();
 
-			return Ok(userViewModels);
-		}
+                    return Ok(userViewModels);
+                }
 
-		[HttpGet("{id}")]
+        [HttpGet("{id}")]
 		public async Task<IActionResult> GetUserById(int id)
 		{
 			var user = await _userRepository.GetByUserID(id);

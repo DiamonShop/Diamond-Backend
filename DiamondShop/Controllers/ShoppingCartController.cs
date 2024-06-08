@@ -1,97 +1,123 @@
 ﻿using DiamondShop.Data;
-using FAMS.Entities.Data;
-using Microsoft.AspNetCore.Http;
+using DiamondShop.Model;
+using DiamondShop.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DiamondShop.Controllers
 {
-	[Route("api/shoppingCarts")]
-	[ApiController]
-	public class ShoppingCartController : ControllerBase
-	{
-		private readonly DiamondDbContext _context;
+    [Route("api/shoppingCarts")]
+    [ApiController]
+    public class ShoppingCartController : ControllerBase
+    {
+        private readonly IShoppingCartRepository _shoppingCartRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ICartItemRepository _cartItemRepository;
 
-		public ShoppingCartController(DiamondDbContext context)
-		{
-			_context = context;
-		}
+        public ShoppingCartController(
+            IShoppingCartRepository shoppingCartRepository,
+            IUserRepository userRepository,
+            ICartItemRepository cartItemRepository)
+        {
+            _shoppingCartRepository = shoppingCartRepository;
+            _userRepository = userRepository;
+            _cartItemRepository = cartItemRepository;
+        }
 
-		[HttpGet]
-		public async Task<IActionResult> GetAllShoppingCarts()
-		{
-			var shoppingcarts = await _context.ShoppingCarts
-				.Include(s => s.User)
-				.ToListAsync();
-			return Ok(shoppingcarts);
-		}
+        [HttpGet]
+        public async Task<ActionResult<List<ShoppingCartViewModel>>> GetAllShoppingCarts()
+        {
+            var shoppingCarts = await _shoppingCartRepository.GetAll();
+            var shoppingCartViewModels = shoppingCarts.Select(cart => new ShoppingCartViewModel
+            {
+                CartId = cart.CartId,
+                UserId = cart.UserId,
+                CartItems = cart.CartItems.Select(ci => new CartItemModel
+                {
+                    ProductId = ci.ProductId,
+                    ProductName = ci.Product.ProductName, // Assuming Product has a Name property
+                    Price = ci.Price,
+                    Quantity = ci.Quantity
+                }).ToList()
+            }).ToList();
 
-		[HttpGet("{id}")]
-		public async Task<IActionResult> GetShoppingCartById(int id)
-		{
-			var shoppingcart = await _context.ShoppingCarts
-				.Include(s => s.User)
-				.FirstOrDefaultAsync(s => s.CartId == id);
+            return Ok(shoppingCartViewModels);
+        }
 
-			if (shoppingcart == null)
-			{
-				return NotFound();
-			}
-			return Ok(shoppingcart);
-		}
 
-		[HttpPost]
-		public async Task<IActionResult> CreateShoppingCart([FromBody] ShoppingCart shoppingcart)
-		{
-			if (ModelState.IsValid)
-			{
-				_context.ShoppingCarts.Add(shoppingcart);
-				await _context.SaveChangesAsync();
-				return CreatedAtAction(nameof(GetShoppingCartById), new { id = shoppingcart.CartId }, shoppingcart);
-			}
-			return BadRequest();
-		}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetShoppingCartById(int id)
+        {
+            var cart = await _shoppingCartRepository.GetById(id);
+            if (cart == null)
+            {
+                return NotFound();
+            }
 
-		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdateShoppingCart(int id, [FromBody] ShoppingCart shoppingcart)
-		{
-			if (id != shoppingcart.CartId)
-			{
-				return BadRequest();
-			}
+            var user = await _userRepository.GetByUserID(cart.UserId);
+            if (user == null)
+            {
+                return NotFound($"User with ID {cart.UserId} not found.");
+            }
 
-			_context.Entry(shoppingcart).State = EntityState.Modified;
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!_context.ShoppingCarts.Any(s => s.CartId == id))
-				{
-					return NotFound();
-				}
-				else
-				{
-					throw;
-				}
-			}
-			return NoContent();
-		}
+            var cartItems = cart.CartItems.ToList();
 
-		[HttpDelete("{id}")]
-		public async Task<IActionResult> DeleteShoppingCart(int id)
-		{
-			var shoppingcart = await _context.ShoppingCarts.FindAsync(id);
-			if (shoppingcart == null)
-			{
-				return NotFound();
-			}
+            var shoppingCartViewModel = new ShoppingCartViewModel
+            {
+                CartId = cart.CartId,
+                UserId = cart.UserId,
+                CartItems = cartItems.Select(ci => new CartItemModel
+                {
+                    ProductId = ci.ProductId,
+                    ProductName = ci.Product.ProductName,
+                    Price = ci.Price,
+                    Quantity = ci.Quantity
+                }).ToList()
+            };
 
-			_context.ShoppingCarts.Remove(shoppingcart);
-			await _context.SaveChangesAsync();
+            return Ok(shoppingCartViewModel);
+        }
 
-			return NoContent();
-		}
-	}
+        [HttpPost]
+        public async Task<IActionResult> CreateShoppingCart([FromBody] ShoppingCart shoppingCart)
+        {
+            if (ModelState.IsValid)
+            {
+                await _shoppingCartRepository.Insert(shoppingCart);
+                return CreatedAtAction(nameof(GetShoppingCartById), new { id = shoppingCart.CartId }, shoppingCart);
+            }
+            return BadRequest();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateShoppingCart(int id, [FromBody] ShoppingCart shoppingCart)
+        {
+            if (id != shoppingCart.CartId)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _shoppingCartRepository.Update(shoppingCart);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (await _shoppingCartRepository.GetById(id) == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return NoContent();
+        }
+    }
 }
+
+
