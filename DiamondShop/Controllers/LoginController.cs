@@ -2,7 +2,7 @@
 using DiamondShop.Model;
 using DiamondShop.Repositories;
 using DiamondShop.Repositories.Interfaces;
-using FAMS.Entities.Data;
+
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;

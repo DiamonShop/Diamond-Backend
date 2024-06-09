@@ -12,7 +12,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DiamondShop.Model;
 using DiamondShop.Data;
-using FAMS.Entities.Data;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;

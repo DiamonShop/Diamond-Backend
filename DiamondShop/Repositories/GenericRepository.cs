@@ -1,6 +1,5 @@
 ﻿
 using DiamondShop.Repositories.Interfaces;
-using FAMS.Entities.Data;
 using Microsoft.EntityFrameworkCore;
 
 

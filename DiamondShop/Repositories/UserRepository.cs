@@ -2,7 +2,6 @@
 using DiamondShop.Data;
 using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
-using FAMS.Entities.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace DiamondShop.Repositories

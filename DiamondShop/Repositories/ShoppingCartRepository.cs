@@ -1,7 +1,6 @@
 ﻿using DiamondShop.Data;
 using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
-using FAMS.Entities.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +21,7 @@ namespace DiamondShop.Repositories
         {
             var shoppingCarts = await _context.ShoppingCarts
                                                 .Include(sc => sc.CartItems)
+                                                .ThenInclude(ci => ci.Product) // Ensure Product is included
                                                 .ToListAsync();
 
             var shoppingCartViewModels = shoppingCarts.Select(cart => new ShoppingCartViewModel
@@ -40,50 +40,22 @@ namespace DiamondShop.Repositories
             return shoppingCartViewModels;
         }
 
-
         public async Task<bool> Insert(ShoppingCart entity)
         {
-            // Chuyển đổi từ ShoppingCart sang ShoppingCartViewModel
-            var viewModel = new ShoppingCartViewModel
-            {
-                CartId = entity.CartId,
-                UserId = entity.UserId,
-                CartItems = entity.CartItems.Select(ci => new CartItemModel
-                {
-                    ProductId = ci.ProductId,
-                    ProductName = ci.Product.ProductName,
-                    Price = ci.Price,
-                    Quantity = ci.Quantity
-                }).ToList()
-            };
-
-            await _context.ShoppingCarts.AddAsync(viewModel); // Thêm viewModel thay vì entity
+            await _context.ShoppingCarts.AddAsync(entity);
             return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> Update(ShoppingCart entity)
         {
-            // Chuyển đổi từ ShoppingCart sang ShoppingCartViewModel
-            var viewModel = new ShoppingCartViewModel
-            {
-                CartId = entity.CartId,
-                UserId = entity.UserId,
-                CartItems = entity.CartItems.Select(ci => new CartItemModel
-                {
-                    ProductId = ci.ProductId,
-                    ProductName = ci.Product.ProductName,
-                    Price = ci.Price,
-                    Quantity = ci.Quantity
-                }).ToList()
-            };
-
-            _context.ShoppingCarts.Update(viewModel); // Cập nhật viewModel thay vì entity
+            _context.ShoppingCarts.Update(entity);
             return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> Delete(int id)
         {
-            var entity = await GetById(id);
+            var entity = await _context.ShoppingCarts.Include(sc => sc.CartItems)
+                                                     .FirstOrDefaultAsync(sc => sc.CartId == id);
             if (entity == null)
                 return false;
 
@@ -95,6 +67,7 @@ namespace DiamondShop.Repositories
         {
             var shoppingCart = await _context.ShoppingCarts
                                               .Include(sc => sc.CartItems)
+                                              .ThenInclude(ci => ci.Product) // Ensure Product is included
                                               .FirstOrDefaultAsync(sc => sc.CartId == id);
 
             if (shoppingCart == null)
@@ -117,7 +90,5 @@ namespace DiamondShop.Repositories
 
             return shoppingCartViewModel;
         }
-
-
     }
 }
