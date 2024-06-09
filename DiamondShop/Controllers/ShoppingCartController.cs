@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DiamondShop.Controllers
 {
-    [Route("api/shoppingCarts")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ShoppingCartController : ControllerBase
     {
@@ -38,7 +38,7 @@ namespace DiamondShop.Controllers
                 CartItems = cart.CartItems.Select(ci => new CartItemModel
                 {
                     ProductId = ci.ProductId,
-                    ProductName = ci.Product.ProductName, // Assuming Product has a Name property
+                    ProductName = ci.Product.ProductName,
                     Price = ci.Price,
                     Quantity = ci.Quantity
                 }).ToList()
@@ -46,7 +46,6 @@ namespace DiamondShop.Controllers
 
             return Ok(shoppingCartViewModels);
         }
-
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetShoppingCartById(int id)
@@ -119,5 +118,6 @@ namespace DiamondShop.Controllers
         }
     }
 }
+
 
 

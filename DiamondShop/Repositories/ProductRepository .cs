@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using DiamondShop.Data;
 using DiamondShop.Repositories.Interfaces;
-using FAMS.Entities.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace DiamondShop.Repositories

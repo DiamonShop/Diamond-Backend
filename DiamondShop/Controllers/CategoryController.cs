@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DiamondShop.Data;
-using FAMS.Entities.Data;
+
 using Microsoft.AspNetCore.Cors;
 namespace DiamondShop.Controllers
 {
