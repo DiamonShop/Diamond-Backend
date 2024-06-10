@@ -2,7 +2,7 @@
 using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+
 
 namespace DiamondShop.Repositories
 {

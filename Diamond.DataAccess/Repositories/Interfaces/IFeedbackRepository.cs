@@ -1,6 +1,6 @@
 ﻿using DiamondShop.Data;
 using DiamondShop.Model;
-using Microsoft.AspNetCore.Mvc;
+
 
 namespace DiamondShop.Repositories.Interfaces
 {

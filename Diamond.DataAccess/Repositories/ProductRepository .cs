@@ -5,7 +5,7 @@ using DiamondShop.Data;
 using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+
 
 namespace DiamondShop.Repositories
 {
@@ -229,5 +229,27 @@ namespace DiamondShop.Repositories
 
 			return true;
 		}
-	}
+        public async Task<List<ProductViewModel>> GetProductsBySimilarName(string keyword)
+        {
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Where(p => p.ProductName.Contains(keyword)) // Tìm kiếm sản phẩm với tên gần đúng
+                .ToListAsync();
+
+            if (products == null) { return null; }
+
+            var productModels = products.Select(p => new ProductViewModel
+            {
+                ProductId = p.ProductId,
+                CategoryId = p.CategoryId,
+                Description = p.Description,
+                Price = p.Price,
+                IsActive = p.IsActive,
+                Stock = p.Stock,
+                ProductName = p.ProductName
+            }).ToList();
+
+            return productModels;
+        }
+    }
 }
