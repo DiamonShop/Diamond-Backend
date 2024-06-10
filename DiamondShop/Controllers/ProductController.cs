@@ -3,179 +3,132 @@ using System.Threading.Tasks;
 using DiamondShop.Repositories.Interfaces;
 using DiamondShop.Data;
 using DiamondShop.Model;
+using DiamondShop.Repositories;
 
 namespace DiamondShop.Controllers
 {
-    [Route("api/products")]
-    [ApiController]
-    public class ProductController : ControllerBase
-    {
-        private readonly IProductRepository _productRepository;
+	[Route("api/products")]
+	[ApiController]
+	public class ProductController : ControllerBase
+	{
+		private readonly IProductRepository _productRepository;
 
-        public ProductController(IProductRepository productRepository)
-        {
-            _productRepository = productRepository;
-        }
+		public ProductController(IProductRepository productRepository)
+		{
+			_productRepository = productRepository;
+		}
 
-        // Lấy tất cả thông tin sản phẩm
-        [HttpGet]
-        public async Task<IActionResult> GetAllProducts()
-        {
-            var products = await _productRepository.GetAllProducts();
-            var productViewModels = products.Select(p => new ProductViewModel
-            {
-                ProductId = p.ProductId,
-                Price = p.Price,
-                ProductName = p.ProductName
-            }).ToList();
-            return Ok(productViewModels);
-        }
+		// Lấy tất cả thông tin sản phẩm
+		[HttpGet]
+		public async Task<IActionResult> GetAllProducts()
+		{
+			var products = await _productRepository.GetAllProducts();
+			if (products != null) { return Ok(products); }
+			return NotFound();
+		}
 
 
-        // Lấy thông tin sản phẩm theo ID
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetProductById(int id)
-        {
-            var product = await _productRepository.GetProductById(id);
+		// Lấy thông tin sản phẩm theo ID
+		[HttpGet("GetProductById")]
+		public async Task<IActionResult> GetProductById(int id)
+		{
+			var products = await _productRepository.GetProductById(id);
+			if (products != null)
+			{
+				return Ok(await _productRepository.GetProductById(id));
+			}
 
-            if (product == null)
-            {
-                return NotFound();
-            }
+			return BadRequest("Product is not found");
+		}
 
-            var productViewModel = new ProductViewModel
-            {
-                ProductId = product.ProductId,
-                Price = product.Price,
-                ProductName = product.ProductName
-            };
+		// Tìm sản phẩm theo tên loại
+		[HttpGet("GetProductsByCategoryName")]
+		public async Task<IActionResult> GetProductsByCategoryName(string categoryName)
+		{
+			var products = await _productRepository.GetProductsByCategoryName(categoryName);
 
-            return Ok(productViewModel);
-        }
+			if (products != null)
+			{
+				return Ok(products);
+			}
 
+			return NotFound("Product is not found");
+		}
 
-        // Tạo sản phẩm mới
-        [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody] Product product)
-        {
-            if (ModelState.IsValid)
-            {
-                await _productRepository.CreateProduct(product);
-                return CreatedAtAction(nameof(GetProductById), new { id = product.ProductId }, product);
-            }
-            return BadRequest(ModelState);
-        }
+		// Tìm sản phẩm theo tên sản phẩm
+		[HttpGet("GetProductsByName")]
+		public async Task<IActionResult> GetProductsByName(string productName)
+		{
+			var products = await _productRepository.GetProductsByName(productName);
 
-        // Cập nhật sản phẩm
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
-        {
-            if (id != product.ProductId)
-            {
-                return BadRequest();
-            }
+			if (products != null)
+			{
+				return Ok(products);
+			}
 
-            await _productRepository.UpdateProduct(product);
+			return NotFound();
+		}
 
-            return NoContent();
-        }
+		// Lọc sản phẩm theo giá từ cao tới thấp
+		[HttpGet("GetProductsByPriceDesc")]
+		public async Task<IActionResult> GetProductsByPriceDesc()
+		{
+			var products = await _productRepository.GetProductsByPriceDesc();
+			if (products != null)
+			{
+				return Ok(products);
+			}
+			return NotFound();
+		}
+		// Lọc sản phẩm theo giá từ thấp tới cao
+		[HttpGet("GetProductsByPriceAsc")]
+		public async Task<IActionResult> GetProductsByPriceAsc()
+		{
+			var products = await _productRepository.GetProductsByPriceAsc();
+			if (products != null)
+			{
+				return Ok(products);
+			}
+			return NotFound();
+		}
 
-        // Xóa sản phẩm
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
-        {
-            var existingProduct = await _productRepository.GetProductById(id);
-            if (existingProduct == null)
-            {
-                return NotFound();
-            }
+		// Tạo sản phẩm mới
+		[HttpPost("CreateProduct")]
+		public async Task<IActionResult> CreateProduct([FromBody] ProductViewModel productModel)
+		{
+			bool result = await _productRepository.CreateProduct(productModel);
 
-            await _productRepository.DeleteProduct(id);
+			if (result)
+			{
+				return Ok("Create User Successfully");
+			}
+			return BadRequest("Failed To Create User");
+		}
 
-            return NoContent();
-        }
+		// Cập nhật sản phẩm
+		[HttpPut("UpdateProduct")]
+		public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductViewModel productModel)
+		{
+			bool result = await _productRepository.UpdateProduct(id, productModel);
 
-        // Tìm sản phẩm theo tên loại
-        [HttpGet("category/{categoryName}")]
-        public async Task<IActionResult> GetProductsByCategoryName(string categoryName)
-        {
-            var products = await _productRepository.GetProductsByCategoryName(categoryName);
+			if (result)
+			{
+				return Ok("Create User Successfully");
+			}
+			return BadRequest("Failed To Create User");
+		}
 
-            if (products == null || !products.Any())
-            {
-                return NotFound();
-            }
+		// Xóa sản phẩm
+		[HttpDelete("DeleteProduct")]
+		public async Task<IActionResult> DeleteProduct(int id)
+		{
+			bool result = await _productRepository.DeleteProduct(id);
 
-            return Ok(products);
-        }
-
-        // Tìm sản phẩm theo tên sản phẩm
-        [HttpGet("search/{productName}")]
-        public async Task<IActionResult> GetProductsByName(string productName)
-        {
-            var products = await _productRepository.GetProductsByName(productName);
-
-            if (products == null || !products.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(products);
-        }
-
-        // Tìm sản phẩm theo chữ cái đầu tiên của tên sản phẩm
-        [HttpGet("startswith/{letter}")]
-        public async Task<IActionResult> GetProductsByFirstLetter(char letter)
-        {
-            var products = await _productRepository.GetProductsByFirstLetter(letter);
-
-            if (products == null || !products.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(products);
-        }
-
-        // Lọc sản phẩm theo giá từ cao tới thấp
-        [HttpGet("price/desc")]
-        public async Task<IActionResult> GetProductsByPriceDesc()
-        {
-            var products = await _productRepository.GetProductsByPriceDesc();
-            var productViewModels = products.Select(p => new ProductViewModel
-            {
-                ProductId = p.ProductId,
-                Price = p.Price,
-                ProductName = p.ProductName
-            }).ToList();
-            return products != null && products.Any() ? Ok(productViewModels) : NotFound("No products found");
-        }
-
-        [HttpGet("price/asc")]
-        public async Task<IActionResult> GetProductsByPriceAsc()
-        {
-            var products = await _productRepository.GetProductsByPriceAsc();
-            var productViewModels = products.Select(p => new ProductViewModel
-            {
-                ProductId = p.ProductId,
-                Price = p.Price,
-                ProductName = p.ProductName
-            }).ToList();
-            return products != null && products.Any() ? Ok(productViewModels) : NotFound("No products found");
-        }
-
-        // Tìm sản phẩm theo từ khóa tương tự với tên sản phẩm
-        [HttpGet("similar/{keyword}")]
-        public async Task<IActionResult> GetProductsBySimilarName(string keyword)
-        {
-            var products = await _productRepository.GetProductsBySimilarName(keyword);
-
-            if (products == null || !products.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(products);
-        }
-    }
+			if (result)
+			{
+				return Ok("Create User Successfully");
+			}
+			return BadRequest("Failed To Create User");
+		}
+	}
 }

@@ -40,6 +40,8 @@ builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>(); // Using simplified namespace
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
@@ -88,11 +90,12 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Register other services and configure the application
-builder.Services.AddControllersWithViews()
+/*builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-    });
+    });*/
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

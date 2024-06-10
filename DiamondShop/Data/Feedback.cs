@@ -16,6 +16,7 @@ namespace DiamondShop.Data
 		public int ProductId { get; set; }
 		[StringLength(200)]
 		public string? Description { get; set; }
+		public bool IsDeleted { get; set; }
 
 		public virtual User User { get; set; }
 		public virtual Product Product { get; set; }

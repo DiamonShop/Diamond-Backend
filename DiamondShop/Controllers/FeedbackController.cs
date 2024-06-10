@@ -1,5 +1,7 @@
 ﻿using DiamondShop.Data;
-
+using DiamondShop.Model;
+using DiamondShop.Repositories;
+using DiamondShop.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,86 +12,60 @@ namespace DiamondShop.Controllers
 	[ApiController]
 	public class FeedbackController : ControllerBase
 	{
-		private readonly DiamondDbContext _context;
+		private readonly IFeedbackRepository _feedbackRepository;
+
+		public FeedbackController(IFeedbackRepository feedbackRepository)
+		{
+			_feedbackRepository = feedbackRepository;
+		}
 
 		[HttpGet]
 		public async Task<IActionResult> GetAllFeedbacks()
 		{
-			var feedbacks = await _context.Feedbacks
-				.Include(f => f.User)
-				.Include(f=>f.Product)
-				.ToListAsync();
-			return Ok(feedbacks);
+			return Ok(await _feedbackRepository.GetAllFeedbacks());
 		}
 
-		[HttpGet("{id}")]
+		[HttpGet("GetFeedbackById")]
 		public async Task<IActionResult> GetFeedbackById(int id)
 		{
-			var feedback = await _context.Feedbacks
-				.Include(f => f.User)
-				.Include(f => f.Product)
-				.FirstOrDefaultAsync(f => f.FeedbackId == id);
-
-			if(feedback == null)
+			if (await _feedbackRepository.GetFeedbackById(id) == null)
 			{
-				return NotFound();
+				return BadRequest("Feedback is not found");
 			}
-
-			return Ok(feedback);
+			return Ok(await _feedbackRepository.GetFeedbackById(id));
 		}
-
-		[HttpPost]
-		public async Task<IActionResult> CreateFeedback([FromBody]Feedback feedback)
+	
+		[HttpPost("CreateFeedback")]
+		public async Task<IActionResult> CreateFeedback(FeedbackModel feedbackModel)
 		{
-			if(ModelState.IsValid)
+			bool result = await _feedbackRepository.CreateFeedback(feedbackModel);
+			if (result)
 			{
-				_context.Feedbacks.Add(feedback);
-				await _context.SaveChangesAsync();
-				return CreatedAtAction(nameof(GetFeedbackById), new {id=feedback.FeedbackId}, feedback);
+				return Ok("Create Feedback Successfully");
 			}
-			return BadRequest();
+			return BadRequest("Failed To Create Feedback");
 		}
-
-		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdateFeedback(int id, [FromBody]Feedback feedback)
+		
+		[HttpPut("UpdateFeedback")]
+		public async Task<IActionResult> UpdateFeedback(int id, [FromBody] FeedbackModel feedbackModel)
 		{
-			if(id != feedback.FeedbackId)
+			bool result = await _feedbackRepository.UpdateFeedback(id, feedbackModel);
+			if (result)
 			{
-				return BadRequest();
+				return Ok("Update User Successfully");
 			}
-
-			_context.Entry(feedback).State=EntityState.Modified;
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch(DbUpdateConcurrencyException)
-			{
-				if(!_context.Feedbacks.Any(f => f.FeedbackId == id))
-				{
-					return NotFound();
-				}
-				else
-				{
-					throw;
-				}
-			}
-			return NoContent();
+			return BadRequest("Failed To Create User");
 		}
 
-		[HttpDelete("{id}")]
+		[HttpDelete("DeleteFeedback")]
 		public async Task<IActionResult> DeleteFeedback(int id)
 		{
-			var feedback = await _context.Feedbacks.FindAsync(id);
-			if(feedback == null)
+			bool result = await _feedbackRepository.DeleteFeedback(id);
+			if (result)
 			{
-				return NotFound();
+				return Ok("Delete User Successfully");
 			}
-
-			_context.Feedbacks.Remove(feedback);
-			await _context.SaveChangesAsync();
-
-			return NoContent();
+			return BadRequest("Failed To Delete User");
 		}
 	}
 }

@@ -1,27 +1,7 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.Apis.Gmail.v1;
-using Google.Apis.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using DiamondShop.Model;
+﻿using Microsoft.AspNetCore.Mvc;
 using DiamondShop.Data;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.Google;
 using DiamondShop.Repositories.Interfaces;
-using NuGet.Protocol.Core.Types;
-using AutoMapper;
+using DiamondShop.Model;
 
 namespace DiamondShop.Controllers
 {
@@ -29,152 +9,84 @@ namespace DiamondShop.Controllers
 	[ApiController]
 	public class UserController : ControllerBase
 	{
-		private readonly SignInManager<IdentityUser> _signInManager;
-		private readonly UserManager<IdentityUser> _userManager;
-		private readonly DiamondDbContext _context;
-		private readonly JwtSettings _jwtSettings;
 		private readonly IUserRepository _userRepository;
 
-		public UserController(DiamondDbContext context, SignInManager<IdentityUser> signInManager,
-			UserManager<IdentityUser> userManager,
-			IOptions<JwtSettings> jwtSettings,
-			IUserRepository userRepository)
+		public UserController(IUserRepository userRepository)
 		{
-			_context = context;
-			_signInManager = signInManager;
-			_userManager = userManager;
-			_jwtSettings = jwtSettings.Value;
 			_userRepository = userRepository;
 		}
 
-        		[HttpGet("GetAllUsers")]
-                public async Task<IActionResult> GetAllUsers()
-                {
-                    var users = await _userRepository.GetAllUsersAsync();
+		[HttpGet("GetAllUsers")]
+		public async Task<IActionResult> GetAllUsers()
+		{
+			return Ok(await _userRepository.GetAllUsersAsync());
+		}
 
-                    // Chuyển đổi danh sách người dùng sang UserViewModel để trả về
-                    var userViewModels = users.Select(user => new UserViewModel
-                    {
-                        UserId = user.UserId,
-                        Username = user.Username,
-                        FullName = user.FullName,
-                        Email = user.Email,
-                        RoleName = user.Role?.RoleName // Lấy tên vai trò của người dùng nếu có
-                    }).ToList();
+		[HttpGet("GetUserByName")]
+		public async Task<IActionResult> GetUserByName(string name)
+		{
+			var userList = await _userRepository.GetByUserName(name);
 
-                    return Ok(userViewModels);
-                }
+			if (userList != null)
+			{
+				return Ok(userList);
+			}
+			return BadRequest("User is not found");
+		}
 
-        [HttpGet("{id}")]
+		[HttpGet("GetUserByEmail")]
+		public async Task<IActionResult> GetUserByEmail(string email)
+		{
+			if (await _userRepository.GetByUserEmail(email) != null)
+			{
+				return Ok(_userRepository.GetByUserEmail(email));
+			}
+			return BadRequest("User is not found");
+		}
+
+		[HttpGet("GetUserById")]
 		public async Task<IActionResult> GetUserById(int id)
 		{
-			var user = await _userRepository.GetByUserID(id);
-			UserViewModel userViewModel;
-
-			try
+			if (await _userRepository.GetByUserID(id) == null)
 			{
-				if (user == null)
-				{
-					return NotFound("User not found");
-				}
-				else
-				{
-					userViewModel = new UserViewModel()
-					{
-						UserId = user.UserId,
-						Username = user.Username,
-						FullName = user.FullName,
-						Email = user.Email,
-						RoleName = user.Role?.RoleName
-					};
-				}
+				return BadRequest("User is not found");
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, "Internal server error");
-			}
-			return Ok(userViewModel);
+			return Ok(await _userRepository.GetByUserID(id));
 		}
 
-		[HttpPost("Registration")]
+		[HttpPost("CreateUser")]
 		public async Task<IActionResult> CreateUser(UserDTO userDTO)
 		{
-			if (!ModelState.IsValid)
+			bool result = await _userRepository.CreateAnNewUser(userDTO);
+			if (result)
 			{
-				return BadRequest(ModelState);
+				return Ok("Create User Successfully");
 			}
-
-			var objUser = _context.Users
-							.FirstOrDefault(x => x.Email == userDTO.Email && x.Username == userDTO.Username);
-
-			if (objUser == null)
-			{
-				_context.Users.Add(new User
-				{
-					FullName = userDTO.Fullname,
-					Username = userDTO.Username,
-					Password = userDTO.Password,
-					Email = userDTO.Email,
-					IsActive = userDTO.IsActive,
-					RoleId = userDTO.RoleId
-				});
-				_context.SaveChanges();
-				return Ok("User registered");
-			}
-			else
-			{
-				return BadRequest("User already existed.");
-			}
+			return BadRequest("Failed To Create User");
 		}
 
-		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdateUser(int id, [FromBody] UserModel userModel)
+		[HttpPut("UpdateUserProfile")]
+		public async Task<IActionResult> UpdateUserProfile(int id, [FromBody] UpdateUserModel userModel)
 		{
-			var user = await _userRepository.GetByUserID(id);
-
-			if (id != user.UserId)
+			bool result = await _userRepository.UpdateUserProfile(id, userModel);
+			if (result)
 			{
-				return BadRequest();
+				return Ok("Update User Successfully");
 			}
-
-			try
-			{
-				user.Username = userModel.Username;
-				user.FullName = userModel.FullName;
-				user.Email = userModel.Email;
-
-				_context.Users.Update(user);
-				_context.SaveChanges();
-				return Ok("Update Successfully!");
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				throw;
-			}
+			return BadRequest("Failed To Create User");
 		}
 
-		[HttpDelete("{id}")]
+		[HttpDelete("DeleteUser")]
 		public async Task<IActionResult> DeleteUser(int id)
 		{
-			var user = await _context.Users.FindAsync(id);
-			if (user == null)
+			bool result = await _userRepository.DeleteUserAsync(id);
+			if (result)
 			{
-				return NotFound();
+				return Ok("Delete User Successfully");
 			}
-			user.IsActive = false;
-
-			_context.Users.Remove(user);
-			await _context.SaveChangesAsync();
-
-			return NoContent();
+			return BadRequest("Failed To Delete User");
 		}
-
 	}
-
-
-
-
-
 }
 
 
