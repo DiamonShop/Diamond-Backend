@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using DiamondShop.Data;
+﻿using DiamondShop.Data;
 
 namespace DiamondShop.Repositories.Interfaces
 {
     public interface IShoppingCartRepository
     {
-        Task<List<ShoppingCartViewModel>> GetAll();
-        Task<ShoppingCartViewModel> GetById(int id);
-        Task<bool> Insert(ShoppingCart entity);
-        Task<bool> Update(ShoppingCart entity);
-        Task<bool> Delete(int id);
+        public Task<List<ShoppingCartViewModel>> GetAll();
+		public Task<ShoppingCartViewModel> GetById(int id);
+		public Task<bool> CreateCart(ShoppingCartViewModel cartModel);
+		public Task<bool> UpdateCart(ShoppingCartViewModel cartModel);
+        public Task<bool> DeleteCart(int id);
     }
 }

@@ -19,13 +19,10 @@ public class DiamondDbContext : DbContext
     public DbSet<ProductDetail> ProductDetails { get; set; }
     public DbSet<Warranty> Warranties { get; set; }
     public DbSet<Feedback> Feedbacks { get; set; }
-    public DbSet<CartItemModel> CartItemModels { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Mark CartItemModel as keyless
-        modelBuilder.Entity<CartItemModel>().HasNoKey();
-
         modelBuilder.Entity<User>(e =>
         {
             e.ToTable("User");

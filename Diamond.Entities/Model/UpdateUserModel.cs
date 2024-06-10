@@ -1,6 +1,6 @@
 ﻿namespace DiamondShop.Model
 {
-    public class ViewModel
+    public class UpdateUserModel
 	{
         public string Username { get; set; }
         public string Password { get; set; }

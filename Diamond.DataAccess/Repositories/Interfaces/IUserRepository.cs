@@ -5,10 +5,12 @@ namespace DiamondShop.Repositories.Interfaces
 {
 	public interface IUserRepository
 	{
-		public Task<User> GetByUserID(int userId);
-		public Task<User> GetByUserName(string userName);
-		public Task<User> GetByUserEmail(string email);
-		public Task<bool> CreateAnNewUser(User user);
-		public Task<List<User>> GetAllUsersAsync();
+		public Task<UserViewModel> GetByUserID(int userId);
+		public Task<List<UserViewModel>> GetByUserName(string userName);
+		public Task<List<UserViewModel>> GetByUserEmail(string email);
+		public Task<bool> CreateAnNewUser(UserDTO userDTO);
+		public Task<List<UserViewModel>> GetAllUsersAsync();
+		public Task<bool> DeleteUserAsync(int userId);
+		public Task<bool> UpdateUserProfile(int userId, UpdateUserModel userModel);
 	}
 }

@@ -1,96 +1,71 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using DiamondShop.Data;
-
 using Microsoft.AspNetCore.Cors;
+using DiamondShop.Repositories.Interfaces;
+using DiamondShop.Model;
 namespace DiamondShop.Controllers
 {
-    [Route("api/categories")]
-    [ApiController]
-    public class CategoryController : Controller
-    {
+	[Route("api/categories")]
+	[ApiController]
+	public class CategoryController : Controller
+	{
+		private readonly ICategoryRepository _cateRepository;
 
-        private readonly DiamondDbContext _context;
+		public CategoryController(ICategoryRepository cateRepository)
+		{
+			_cateRepository = cateRepository;
+		}
 
-        public CategoryController(DiamondDbContext context)
-        {
-            _context = context;
-        }
-
-		[EnableCors("AllowSpecificOrigin")]
+		/*[EnableCors("AllowSpecificOrigin")]*/
 		[HttpGet("GetAllCategories")]
-        public async Task<IActionResult> GetAllCategories()
-        {
-            var categories = await _context.Categories.ToListAsync();
-            return Ok(categories);
-        }
+		public async Task<IActionResult> GetAllCategories()
+		{
+			return Ok(await _cateRepository.GetAllCategories());
+		}
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategoryById(int id)
-        {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-            return Ok(category);
-        }
+		[HttpGet("GetCategoryById")]
+		public async Task<IActionResult> GetCategoryById(int id)
+		{
+			var category = await _cateRepository.GetCategoryById(id);
+			if (category != null)
+			{
+				return Ok(category);
+			}
+			return BadRequest("Category is not found");
+		}
 
-        [HttpPost("CreateACategory")]
-        public async Task<IActionResult> CreateCategory([FromBody] Category category)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Categories.Add(category);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetCategoryById), new { id = category.CategoryId }, category);
-            }
-            return BadRequest(ModelState);
-        }
+		[HttpGet("GetCategoryByName")]
+		public async Task<IActionResult> GetCategoryByName(string name)
+		{
+			var category = await _cateRepository.GetCategoryByName(name);
+			if (category != null)
+			{
+				return Ok(category);
+			}
+			return BadRequest("Category is not found");
+		}
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, [FromBody] Category category)
-        {
-            if (id != category.CategoryId)
-            {
-                return BadRequest();
-            }
+		[HttpPost("CreateACategory")]
+		public async Task<IActionResult> CreateCategory([FromBody] CategoryModel categoryModel)
+		{
+			bool result = await _cateRepository.CreateCategory(categoryModel);
+			if (result)
+			{
+				return Ok("Category created successfully");
+			}
+			return BadRequest("Category cannot be null");
+		}
 
-            _context.Entry(category).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Categories.Any(c => c.CategoryId == id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
-        {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-    }
+		[HttpPut("{id}")]
+		public async Task<IActionResult> UpdateCategory(int id, [FromBody] Category category)
+		{
+			bool result = await _cateRepository.UpdateCategory(id, category);
+			if (result)
+			{
+				return Ok("Category updated successfully");
+			}
+			return BadRequest("Category cannot be null");
+		}
+	}
 }
 

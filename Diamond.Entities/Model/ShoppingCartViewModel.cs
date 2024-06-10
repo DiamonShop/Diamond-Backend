@@ -6,5 +6,5 @@ public class ShoppingCartViewModel
     public int CartId { get; set; }
     public int UserId { get; set; }
 
-    public List<CartItemModel> CartItems { get; set; }
+    public List<CartItemModel>? CartItems { get; set; }
 }

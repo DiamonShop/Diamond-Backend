@@ -2,101 +2,232 @@
 using System.Linq;
 using System.Threading.Tasks;
 using DiamondShop.Data;
+using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace DiamondShop.Repositories
 {
-    public class ProductRepository : IProductRepository
-    {
-        private readonly DiamondDbContext _context;
+	public class ProductRepository : IProductRepository
+	{
+		private readonly DiamondDbContext _context;
 
-        public ProductRepository(DiamondDbContext context)
-        {
-            _context = context;
-        }
+		public ProductRepository(DiamondDbContext context)
+		{
+			_context = context;
+		}
 
-        public async Task<IEnumerable<Product>> GetAllProducts()
-        {
-            return await _context.Products.ToListAsync();
-        }
+		public async Task<List<ProductViewModel>> GetAllProducts()
+		{
+			var productList = await _context.Products.ToListAsync();
 
-        public async Task<Product> GetProductById(int id)
-        {
-            return await _context.Products.FindAsync(id);
-        }
+			if (productList == null) { return null; }
 
-        public async Task CreateProduct(Product product)
-        {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-        }
+			var productModels = productList.Select(p => new ProductViewModel
+			{
+				ProductId = p.ProductId,
+				CategoryId = p.CategoryId,
+				Description = p.Description,
+				Price = p.Price,
+				IsActive = p.IsActive,
+				Stock = p.Stock,
+				ProductName = p.ProductName
+			}).ToList();
 
-        public async Task UpdateProduct(Product product)
-        {
-            _context.Entry(product).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
+			return productModels;
+		}
 
-        public async Task DeleteProduct(int id)
-        {
-            var product = await _context.Products.FindAsync(id);
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-        }
+		public async Task<ProductViewModel> GetProductById(int id)
+		{
+			var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
 
-        public async Task<IEnumerable<Product>> GetProductsByCategoryName(string categoryName)
-        {
-            return await _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.ProductDetail)
-                .Where(p => p.Category.CategoryName == categoryName)
-                .ToListAsync();
-        }
+			if (product == null) { return null; }
 
-        public async Task<IEnumerable<Product>> GetProductsByName(string productName)
-        {
-            return await _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.ProductDetail)
-                .Where(p => p.ProductName.Contains(productName))
-                .ToListAsync();
-        }
+			var productModel = new ProductViewModel()
+			{
+				ProductId = product.ProductId,
+				CategoryId = product.CategoryId,
+				Description = product.Description,
+				Price = product.Price,
+				IsActive = product.IsActive,
+				Stock = product.Stock,
+				ProductName = product.ProductName
+			};
 
-        public async Task<IEnumerable<Product>> GetProductsByFirstLetter(char letter)
-        {
-            return await _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.ProductDetail)
-                .Where(p => p.ProductName.StartsWith(letter.ToString()))
-                .ToListAsync();
-        }
+			return productModel;
+		}
 
-        public async Task<IEnumerable<Product>> GetProductsByPriceDesc()
-        {
-            return await _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.ProductDetail)
-                .OrderByDescending(p => p.Price)
-                .ToListAsync();
-        }
+		public async Task<List<ProductViewModel>> GetProductsByCategoryName(string categoryName)
+		{
+			var productList = await _context.Products
+				.Include(p => p.Category)
+				.Where(p => p.Category.CategoryName.Contains(categoryName)) //Tìm gần đúng
+				.ToListAsync();
 
-        public async Task<IEnumerable<Product>> GetProductsByPriceAsc()
-        {
-            return await _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.ProductDetail)
-                .OrderBy(p => p.Price)
-                .ToListAsync();
-        }
+			if (productList == null) { return null; }
 
-        public async Task<IEnumerable<Product>> GetProductsBySimilarName(string keyword)
-        {
-            return await _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.ProductDetail)
-                .Where(p => p.ProductName.Contains(keyword))
-                .ToListAsync();
-        }
-    }
+			var productModel = productList.Select(product => new ProductViewModel
+			{
+				ProductId = product.ProductId,
+				CategoryId = product.CategoryId,
+				Description = product.Description,
+				Price = product.Price,
+				IsActive = product.IsActive,
+				Stock = product.Stock,
+				ProductName = product.ProductName
+			}).ToList();
+
+			return productModel;
+		}
+
+		public async Task<List<ProductViewModel>> GetProductsByName(string productName)
+		{
+			var productList = await _context.Products
+				.Include(p => p.Category)
+				.Where(p => p.ProductName.Contains(productName)) //Tìm gần đúng
+				.ToListAsync();
+
+			if (productList == null) { return null; }
+
+			var productModel = productList.Select(product => new ProductViewModel
+			{
+				ProductId = product.ProductId,
+				CategoryId = product.CategoryId,
+				Description = product.Description,
+				Price = product.Price,
+				IsActive = product.IsActive,
+				Stock = product.Stock,
+				ProductName = product.ProductName
+			}).ToList();
+
+			return productModel;
+		}
+
+		public async Task<List<ProductViewModel>> GetProductsByPriceDesc()
+		{
+			var productList = await _context.Products
+				.Include(p => p.Category)
+				.Include(p => p.ProductDetail)
+				.OrderByDescending(p => p.Price)
+				.ToListAsync();
+
+			if (productList == null) { return null; }
+
+			var productModel = productList.Select(p => new ProductViewModel()
+			{
+				ProductId = p.ProductId,
+				CategoryId = p.CategoryId,
+				Description = p.Description,
+				Price = p.Price,
+				IsActive = p.IsActive,
+				Stock = p.Stock,
+				ProductName = p.ProductName
+			}).ToList();
+
+			return productModel;
+		}
+
+		public async Task<List<ProductViewModel>> GetProductsByPriceAsc()
+		{
+			var productList = await _context.Products
+				.Include(p => p.Category)
+				.Include(p => p.ProductDetail)
+				.OrderBy(p => p.Price)
+				.ToListAsync();
+
+			if (productList == null) { return null; }
+
+			var productModel = productList.Select(p => new ProductViewModel()
+			{
+				ProductId = p.ProductId,
+				CategoryId = p.CategoryId,
+				Description = p.Description,
+				Price = p.Price,
+				IsActive = p.IsActive,
+				Stock = p.Stock,
+				ProductName = p.ProductName
+			}).ToList();
+
+			return productModel;
+		}
+
+		public async Task<bool> CreateProduct(ProductViewModel productModel)
+		{
+			bool result = false;
+			if (productModel == null) { return result; }
+
+			try
+			{
+				var product = new Product()
+				{
+					ProductId = productModel.ProductId,
+					CategoryId = productModel.CategoryId,
+					Description = productModel.Description,
+					Price = productModel.Price,
+					IsActive = productModel.IsActive,
+					Stock = productModel.Stock,
+					ProductName = productModel.ProductName
+				};
+				await _context.Products.AddAsync(product);
+				result = _context.SaveChanges() > 0;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+			return result;
+		}
+
+		public async Task<bool> UpdateProduct(int id, ProductViewModel productModel)
+		{
+			bool result = false;
+
+			var product = await _context.Products
+				.Include(u => u.Category)
+				.FirstOrDefaultAsync(u => u.ProductId == id);
+
+			if (product == null)
+			{
+				return result;
+			}
+
+			try
+			{
+				product.ProductName = productModel.ProductName;
+				product.CategoryId = productModel.CategoryId;
+				product.Description = productModel.Description;
+				product.Price = productModel.Price;
+				product.IsActive = productModel.IsActive;
+				product.ProductName = product.ProductName;
+
+				_context.Products.Update(product);
+				result = await _context.SaveChangesAsync() > 0;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+			return result;
+		}
+
+		public async Task<bool> DeleteProduct(int id)
+		{
+			var product = await _context.Products.FirstOrDefaultAsync(u => u.ProductId == id);
+
+			if (product == null)
+			{
+				return false;
+			}
+
+			if (product.ProductId == id)
+			{
+				product.IsActive = false;
+				_context.Products.Update(product);
+				await _context.SaveChangesAsync();
+			}
+
+			return true;
+		}
+	}
 }
