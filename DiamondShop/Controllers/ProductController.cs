@@ -18,14 +18,23 @@ namespace DiamondShop.Controllers
 			_productRepository = productRepository;
 		}
 
+
+        // Lấy tất cả thông tin sản phẩm
+        [HttpGet]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            var products = await _productRepository.GetAllProducts();
+            var productViewModels = products.Select(static p => new ProductViewModel
+            {
+                ProductId = p.ProductId,
+                Price = p.Price,
+                ProductName = p.ProductName
+            }).ToList();
+            return Ok(productViewModels);
+        }
+
 		// Lấy tất cả thông tin sản phẩm
-		[HttpGet]
-		public async Task<IActionResult> GetAllProducts()
-		{
-			var products = await _productRepository.GetAllProducts();
-			if (products != null) { return Ok(products); }
-			return NotFound();
-		}
+		
 
 
 		// Lấy thông tin sản phẩm theo ID
@@ -124,11 +133,29 @@ namespace DiamondShop.Controllers
 		{
 			bool result = await _productRepository.DeleteProduct(id);
 
-			if (result)
-			{
-				return Ok("Create User Successfully");
-			}
-			return BadRequest("Failed To Create User");
-		}
+
+            return Ok("delete sucessfully");
+        }
+
+       
+       
+
+        // Tìm sản phẩm theo từ khóa tương tự với tên sản phẩm
+        [HttpGet("similar/{keyword}")]
+        public async Task<IActionResult> GetProductsBySimilarName(string keyword)
+        {
+            var products = await _productRepository.GetProductsBySimilarName(keyword);
+
+            if (products == null || !products.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(products);
+        }
+    }
+
+
 	}
-}
+
+
