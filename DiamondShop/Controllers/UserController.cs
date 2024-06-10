@@ -127,6 +127,32 @@ namespace DiamondShop.Controllers
 			}
 		}
 
+		//login user
+		[HttpPost]
+		[Route("Login")]
+		public async Task<IActionResult> Login(LoginModel model)
+		{
+			var user = _context.Users.FirstOrDefault(x =>
+			x.Username == model.UserName &&
+			x.Password == model.Password);
+			if (user != null)
+			{
+				return Ok(new ApiResponse
+				{
+					Success = true,
+					Message = "Login successful"
+				});
+			}
+			else
+			{
+				return Ok(new ApiResponse
+				{
+					Success = false,
+					Message = "Invalid login attempt"
+				});
+			}
+		}
+
 		[HttpPut("{id}")]
 		public async Task<IActionResult> UpdateUser(int id, [FromBody] UserModel userModel)
 		{
