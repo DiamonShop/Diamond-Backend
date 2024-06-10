@@ -15,7 +15,7 @@ namespace DiamondShop.Data
 		[StringLength(100)]
 		public string ProductName { get; set; }
 		[StringLength(300)]
-		public string? Description { get; internal set; }
+		public string? Description { get;  set; }
 		public int? Stock { get; set; }
 
 		public int? Price { get; set; }
