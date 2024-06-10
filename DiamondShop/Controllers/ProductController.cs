@@ -22,7 +22,7 @@ namespace DiamondShop.Controllers
         public async Task<IActionResult> GetAllProducts()
         {
             var products = await _productRepository.GetAllProducts();
-            var productViewModels = products.Select(p => new ProductViewModel
+            var productViewModels = products.Select(static p => new ProductViewModel
             {
                 ProductId = p.ProductId,
                 Price = p.Price,
@@ -142,7 +142,7 @@ namespace DiamondShop.Controllers
         public async Task<IActionResult> GetProductsByPriceDesc()
         {
             var products = await _productRepository.GetProductsByPriceDesc();
-            var productViewModels = products.Select(p => new ProductViewModel
+            var productViewModels = products.Select(static p => new ProductViewModel
             {
                 ProductId = p.ProductId,
                 Price = p.Price,
@@ -155,7 +155,7 @@ namespace DiamondShop.Controllers
         public async Task<IActionResult> GetProductsByPriceAsc()
         {
             var products = await _productRepository.GetProductsByPriceAsc();
-            var productViewModels = products.Select(p => new ProductViewModel
+            var productViewModels = products.Select(static p => new ProductViewModel
             {
                 ProductId = p.ProductId,
                 Price = p.Price,

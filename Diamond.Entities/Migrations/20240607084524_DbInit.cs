@@ -13,33 +13,33 @@ namespace DiamondShop.Migrations
         {
             migrationBuilder.CreateTable(
                 name: "Category",
-                columns: table => new
+                columns: static table => new
                 {
                     CategoryId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CategoryName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_Category", x => x.CategoryId);
+                    table.PrimaryKey("PK_Category", static x => x.CategoryId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Role",
-                columns: table => new
+                columns: static table => new
                 {
                     RoleId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RoleName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_Role", x => x.RoleId);
+                    table.PrimaryKey("PK_Role", static x => x.RoleId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Product",
-                columns: table => new
+                columns: static table => new
                 {
                     ProductId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
@@ -50,12 +50,12 @@ namespace DiamondShop.Migrations
                     Price = table.Column<int>(type: "int", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_Product", x => x.ProductId);
+                    table.PrimaryKey("PK_Product", static x => x.ProductId);
                     table.ForeignKey(
                         name: "FK_Product_Category_CategoryId",
-                        column: x => x.CategoryId,
+                        column: static x => x.CategoryId,
                         principalTable: "Category",
                         principalColumn: "CategoryId",
                         onDelete: ReferentialAction.Cascade);
@@ -63,7 +63,7 @@ namespace DiamondShop.Migrations
 
             migrationBuilder.CreateTable(
                 name: "User",
-                columns: table => new
+                columns: static table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
@@ -74,12 +74,12 @@ namespace DiamondShop.Migrations
                     Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.UserId);
+                    table.PrimaryKey("PK_User", static x => x.UserId);
                     table.ForeignKey(
                         name: "FK_User_Role_RoleId",
-                        column: x => x.RoleId,
+                        column: static x => x.RoleId,
                         principalTable: "Role",
                         principalColumn: "RoleId",
                         onDelete: ReferentialAction.Cascade);
@@ -87,7 +87,7 @@ namespace DiamondShop.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ProductDetail",
-                columns: table => new
+                columns: static table => new
                 {
                     ProductDetailId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
@@ -98,12 +98,12 @@ namespace DiamondShop.Migrations
                     Cut = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_ProductDetail", x => x.ProductDetailId);
+                    table.PrimaryKey("PK_ProductDetail", static x => x.ProductDetailId);
                     table.ForeignKey(
                         name: "FK_ProductDetail_Product_ProductId",
-                        column: x => x.ProductId,
+                        column: static x => x.ProductId,
                         principalTable: "Product",
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
@@ -111,7 +111,7 @@ namespace DiamondShop.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Certificate",
-                columns: table => new
+                columns: static table => new
                 {
                     CertificateId = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
@@ -121,25 +121,25 @@ namespace DiamondShop.Migrations
                     Cut = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: true)
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_Certificate", x => x.CertificateId);
+                    table.PrimaryKey("PK_Certificate", static x => x.CertificateId);
                     table.ForeignKey(
                         name: "FK_Certificate_Product_CertificateId",
-                        column: x => x.CertificateId,
+                        column: static x => x.CertificateId,
                         principalTable: "Product",
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Certificate_User_UserId",
-                        column: x => x.UserId,
+                        column: static x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Feedback",
-                columns: table => new
+                columns: static table => new
                 {
                     FeedbackId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
@@ -147,18 +147,18 @@ namespace DiamondShop.Migrations
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_Feedback", x => x.FeedbackId);
+                    table.PrimaryKey("PK_Feedback", static x => x.FeedbackId);
                     table.ForeignKey(
                         name: "FK_Feedback_Product_ProductId",
-                        column: x => x.ProductId,
+                        column: static x => x.ProductId,
                         principalTable: "Product",
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Feedback_User_UserId",
-                        column: x => x.UserId,
+                        column: static x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
@@ -166,7 +166,7 @@ namespace DiamondShop.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Order",
-                columns: table => new
+                columns: static table => new
                 {
                     OrderId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
@@ -175,12 +175,12 @@ namespace DiamondShop.Migrations
                     Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_Order", x => x.OrderId);
+                    table.PrimaryKey("PK_Order", static x => x.OrderId);
                     table.ForeignKey(
                         name: "FK_Order_User_UserId",
-                        column: x => x.UserId,
+                        column: static x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
@@ -188,18 +188,18 @@ namespace DiamondShop.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ShoppingCart",
-                columns: table => new
+                columns: static table => new
                 {
                     CartId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_ShoppingCart", x => x.CartId);
+                    table.PrimaryKey("PK_ShoppingCart", static x => x.CartId);
                     table.ForeignKey(
                         name: "FK_ShoppingCart_User_UserId",
-                        column: x => x.UserId,
+                        column: static x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
@@ -207,25 +207,25 @@ namespace DiamondShop.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Warranty",
-                columns: table => new
+                columns: static table => new
                 {
                     WarrantyId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     WarrantyPeriod = table.Column<int>(type: "int", nullable: false)
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_Warranty", x => x.WarrantyId);
+                    table.PrimaryKey("PK_Warranty", static x => x.WarrantyId);
                     table.ForeignKey(
                         name: "FK_Warranty_Product_WarrantyId",
-                        column: x => x.WarrantyId,
+                        column: static x => x.WarrantyId,
                         principalTable: "Product",
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Warranty_User_UserId",
-                        column: x => x.UserId,
+                        column: static x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
@@ -233,7 +233,7 @@ namespace DiamondShop.Migrations
 
             migrationBuilder.CreateTable(
                 name: "CartItem",
-                columns: table => new
+                columns: static table => new
                 {
                     CartItemId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
@@ -243,22 +243,22 @@ namespace DiamondShop.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false)
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_CartItem", x => x.CartItemId);
+                    table.PrimaryKey("PK_CartItem", static x => x.CartItemId);
                     table.ForeignKey(
                         name: "FK_CartItem_Order_OrderId",
-                        column: x => x.OrderId,
+                        column: static x => x.OrderId,
                         principalTable: "Order",
                         principalColumn: "OrderId");
                     table.ForeignKey(
                         name: "FK_CartItem_Product_ProductId",
-                        column: x => x.ProductId,
+                        column: static x => x.ProductId,
                         principalTable: "Product",
                         principalColumn: "ProductId");
                     table.ForeignKey(
                         name: "FK_CartItem_ShoppingCart_CartId",
-                        column: x => x.CartId,
+                        column: static x => x.CartId,
                         principalTable: "ShoppingCart",
                         principalColumn: "CartId");
                 });
