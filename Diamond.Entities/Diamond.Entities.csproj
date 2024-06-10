@@ -21,4 +21,10 @@
 	  
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Data\DiamondDbContext.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
 </Project>
