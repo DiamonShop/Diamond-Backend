@@ -16,7 +16,7 @@ namespace DiamondShop.Controllers
 			_context = context;
 		}
 
-        [HttpGet]
+        [HttpGet("get-all-order")]
         public async Task<ActionResult<List<OrderViewModel>>> GetAllOrders()
         {
             var orders = await _context.Orders
@@ -42,7 +42,7 @@ namespace DiamondShop.Controllers
             return Ok(orders);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get/{id}")]
         public async Task<ActionResult<OrderViewModel>> GetOrderById(int id)
         {
             var order = await _context.Orders
