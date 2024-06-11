@@ -24,26 +24,17 @@ namespace DiamondShop.Controllers
 	[ApiController]
 	public class LoginController : ControllerBase
 	{
-		private readonly SignInManager<IdentityUser> _signInManager;
-		private readonly UserManager<IdentityUser> _userManager;
 		private readonly DiamondDbContext _context;
 		private readonly JwtSettings _jwtSettings;
-		private readonly IUserRepository _userRepository;
 
 		public LoginController(DiamondDbContext context, SignInManager<IdentityUser> signInManager,
-				UserManager<IdentityUser> userManager,
-				IOptions<JwtSettings> jwtSettings,
-				IUserRepository userRepository)
+				IOptions<JwtSettings> jwtSettings)
 		{
 			_context = context;
-			_signInManager = signInManager;
-			_userManager = userManager;
 			_jwtSettings = jwtSettings.Value;
-			_userRepository = userRepository;
 		}
 
 		[HttpPost]
-		[Route("Login")]
 		public async Task<IActionResult> Login(LoginModel model)
 		{
 			var user = _context.Users.FirstOrDefault(user =>
@@ -54,7 +45,8 @@ namespace DiamondShop.Controllers
 				return Ok(new ApiResponse
 				{
 					Success = true,
-					Message = "Login successful"
+					Message = "Login successful",
+					Data = user
 				});
 			}
 			else
@@ -67,8 +59,13 @@ namespace DiamondShop.Controllers
 			}
 		}
 
+		/*[HttpPost("SignUp")]
+		public Task<IActionResult> SignUp() 
+		{
+
+		}*/
+
 		[HttpGet("GoogleLogin")]
-		[EnableCors("AllowSpecificOrigin")]
 		public IActionResult GoogleLogin()
 		{
 			var props = new AuthenticationProperties { RedirectUri = "Login/GoogleLogin" };

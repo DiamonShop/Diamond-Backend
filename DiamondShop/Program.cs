@@ -10,11 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,13 +44,11 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
 {
-
 	options.AddPolicy("AllowSpecificOrigin", policy =>
 	{
-		policy.WithOrigins("http://localhost:3000")
+		policy.AllowAnyOrigin()
 			  .AllowAnyHeader()
-			  .AllowAnyMethod()
-			  .AllowCredentials();
+			  .AllowAnyMethod();
 	});
 });
 
