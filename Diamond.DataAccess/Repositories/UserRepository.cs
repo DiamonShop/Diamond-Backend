@@ -182,5 +182,31 @@ namespace DiamondShop.Repositories
 			}
 			return true;
 		}
+		public async Task<bool> SignUpUser(UserSignUpModel userSignUpModel)
+		{
+			bool result = false;
+			if (userSignUpModel == null)
+			{
+				return false;
+			}
+
+			try
+			{
+				var user = new User()
+				{
+					Username = userSignUpModel.Username,
+					Email = userSignUpModel.Email,
+					Password = userSignUpModel.Password
+				};
+
+				await _context.AddAsync(user);
+				result = _context.SaveChanges() > 0;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+			return result;
+		}
 	}
 }
