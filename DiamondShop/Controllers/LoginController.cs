@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DiamondShop.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
@@ -138,4 +139,5 @@ namespace DiamondShop.Controllers
             return tokenHandler.WriteToken(token);
         }
     }
+
 }

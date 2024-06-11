@@ -13,6 +13,7 @@ using Swashbuckle.AspNetCore.Filters;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
+using DiamondShop.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,12 +45,14 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
 {
+
     options.AddPolicy("AllowSpecificOrigin", policy =>
     {
         policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+
 });
 
 // Register JWT Authentication
@@ -116,6 +119,9 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
+
+//VnPayService
+builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
 // Configure and build the application
 var app = builder.Build();
