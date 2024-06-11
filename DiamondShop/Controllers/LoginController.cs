@@ -15,6 +15,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Diamond.Entities.Helpers;
 
 namespace DiamondShop.Controllers
 {
@@ -121,7 +122,7 @@ namespace DiamondShop.Controllers
 
             var claims = new List<Claim>
             {
-                new Claim("UserID", user.UserId.ToString()),
+                new Claim(MySettings.CLAIM_USERID, user.UserId.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email)
             };

@@ -8,6 +8,8 @@ namespace Diamond.Entities.Model
 {
 	public class OrderCheckOutModel
 	{
+		public bool CheckUser { get; set; }
+		public string Name { get; set; }
 		public int OrderId { get; set; }
 		public int UserId { get; set; } 
 	}

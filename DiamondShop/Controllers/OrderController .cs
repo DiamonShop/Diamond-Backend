@@ -4,6 +4,9 @@ using DiamondShop.Data;
 
 using DiamondShop.Model;
 using Diamond.Entities.Model;
+using Diamond.Entities.Helpers;
+using Diamond.Entities.Data;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 namespace DiamondShop.Controllers
 {
 	[Route("api/orders")]
@@ -16,7 +19,7 @@ namespace DiamondShop.Controllers
 		public OrderController(DiamondDbContext context, IVnPayService vnPayService)
 		{
 			_context = context;
-            _vnPayService = vnPayService;
+			_vnPayService = vnPayService;
 		}
 
         [HttpGet("get-all-order")]
@@ -132,22 +135,88 @@ namespace DiamondShop.Controllers
 			var order = _context.Orders.Include(o => o.CartItems).Include(o => o.User)
 		.FirstOrDefault(o => o.UserId == od.UserId && o.OrderId == od.OrderId);
 
-			if (!ModelState.IsValid)
+			if (ModelState.IsValid)
 			{
-                return BadRequest(); // Return the view to display the error
-			}
+				var vnPayModel = new VnPaymentRequestModel
+				{
+					Amount = (double)order.CartItems.Sum(c => c.Price * c.Quantity),
+					CreatedDate = DateTime.Now,
+					Fullname = order.User.FullName,
+					OrderId = new Random().Next(100, 1000)
+				};
+				//return Ok(vnPayModel);
+				return Redirect(_vnPayService.CreatePaymentUrl(HttpContext, vnPayModel));
+			}else { return NoContent(); }
 
-			var vnPayModel = new VnPaymentRequestModel
-			{
-				Amount = (double)order.CartItems.Sum(c => c.Price * c.Quantity),
-				CreatedDate = DateTime.Now,
-				Fullname = order.User.FullName,
-				OrderId = new Random().Next(100, 1000)
+			var uId = HttpContext.User.Claims.SingleOrDefault(p => p.Type == MySettings.CLAIM_USERID).Value;
+            var user = new User();
+            if (od.CheckUser)
+            {
+				user = _context.Users.SingleOrDefault(u => u.UserId == int.Parse(uId));
+            }
+
+            var bill = new Bill
+            {
+                BillId = int.Parse(uId),
+                Fullname = od.Name ?? user.FullName,
+                PayDate = DateTime.Now,
+				PaymentMethod = "VnPay",
+				ShipMethod = "Grab"
 			};
 
-			return Ok(vnPayModel);
+			_context.Database.BeginTransaction();
+            try
+            {
+                _context.Add(bill);
+                _context.SaveChanges();
 
-            
+                var detailList = new List<BillDetail>();
+                foreach(var item in order.CartItems)
+                {
+                    detailList.Add(new BillDetail
+                    {
+                        BillId = bill.BillId,
+                        Quantity = item.Quantity,
+                        Price = item.Price,
+                        CartItemId = item.CartItemId
+                    });
+
+                }
+                
+                _context.AddRange(detailList);
+                _context.SaveChanges();
+                _context.Database.CommitTransaction();
+
+               // HttpContext.Session.Set<List<CartItem>>("MYCART", new List<CartItem>());
+
+				return Ok("Success");
+            }
+            catch 
+            {
+                _context.Database.RollbackTransaction();
+            }
+		}
+
+		public IActionResult PaymentSuccess()
+		{
+			return Ok("Success");
+		}
+
+		public IActionResult PaymentCallBack()
+		{
+			var response = _vnPayService.PaymentExecute(Request.Query);
+
+			if (response == null || response.VnPayResponseCode != "00")
+			{
+				//TempData["Message"] = $"Lỗi thanh toán VN Pay: {response.VnPayResponseCode}";
+				return RedirectToAction("PaymentFail");
+			}
+
+
+			// Lưu đơn hàng vô database
+
+			//TempData["Message"] = $"Thanh toán VNPay thành công";
+			return RedirectToAction("PaymentSuccess");
 		}
 	}
 }
