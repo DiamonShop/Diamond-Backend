@@ -78,6 +78,11 @@ namespace DiamondShop.Controllers
 			}
 			return NoContent();
 		}
+
+		public async Task<IActionResult> PaymentCallBack()
+		{
+			return null;
+		}
 	}
 }
 
