@@ -13,6 +13,7 @@ using Swashbuckle.AspNetCore.Filters;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
+using DiamondShop.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -122,6 +123,9 @@ builder.Services.AddSwaggerGen(options =>
 	options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 	options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
+
+//VnPayService
+builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
 // Configure and build the application
 var app = builder.Build();

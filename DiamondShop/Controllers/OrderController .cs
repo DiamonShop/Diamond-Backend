@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using DiamondShop.Data;
 
 using DiamondShop.Model;
+using Diamond.Entities.Model;
 namespace DiamondShop.Controllers
 {
 	[Route("api/orders")]
@@ -10,10 +11,12 @@ namespace DiamondShop.Controllers
 	public class OrderController : ControllerBase
 	{
 		private readonly DiamondDbContext _context;
+		private readonly IVnPayService _vnPayService;
 
-		public OrderController(DiamondDbContext context)
+		public OrderController(DiamondDbContext context, IVnPayService vnPayService)
 		{
 			_context = context;
+            _vnPayService = vnPayService;
 		}
 
         [HttpGet("get-all-order")]
@@ -121,6 +124,30 @@ namespace DiamondShop.Controllers
 			await _context.SaveChangesAsync();
 
 			return NoContent();
+		}
+
+		[HttpPost("checkout")]
+		public async Task<IActionResult> Checkout(OrderCheckOutModel od)
+        {
+			var order = _context.Orders.Include(o => o.CartItems).Include(o => o.User)
+		.FirstOrDefault(o => o.UserId == od.UserId && o.OrderId == od.OrderId);
+
+			if (!ModelState.IsValid)
+			{
+                return BadRequest(); // Return the view to display the error
+			}
+
+			var vnPayModel = new VnPaymentRequestModel
+			{
+				Amount = (double)order.CartItems.Sum(c => c.Price * c.Quantity),
+				CreatedDate = DateTime.Now,
+				Fullname = order.User.FullName,
+				OrderId = new Random().Next(100, 1000)
+			};
+
+			return Ok(vnPayModel);
+
+            
 		}
 	}
 }
