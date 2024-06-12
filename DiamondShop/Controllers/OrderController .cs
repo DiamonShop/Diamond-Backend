@@ -197,11 +197,13 @@ namespace DiamondShop.Controllers
             }
 		}
 
+		[HttpPost("PaymentSuccess")]
 		public IActionResult PaymentSuccess()
 		{
 			return Ok("Success");
 		}
 
+		[HttpPost("Callback")]
 		public IActionResult PaymentCallBack()
 		{
 			var response = _vnPayService.PaymentExecute(Request.Query);
