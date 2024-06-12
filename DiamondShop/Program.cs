@@ -1,19 +1,21 @@
-﻿using DiamondShop.Data;
-using DiamondShop.Repositories;
-using DiamondShop.Repositories.Interfaces;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Text;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Identity;
+using DiamondShop.Data;
+using DiamondShop.Repositories;
+using DiamondShop.Repositories.Interfaces;
 using DiamondShop.Controllers;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,19 +47,22 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
 {
-
     options.AddPolicy("AllowSpecificOrigin", policy =>
     {
         policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
-
 });
 
 // Register JWT Authentication
-var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
-var key = Encoding.ASCII.GetBytes(jwtSettings.SecretKey);
+var jwt = builder.Configuration.GetSection("Jwt").Get<Jwt>();
+Console.WriteLine($"jwt: {jwt}");
+var key = Encoding.ASCII.GetBytes(jwt.SecretKey);
+Console.WriteLine($"SecretKey: {jwt.SecretKey}");
+Console.WriteLine($"Issuer: {jwt.Issuer}");
+Console.WriteLine($"Audience: {jwt.Audience}");
+Console.WriteLine($"ExpirationMinutes: {jwt.ExpirationMinutes}");
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -72,8 +77,8 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings.Issuer,
-        ValidAudience = jwtSettings.Audience,
+        ValidIssuer = jwt.Issuer,
+        ValidAudience = jwt.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 })
@@ -82,9 +87,6 @@ builder.Services.AddAuthentication(options =>
 {
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-
-
-
     options.CallbackPath = "/api/Login/GoogleLoginCallback";
 });
 
@@ -117,7 +119,6 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-    options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
 //VnPayService

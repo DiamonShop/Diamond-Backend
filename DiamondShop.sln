@@ -5,9 +5,11 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiamondShop.API", "DiamondShop\DiamondShop.API.csproj", "{FF0B678B-665D-4C30-AC23-9C9AAFE67678}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diamond.DataAccess", "Diamond.DataAccess\Diamond.DataAccess.csproj", "{F67EA9B0-24C5-4C51-A2B4-2699F8A0AF56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diamond.DataAccess", "Diamond.DataAccess\Diamond.DataAccess.csproj", "{F67EA9B0-24C5-4C51-A2B4-2699F8A0AF56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diamond.Entities", "Diamond.Entities\Diamond.Entities.csproj", "{117BBBDA-5E3F-4ADE-85EC-2D6BECFEFB11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diamond.Entities", "Diamond.Entities\Diamond.Entities.csproj", "{117BBBDA-5E3F-4ADE-85EC-2D6BECFEFB11}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1F515B6F-D30F-489E-9559-51222281EC22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

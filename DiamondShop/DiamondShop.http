@@ -1,4 +1,4 @@
-@DiamondShop_HostAddress = http://localhost:5075
+@DiamondShop_HostAddress = https://localhost:7101
 
 GET {{DiamondShop_HostAddress}}/weatherforecast/
 Accept: application/json
