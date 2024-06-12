@@ -122,7 +122,7 @@ namespace DiamondShop.Controllers
 
             var claims = new List<Claim>
             {
-                new Claim(MySettings.CLAIM_USERID, user.UserId.ToString()),
+                new Claim("UserID", user.UserId.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email)
             };
