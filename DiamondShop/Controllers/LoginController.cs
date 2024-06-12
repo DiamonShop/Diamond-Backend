@@ -142,6 +142,7 @@ namespace DiamondShop.Controllers
         {
             try
             {
+
                 if (user == null)
                 {
                     throw new ArgumentNullException(nameof(user), "User cannot be null");
@@ -155,7 +156,7 @@ namespace DiamondShop.Controllers
                 if (string.IsNullOrEmpty(_jwtSettings.SecretKey))
                 {
                     throw new ArgumentException("JWT Secret Key is null or empty", nameof(_jwtSettings.SecretKey));
-                }
+                }        
 
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
