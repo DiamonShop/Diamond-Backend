@@ -16,10 +16,12 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Diamond.Entities.Helpers;
+using System;
+using System.Threading.Tasks;
+using NuGet.Common;
 
 namespace DiamondShop.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
@@ -27,51 +29,73 @@ namespace DiamondShop.Controllers
         private readonly DiamondDbContext _context;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly JwtSettings _jwtSettings;
+        private readonly Jwt _jwtSettings;
         private readonly IUserRepository _userRepository;
+        private readonly ILogger<LoginController> _logger; // Thêm ILogger vào đây
 
         public LoginController(DiamondDbContext context, SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager, IOptions<JwtSettings> jwtSettings, IUserRepository userRepository)
+            UserManager<IdentityUser> userManager, IOptions<Jwt> jwtSettings, IUserRepository userRepository,
+            ILogger<LoginController> logger) // Thêm ILogger vào đây
         {
             _context = context;
             _signInManager = signInManager;
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
             _userRepository = userRepository;
+            _logger = logger; // Gán logger cho trường _logger
         }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            var user = _context.Users.Include(u => u.Role).FirstOrDefault(u =>
-                u.Username == model.UserName &&
-                u.Password == model.Password);
-
-            if (user == null)
+            try
             {
+                if (model == null || string.IsNullOrEmpty(model.UserName) || string.IsNullOrEmpty(model.Password))
+                {
+                    return BadRequest("Invalid input data");
+                }
+
+                var user = await _context.Users.Include(u => u.Role)
+                    .FirstOrDefaultAsync(u =>
+                        u.Username == model.UserName &&
+                        u.Password == model.Password);
+
+                if (user == null)
+                {
+                    return BadRequest(new ApiResponse
+                    {
+                        Success = false,
+                        Message = "Invalid login attempt"
+                    });
+                }
+
+                // User found, generate token
+                var token = GenerateToken(user);
+
+                // Return token along with user data
                 return Ok(new ApiResponse
                 {
-                    Success = false,
-                    Message = "Invalid login attempt"
+                    Success = true,
+                    Message = "Login successful",
+                    Data = new
+                    {
+                        user.UserId,
+                        user.Username,
+                        user.FullName,
+                        user.Email,
+                        user.Role.RoleName,
+                        Token = token
+                    }
                 });
             }
-
-            UserViewModel userModel = new UserViewModel()
+            catch (Exception ex)
             {
-                UserId = user.UserId,
-                Email = user.Email,
-                FullName = user.FullName,
-                RoleName = user.Role.RoleName,
-                Username = model.UserName
-            };
-
-            return Ok(new ApiResponse
-            {
-                Success = true,
-                Message = "Login successful",
-                Data = userModel
-            });
+                // Log the exception for debugging purposes
+                Console.WriteLine($"Exception occurred in Login method: {ex}");
+                return StatusCode(500, "An error occurred while processing your request");
+            }
         }
+
 
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp(UserSignUpModel userSignUpModel)
@@ -90,7 +114,6 @@ namespace DiamondShop.Controllers
             var props = new AuthenticationProperties { RedirectUri = "/api/Login/GoogleLoginCallback" };
             return Challenge(props, GoogleDefaults.AuthenticationScheme);
         }
-
 
         [HttpGet("GoogleLoginCallback")]
         public async Task<IActionResult> GoogleLoginCallback()
@@ -115,30 +138,90 @@ namespace DiamondShop.Controllers
             return Ok(userViewModel);
         }
 
-
         private string GenerateToken(User user)
         {
-            var secretKeyBytes = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
-
-            var claims = new List<Claim>
+            try
             {
-                new Claim(MySettings.CLAIM_USERID, user.UserId.ToString()),
+                if (user == null)
+                {
+                    throw new ArgumentNullException(nameof(user), "User cannot be null");
+                }
+             
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
+
+                // Check if the JWT Secret Key is null or empty
+                if (string.IsNullOrEmpty(_jwtSettings.SecretKey))
+                {
+                    throw new ArgumentException("JWT Secret Key is null or empty", nameof(_jwtSettings.SecretKey));
+                }
+
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email)
-            };
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role.RoleName)
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+            }
+            catch (ArgumentNullException ex)
             {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddMinutes(_jwtSettings.ExpirationMinutes),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.HmacSha512Signature)
+                // Log the specific error message for debugging purposes
+                Console.WriteLine($"ArgumentNullException occurred in GenerateToken method: {ex.Message}");
+                throw; // Rethrow the exception to handle it in the calling method
+            }
+            catch (ArgumentException ex)
+            {
+                // Log the specific error message for debugging purposes
+                Console.WriteLine($"ArgumentException occurred in GenerateToken method: {ex.Message}");
+                throw; // Rethrow the exception to handle it in the calling method
+            }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging purposes
+                Console.WriteLine($"Exception occurred in GenerateToken method: {ex}");
+                return null; // Return null or handle the error as appropriate for your application
+            }
+        }
+
+
+
+
+        private void ValidateToken(string token)
+        {
+            var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false
             };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+                Console.WriteLine("Token is valid");
+                Console.WriteLine("Decoded JWT:");
+                foreach (var claim in principal.Claims)
+                {
+                    Console.WriteLine($"{claim.Type}: {claim.Value}");
+                }
+            }
+            catch (SecurityTokenException ex)
+            {
+                Console.WriteLine($"Invalid token: {ex.Message}");
+            }
         }
     }
-
 }
