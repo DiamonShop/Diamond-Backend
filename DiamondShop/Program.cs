@@ -17,23 +17,27 @@ using DiamondShop.Repositories.Interfaces;
 using DiamondShop.Controllers;
 using Microsoft.OpenApi.Models;
 
+using Microsoft.Extensions.Options;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Read configuration from appsettings.json
+// Configuration setup
 builder.Configuration.AddJsonFile("appsettings.json", optional: false);
 
-// Register DbContext
+// Configure services
+builder.Services.Configure<Jwt>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddDbContext<DiamondDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DB"));
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
-// Register Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<DiamondDbContext>()
     .AddSignInManager<SignInManager<IdentityUser>>()
     .AddDefaultTokenProviders();
+
+    
 
 // Register services
 builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
