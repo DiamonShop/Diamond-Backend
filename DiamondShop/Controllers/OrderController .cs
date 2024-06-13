@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DiamondShop.Data;
-
+using Diamond.Libraries;
 using DiamondShop.Model;
 using Diamond.Entities.Model;
-using Diamond.Entities.Helpers;
-using Diamond.Entities.Data;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Claims;
+using DiamondShop.Repositories.Interfaces;
+
 namespace DiamondShop.Controllers
 {
     [Route("api/orders")]
@@ -15,12 +15,12 @@ namespace DiamondShop.Controllers
     public class OrderController : ControllerBase
     {
         private readonly DiamondDbContext _context;
-        private readonly IVnPayService _vnPayService;
+        private readonly IVnPayRepository _vnPayRepo;
 
-        public OrderController(DiamondDbContext context, IVnPayService vnPayService)
+        public OrderController(DiamondDbContext context, IVnPayRepository vnPayRepo)
         {
             _context = context;
-            _vnPayService = vnPayService;
+            _vnPayRepo = vnPayRepo;
         }
 
         [HttpGet("get-all-order")]
@@ -133,7 +133,11 @@ namespace DiamondShop.Controllers
         [HttpPost("Checkout")]
         public IActionResult CreatePaymentUrl(PaymentInformationModel model)
         {
-            var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
+            /*var order = _context.Orders.Include(o => o.CartItems)
+				.Include(o => o.User)                
+                .FirstOrDefault(o => o.UserId == uid && o.OrderId == oid);*/
+
+			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
 
             return Redirect(url);
         }
@@ -141,7 +145,7 @@ namespace DiamondShop.Controllers
         [HttpGet("result")]
 		public IActionResult PaymentCallback()
 		{
-			var response = _vnPayService.PaymentExecute(Request.Query);
+			var response = _vnPayRepo.PaymentExecute(Request.Query);
 
 			return Ok(response);
 		}

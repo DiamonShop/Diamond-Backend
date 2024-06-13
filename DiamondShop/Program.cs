@@ -47,6 +47,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<IVnPayRepository, VnPayRepository>();
 
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
@@ -127,7 +128,7 @@ builder.Services.AddSwaggerGen(options =>
 
 //VnPayService
 //builder.Services.AddSingleton<IVnPayService, VnPayService>();
-builder.Services.AddScoped<IVnPayService, VnPayService>();
+
 
 // Configure and build the application
 var app = builder.Build();

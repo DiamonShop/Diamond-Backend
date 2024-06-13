@@ -2,9 +2,9 @@
 using DiamondShop.Model;
 using Microsoft.AspNetCore.Http;
 
-namespace DiamondShop.Controllers
+namespace DiamondShop.Repositories.Interfaces
 {
-	public interface IVnPayService
+	public interface IVnPayRepository
 	{
 		string CreatePaymentUrl(PaymentInformationModel model, HttpContext context);
 		PaymentResponseModel PaymentExecute(IQueryCollection collections);

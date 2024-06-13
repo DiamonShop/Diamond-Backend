@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Diamond.Entities.Model;
 
-namespace DiamondShop.Controllers
+namespace Diamond.Libraries
 {
 	public class VnPayLibrary
 	{

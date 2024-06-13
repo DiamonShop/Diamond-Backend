@@ -1,17 +1,19 @@
 ﻿using Diamond.Entities.Model;
+using Diamond.Libraries;
 using DiamondShop.Data;
 using DiamondShop.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System.Security.Policy;
+using DiamondShop.Repositories.Interfaces;
 
-namespace DiamondShop.Controllers
+namespace DiamondShop.Repositories
 {
-	public class VnPayService : IVnPayService
+	public class VnPayRepository : IVnPayRepository
 	{
 		private readonly IConfiguration _configuration;
 
-		public VnPayService(IConfiguration configuration)
+		public VnPayRepository(IConfiguration configuration)
 		{
 			_configuration = configuration;
 		}
