@@ -1,11 +1,12 @@
-﻿using DiamondShop.Model;
+﻿using Diamond.Entities.Model;
+using DiamondShop.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace DiamondShop.Controllers
 {
 	public interface IVnPayService
 	{
-		string CreatePaymentUrl(HttpContext context, VnPaymentRequestModel model);
-		VnPaymentResponseModel PaymentExecute(IQueryCollection collections);
+		string CreatePaymentUrl(PaymentInformationModel model, HttpContext context);
+		PaymentResponseModel PaymentExecute(IQueryCollection collections);
 	}
 }

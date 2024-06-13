@@ -4,6 +4,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Diamond.Entities.Model;
 
 namespace DiamondShop.Controllers
 {
@@ -12,6 +13,73 @@ namespace DiamondShop.Controllers
 		private readonly SortedList<string, string> _requestData = new SortedList<string, string>(new VnPayCompare());
 		private readonly SortedList<string, string> _responseData = new SortedList<string, string>(new VnPayCompare());
 
+		public PaymentResponseModel GetFullResponseData(IQueryCollection collection, string hashSecret)
+		{
+			var vnPay = new VnPayLibrary();
+
+			foreach (var (key, value) in collection)
+			{
+				if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_"))
+				{
+					vnPay.AddResponseData(key, value);
+				}
+			}
+
+			var orderId = Convert.ToInt64(vnPay.GetResponseData("vnp_TxnRef"));
+			var vnPayTranId = Convert.ToInt64(vnPay.GetResponseData("vnp_TransactionNo"));
+			var vnpResponseCode = vnPay.GetResponseData("vnp_ResponseCode");
+			var vnpSecureHash =
+				collection.FirstOrDefault(k => k.Key == "vnp_SecureHash").Value; //hash của dữ liệu trả về
+			var orderInfo = vnPay.GetResponseData("vnp_OrderInfo");
+
+			var checkSignature =
+				vnPay.ValidateSignature(vnpSecureHash, hashSecret); //check Signature
+
+			if (!checkSignature)
+				return new PaymentResponseModel()
+				{
+					Success = false
+				};
+
+			return new PaymentResponseModel()
+			{
+				Success = true,
+				PaymentMethod = "VnPay",
+				OrderDescription = orderInfo,
+				OrderId = orderId.ToString(),
+				PaymentId = vnPayTranId.ToString(),
+				TransactionId = vnPayTranId.ToString(),
+				Token = vnpSecureHash,
+				VnPayResponseCode = vnpResponseCode
+			};
+		}
+		public string GetIpAddress(HttpContext context)
+		{
+			var ipAddress = string.Empty;
+			try
+			{
+				var remoteIpAddress = context.Connection.RemoteIpAddress;
+
+				if (remoteIpAddress != null)
+				{
+					if (remoteIpAddress.AddressFamily == AddressFamily.InterNetworkV6)
+					{
+						remoteIpAddress = Dns.GetHostEntry(remoteIpAddress).AddressList
+							.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork);
+					}
+
+					if (remoteIpAddress != null) ipAddress = remoteIpAddress.ToString();
+
+					return ipAddress;
+				}
+			}
+			catch (Exception ex)
+			{
+				return ex.Message;
+			}
+
+			return "127.0.0.1";
+		}
 		public void AddRequestData(string key, string value)
 		{
 			if (!string.IsNullOrEmpty(value))
@@ -33,7 +101,6 @@ namespace DiamondShop.Controllers
 			return _responseData.TryGetValue(key, out var retValue) ? retValue : string.Empty;
 		}
 
-		#region Request
 		public string CreateRequestUrl(string baseUrl, string vnpHashSecret)
 		{
 			var data = new StringBuilder();
@@ -52,19 +119,34 @@ namespace DiamondShop.Controllers
 				signData = signData.Remove(data.Length - 1, 1);
 			}
 
-			var vnpSecureHash = Utils.HmacSHA512(vnpHashSecret, signData);
+			var vnpSecureHash = HmacSha512(vnpHashSecret, signData);
 			baseUrl += "vnp_SecureHash=" + vnpSecureHash;
 
 			return baseUrl;
 		}
-		#endregion
 
-		#region Response process
 		public bool ValidateSignature(string inputHash, string secretKey)
 		{
 			var rspRaw = GetResponseData();
-			var myChecksum = Utils.HmacSHA512(secretKey, rspRaw);
+			var myChecksum = HmacSha512(secretKey, rspRaw);
 			return myChecksum.Equals(inputHash, StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		private string HmacSha512(string key, string inputData)
+		{
+			var hash = new StringBuilder();
+			var keyBytes = Encoding.UTF8.GetBytes(key);
+			var inputBytes = Encoding.UTF8.GetBytes(inputData);
+			using (var hmac = new HMACSHA512(keyBytes))
+			{
+				var hashValue = hmac.ComputeHash(inputBytes);
+				foreach (var theByte in hashValue)
+				{
+					hash.Append(theByte.ToString("x2"));
+				}
+			}
+
+			return hash.ToString();
 		}
 
 		private string GetResponseData()
@@ -92,58 +174,6 @@ namespace DiamondShop.Controllers
 			}
 
 			return data.ToString();
-		}
-		#endregion
-
-	}
-
-	public class Utils
-	{
-		public static string HmacSHA512(string key, string inputData)
-		{
-			var hash = new StringBuilder();
-			var keyBytes = Encoding.UTF8.GetBytes(key);
-			var inputBytes = Encoding.UTF8.GetBytes(inputData);
-			using (var hmac = new HMACSHA512(keyBytes))
-			{
-				var hashValue = hmac.ComputeHash(inputBytes);
-				foreach (var theByte in hashValue)
-				{
-					hash.Append(theByte.ToString("x2"));
-				}
-			}
-
-			return hash.ToString();
-		}
-
-
-		// có chế biến cho .NET Core MVC
-		public static string GetIpAddress(HttpContext context)
-		{
-			var ipAddress = string.Empty;
-			try
-			{
-				var remoteIpAddress = context.Connection.RemoteIpAddress;
-
-				if (remoteIpAddress != null)
-				{
-					if (remoteIpAddress.AddressFamily == AddressFamily.InterNetworkV6)
-					{
-						remoteIpAddress = Dns.GetHostEntry(remoteIpAddress).AddressList
-							.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork);
-					}
-
-					if (remoteIpAddress != null) ipAddress = remoteIpAddress.ToString();
-
-					return ipAddress;
-				}
-			}
-			catch (Exception ex)
-			{
-				return "Invalid IP:" + ex.Message;
-			}
-
-			return "127.0.0.1";
 		}
 	}
 

@@ -126,7 +126,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 //VnPayService
-builder.Services.AddSingleton<IVnPayService, VnPayService>();
+//builder.Services.AddSingleton<IVnPayService, VnPayService>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 
 // Configure and build the application
 var app = builder.Build();
