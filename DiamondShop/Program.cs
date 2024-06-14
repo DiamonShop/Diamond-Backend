@@ -62,12 +62,7 @@ builder.Services.AddCors(options =>
 
 // Register JWT Authentication
 var jwt = builder.Configuration.GetSection("Jwt").Get<Jwt>();
-Console.WriteLine($"jwt: {jwt}");
 var key = Encoding.ASCII.GetBytes(jwt.SecretKey);
-Console.WriteLine($"SecretKey: {jwt.SecretKey}");
-Console.WriteLine($"Issuer: {jwt.Issuer}");
-Console.WriteLine($"Audience: {jwt.Audience}");
-Console.WriteLine($"ExpirationMinutes: {jwt.ExpirationMinutes}");
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -80,8 +75,8 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateIssuerSigningKey = true,
+		ValidateAudience = true,
+		ValidateIssuerSigningKey = true,
         ValidIssuer = jwt.Issuer,
         ValidAudience = jwt.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(key)

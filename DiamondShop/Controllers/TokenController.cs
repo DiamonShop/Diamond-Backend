@@ -16,17 +16,15 @@ namespace DiamondShop.Controllers
     public class TokenController : ControllerBase
     {
         private readonly Jwt _jwtSettings;
-        private readonly DiamondDbContext _context;
 
-        public TokenController(IOptions<Jwt> jwtSettings, DiamondDbContext context)
+        public TokenController(IOptions<Jwt> jwtSettings)
         {
             _jwtSettings = jwtSettings.Value;
-            _context = context;
         }
 
         [HttpGet("protected-resource")]
-        [Authorize]
-        public IActionResult GetProtectedResource()
+		[Authorize(Roles = "Admin")]
+		public IActionResult GetProtectedResource()
         {
             // Đây là một ví dụ về một endpoint bảo vệ
             return Ok("This is a protected resource");
@@ -58,8 +56,8 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPost("protected-action")]
-        [Authorize]
-        public IActionResult ProtectedAction()
+		[Authorize(Roles = "Admin")]
+		public IActionResult ProtectedAction()
         {
             // Lấy token từ header Authorization
             var authHeader = HttpContext.Request.Headers["Authorization"];

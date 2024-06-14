@@ -196,7 +196,10 @@ namespace DiamondShop.Repositories
 				{
 					Username = userSignUpModel.Username,
 					Email = userSignUpModel.Email,
-					Password = userSignUpModel.Password
+					Password = userSignUpModel.Password,
+					FullName = "",
+					IsActive = true,
+					RoleId = 3
 				};
 
 				await _context.AddAsync(user);
