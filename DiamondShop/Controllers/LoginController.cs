@@ -1,24 +1,20 @@
-﻿using DiamondShop.Data;
-using DiamondShop.Model;
-using DiamondShop.Repositories;
+﻿using Microsoft.AspNetCore.Mvc;
+using DiamondShop.Data;
 using DiamondShop.Repositories.Interfaces;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using DiamondShop.Model;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Diamond.Entities.Helpers;
-using System;
-using System.Threading.Tasks;
-using NuGet.Common;
+using Microsoft.IdentityModel.Tokens;
+using Diamond.DataAccess.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace DiamondShop.Controllers
 {
@@ -31,21 +27,23 @@ namespace DiamondShop.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly Jwt _jwtSettings;
         private readonly IUserRepository _userRepository;
-        private readonly ILogger<LoginController> _logger; // Thêm ILogger vào đây
+        private readonly ILogger<LoginController> _logger;
+        private readonly ITokenService _tokenService;
 
         public LoginController(DiamondDbContext context, SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager, IOptions<Jwt> jwtSettings, IUserRepository userRepository,
-            ILogger<LoginController> logger) // Thêm ILogger vào đây
+            ILogger<LoginController> logger, ITokenService tokenService)
         {
             _context = context;
             _signInManager = signInManager;
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
             _userRepository = userRepository;
-            _logger = logger; // Gán logger cho trường _logger
+            _logger = logger;
+            _tokenService = tokenService;
         }
 
-        [HttpPost("Login")]
+        [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
             try
@@ -69,10 +67,8 @@ namespace DiamondShop.Controllers
                     });
                 }
 
-                // User found, generate token
                 var token = GenerateToken(user);
 
-                // Return token along with user data
                 return Ok(new ApiResponse
                 {
                     Success = true,
@@ -90,12 +86,10 @@ namespace DiamondShop.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception for debugging purposes
-                Console.WriteLine($"Exception occurred in Login method: {ex}");
+                _logger.LogError($"Exception occurred in Login method: {ex}");
                 return StatusCode(500, "An error occurred while processing your request");
             }
         }
-
 
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp(UserSignUpModel userSignUpModel)
@@ -142,30 +136,27 @@ namespace DiamondShop.Controllers
         {
             try
             {
-
                 if (user == null)
                 {
                     throw new ArgumentNullException(nameof(user), "User cannot be null");
                 }
-             
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
 
-                // Check if the JWT Secret Key is null or empty
                 if (string.IsNullOrEmpty(_jwtSettings.SecretKey))
                 {
                     throw new ArgumentException("JWT Secret Key is null or empty", nameof(_jwtSettings.SecretKey));
-                }        
+                }
 
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.RoleName)
+                        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                        new Claim(ClaimTypes.Name, user.Username),
+                        new Claim(ClaimTypes.Email, user.Email),
+                        new Claim(ClaimTypes.Role, user.Role.RoleName)
                     }),
                     Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -176,52 +167,18 @@ namespace DiamondShop.Controllers
             }
             catch (ArgumentNullException ex)
             {
-                // Log the specific error message for debugging purposes
-                Console.WriteLine($"ArgumentNullException occurred in GenerateToken method: {ex.Message}");
-                throw; // Rethrow the exception to handle it in the calling method
+                _logger.LogError($"ArgumentNullException occurred in GenerateToken method: {ex.Message}");
+                throw;
             }
             catch (ArgumentException ex)
             {
-                // Log the specific error message for debugging purposes
-                Console.WriteLine($"ArgumentException occurred in GenerateToken method: {ex.Message}");
-                throw; // Rethrow the exception to handle it in the calling method
+                _logger.LogError($"ArgumentException occurred in GenerateToken method: {ex.Message}");
+                throw;
             }
             catch (Exception ex)
             {
-                // Log the exception for debugging purposes
-                Console.WriteLine($"Exception occurred in GenerateToken method: {ex}");
-                return null; // Return null or handle the error as appropriate for your application
-            }
-        }
-
-
-
-
-        private void ValidateToken(string token)
-        {
-            var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = false,
-                ValidateAudience = false
-            };
-
-            try
-            {
-                var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
-                Console.WriteLine("Token is valid");
-                Console.WriteLine("Decoded JWT:");
-                foreach (var claim in principal.Claims)
-                {
-                    Console.WriteLine($"{claim.Type}: {claim.Value}");
-                }
-            }
-            catch (SecurityTokenException ex)
-            {
-                Console.WriteLine($"Invalid token: {ex.Message}");
+                _logger.LogError($"Exception occurred in GenerateToken method: {ex}");
+                return null;
             }
         }
     }
