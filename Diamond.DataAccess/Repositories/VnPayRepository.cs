@@ -1,5 +1,5 @@
 ﻿using Diamond.Entities.Model;
-using Diamond.Libraries;
+using DiamondShop.API.Libraries;
 using DiamondShop.Data;
 using DiamondShop.Model;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using System.Security.Policy;
 using DiamondShop.Repositories.Interfaces;
 
-namespace DiamondShop.Repositories
+namespace DiamondShop.Controllers
 {
 	public class VnPayRepository : IVnPayRepository
 	{

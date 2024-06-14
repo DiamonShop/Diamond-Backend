@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DiamondShop.Data;
-using Diamond.Libraries;
 using DiamondShop.Model;
 using Diamond.Entities.Model;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -131,12 +130,21 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPost("Checkout")]
-        public IActionResult CreatePaymentUrl(PaymentInformationModel model)
-        {
-            /*var order = _context.Orders.Include(o => o.CartItems)
-				.Include(o => o.User)                
-                .FirstOrDefault(o => o.UserId == uid && o.OrderId == oid);*/
+		//public IActionResult CreatePaymentUrl(PaymentInformationModel model)
 
+		public IActionResult CreatePaymentUrl(OrderCheckOutModel orderModel)
+        {
+            var order = _context.Orders.Include(o => o.CartItems)
+                .Include(o => o.User)
+                .FirstOrDefault(o => o.UserId == orderModel.UserId
+                && o.OrderId == orderModel.OrderId);
+
+
+            PaymentInformationModel model = new PaymentInformationModel 
+            {
+                Amount = (double)order.CartItems.Sum(c => c.Price * c.Quantity),
+                Name = order.User.FullName
+            };
 			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
 
             return Redirect(url);
