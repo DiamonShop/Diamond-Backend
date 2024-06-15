@@ -47,6 +47,9 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+builder.Services.AddScoped<IVnPayRepository, VnPayRepository>();
+
+
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
 {
@@ -76,7 +79,8 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = true,
-        ValidateAudience = true,
+		ValidateAudience = true,
+		ValidateIssuerSigningKey = true,
         ValidIssuer = jwt.Issuer,
         ValidAudience = jwt.Audience,
         ClockSkew = TimeSpan.Zero // Optional: Adjust to reduce tolerance for token expiration
@@ -120,8 +124,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
 
-// VnPayService
-builder.Services.AddSingleton<IVnPayService, VnPayService>();
+
 
 // Configure and build the application
 var app = builder.Build();

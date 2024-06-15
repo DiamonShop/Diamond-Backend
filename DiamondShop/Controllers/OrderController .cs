@@ -1,26 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DiamondShop.Data;
-
 using DiamondShop.Model;
 using Diamond.Entities.Model;
-using Diamond.Entities.Helpers;
-using Diamond.Entities.Data;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Claims;
+using DiamondShop.Repositories.Interfaces;
+
 namespace DiamondShop.Controllers
 {
-	[Route("api/orders")]
-	[ApiController]
-	public class OrderController : ControllerBase
-	{
-		private readonly DiamondDbContext _context;
-		private readonly IVnPayService _vnPayService;
+    [Route("api/orders")]
+    [ApiController]
+    public class OrderController : ControllerBase
+    {
+        private readonly DiamondDbContext _context;
+        private readonly IVnPayRepository _vnPayRepo;
 
-		public OrderController(DiamondDbContext context, IVnPayService vnPayService)
-		{
-			_context = context;
-			_vnPayService = vnPayService;
-		}
+        public OrderController(DiamondDbContext context, IVnPayRepository vnPayRepo)
+        {
+            _context = context;
+            _vnPayRepo = vnPayRepo;
+        }
 
         [HttpGet("get-all-order")]
         public async Task<ActionResult<List<OrderViewModel>>> GetAllOrders()
@@ -115,110 +115,47 @@ namespace DiamondShop.Controllers
 
 
         [HttpDelete("{id}")]
-		public async Task<IActionResult> DeleteOrder(int id)
-		{
-			var order = await _context.Orders.FindAsync(id);
-			if (order == null)
-			{
-				return NotFound();
-			}
-
-			_context.Orders.Remove(order);
-			await _context.SaveChangesAsync();
-
-			return NoContent();
-		}
-
-		[HttpPost("checkout")]
-		public async Task<IActionResult> Checkout(OrderCheckOutModel od)
+        public async Task<IActionResult> DeleteOrder(int id)
         {
-			var order = _context.Orders.Include(o => o.CartItems).Include(o => o.User)
-		.FirstOrDefault(o => o.UserId == od.UserId && o.OrderId == od.OrderId);
-
-			if (ModelState.IsValid)
-			{
-				var vnPayModel = new VnPaymentRequestModel
-				{
-					Amount = (double)order.CartItems.Sum(c => c.Price * c.Quantity),
-					CreatedDate = DateTime.Now,
-					Fullname = order.User.FullName,
-					OrderId = new Random().Next(100, 1000)
-				};
-				//return Ok(vnPayModel);
-				return Redirect(_vnPayService.CreatePaymentUrl(HttpContext, vnPayModel));
-			}else { return NoContent(); }
-
-			var uId = HttpContext.User.Claims.SingleOrDefault(p => p.Type == MySettings.CLAIM_USERID).Value;
-            var user = new User();
-            if (od.CheckUser)
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
             {
-				user = _context.Users.SingleOrDefault(u => u.UserId == int.Parse(uId));
+                return NotFound();
             }
 
-            var bill = new Bill
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPost("Checkout")]
+		//public IActionResult CreatePaymentUrl(PaymentInformationModel model)
+
+		public IActionResult CreatePaymentUrl(OrderCheckOutModel orderModel)
+        {
+            var order = _context.Orders.Include(o => o.CartItems)
+                .Include(o => o.User)
+                .FirstOrDefault(o => o.UserId == orderModel.UserId
+                && o.OrderId == orderModel.OrderId);
+
+
+            PaymentInformationModel model = new PaymentInformationModel 
             {
-                BillId = int.Parse(uId),
-                Fullname = od.Name ?? user.FullName,
-                PayDate = DateTime.Now,
-				PaymentMethod = "VnPay",
-				ShipMethod = "Grab"
-			};
+                Amount = (double)order.CartItems.Sum(c => c.Price * c.Quantity),
+                Name = order.User.FullName
+            };
+			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
 
-			_context.Database.BeginTransaction();
-            try
-            {
-                _context.Add(bill);
-                _context.SaveChanges();
+            return Redirect(url);
+        }
 
-                var detailList = new List<BillDetail>();
-                foreach(var item in order.CartItems)
-                {
-                    detailList.Add(new BillDetail
-                    {
-                        BillId = bill.BillId,
-                        Quantity = item.Quantity,
-                        Price = item.Price,
-                        CartItemId = item.CartItemId
-                    });
-
-                }
-                
-                _context.AddRange(detailList);
-                _context.SaveChanges();
-                _context.Database.CommitTransaction();
-
-               // HttpContext.Session.Set<List<CartItem>>("MYCART", new List<CartItem>());
-
-				return Ok("Success");
-            }
-            catch 
-            {
-                _context.Database.RollbackTransaction();
-            }
-		}
-
-		[HttpPost("PaymentSuccess")]
-		public IActionResult PaymentSuccess()
+        [HttpGet("result")]
+		public IActionResult PaymentCallback()
 		{
-			return Ok("Success");
-		}
+			var response = _vnPayRepo.PaymentExecute(Request.Query);
 
-		[HttpPost("Callback")]
-		public IActionResult PaymentCallBack()
-		{
-			var response = _vnPayService.PaymentExecute(Request.Query);
-
-			if (response == null || response.VnPayResponseCode != "00")
-			{
-				//TempData["Message"] = $"Lỗi thanh toán VN Pay: {response.VnPayResponseCode}";
-				return RedirectToAction("PaymentFail");
-			}
-
-
-			// Lưu đơn hàng vô database
-
-			//TempData["Message"] = $"Thanh toán VNPay thành công";
-			return RedirectToAction("PaymentSuccess");
+			return Ok(response);
 		}
 	}
 }

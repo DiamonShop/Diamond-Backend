@@ -9,6 +9,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+
 using Microsoft.IdentityModel.Tokens;
 using Diamond.DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -182,4 +183,5 @@ namespace DiamondShop.Controllers
             }
         }
     }
+
 }

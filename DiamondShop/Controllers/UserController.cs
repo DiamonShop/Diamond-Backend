@@ -2,6 +2,7 @@
 using DiamondShop.Data;
 using DiamondShop.Repositories.Interfaces;
 using DiamondShop.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DiamondShop.Controllers
 {
@@ -17,12 +18,14 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpGet("GetAllUsers")]
+		[Authorize(Roles = "Admin,Manager")]
 		public async Task<IActionResult> GetAllUsers()
 		{
 			return Ok(await _userRepository.GetAllUsersAsync());
 		}
 
 		[HttpGet("GetUserByName")]
+		[Authorize(Roles = "Admin,Manager")]
 		public async Task<IActionResult> GetUserByName(string name)
 		{
 			var userList = await _userRepository.GetByUserName(name);
@@ -35,6 +38,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpGet("GetUserByEmail")]
+		[Authorize(Roles = "Admin,Manager")]
 		public async Task<IActionResult> GetUserByEmail(string email)
 		{
 			if (await _userRepository.GetByUserEmail(email) != null)
@@ -45,6 +49,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpGet("GetUserById")]
+		[Authorize(Roles = "Admin,Manager")]
 		public async Task<IActionResult> GetUserById(int id)
 		{
 			if (await _userRepository.GetByUserID(id) == null)
@@ -55,6 +60,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpPost("CreateUser")]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> CreateUser(UserDTO userDTO)
 		{
 			bool result = await _userRepository.CreateAnNewUser(userDTO);
@@ -66,6 +72,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpPut("UpdateUserProfile")]
+		[Authorize(Roles = "Admin,Manager,Staff,Member")]
 		public async Task<IActionResult> UpdateUserProfile(int id, [FromBody] UpdateUserModel userModel)
 		{
 			bool result = await _userRepository.UpdateUserProfile(id, userModel);
@@ -77,6 +84,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpDelete("DeleteUser")]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> DeleteUser(int id)
 		{
 			bool result = await _userRepository.DeleteUserAsync(id);
