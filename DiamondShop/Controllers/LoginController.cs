@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;
 using NuGet.Common;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace DiamondShop.Controllers
 {
@@ -40,16 +41,20 @@ namespace DiamondShop.Controllers
             _logger = logger; // Gán logger cho trường _logger
         }
 
+
         [HttpPost("Login")]
+        [AllowAnonymous] // Cho phép truy cập mà không cần xác thực
         public async Task<IActionResult> Login(LoginModel model)
         {
             try
             {
+                // Kiểm tra dữ liệu đầu vào
                 if (model == null || string.IsNullOrEmpty(model.UserName) || string.IsNullOrEmpty(model.Password))
                 {
                     return BadRequest("Invalid input data");
                 }
 
+                // Tìm kiếm người dùng trong cơ sở dữ liệu
                 var user = await _context.Users.Include(u => u.Role)
                     .FirstOrDefaultAsync(u =>
                         u.Username == model.UserName &&
@@ -57,6 +62,7 @@ namespace DiamondShop.Controllers
 
                 if (user == null)
                 {
+                    // Không tìm thấy người dùng, trả về lỗi
                     return BadRequest(new ApiResponse
                     {
                         Success = false,
@@ -64,10 +70,10 @@ namespace DiamondShop.Controllers
                     });
                 }
 
-                // User found, generate token
+                // Người dùng được tìm thấy, sinh token
                 var token = GenerateToken(user);
 
-                // Return token along with user data
+                // Trả về thông tin người dùng cùng với token
                 return Ok(new ApiResponse
                 {
                     Success = true,
@@ -84,17 +90,32 @@ namespace DiamondShop.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception for debugging purposes
-                Console.WriteLine($"Exception occurred in Login method: {ex}");
+                // Ghi log lỗi nếu có lỗi xảy ra
+                _logger.LogError($"Exception occurred in Login method: {ex}");
                 return StatusCode(500, "An error occurred while processing your request");
             }
         }
 
-        /*[HttpPost("Logout")]
+        [Authorize]
+        [HttpPost("Logout")]
         public async Task<IActionResult> Logout()
         {
-            
-        }*/
+            try
+            {
+                return Ok(new ApiResponse
+                {
+                    Success = true,
+                    Message = "Logout successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception occurred in Logout method: {ex}");
+                return StatusCode(500, "An error occurred while processing your request");
+            }
+        }
+
+
 
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp(UserSignUpModel userSignUpModel)
