@@ -7,19 +7,19 @@ namespace DiamondShop.Data
 	{
 		[Key]
 		[Required]
-		public string PromotionId { get; set; }
+		public string PromotionID { get; set; }
 		[ForeignKey("User")]
-		public int UserId { get; set; }
-		public string UserName { get; set; }
-		public int DiscountPercentage { get; set; }
+		public int UserID { get; set; }
+        [Required]
+        public int DiscountPercentage { get; set; }
+        [Required]
+        public string Description { get; set; }
+        [Required]
+        public bool IsActive { get; set; }
 		[Required]
-		public DateTime StartDate { get; set; }
-		[Required]
-		public DateTime EndDate { get; set; }
-		public string Conditions { get; set; }
+        [StringLength(100)]
+        public string Condition { get; set; }
 
-		public virtual User User { get; set; }
-		//check được
-		public bool IsActive { get; set; }
+        public virtual User User { get; set; }
 	}
 }

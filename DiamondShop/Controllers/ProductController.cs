@@ -26,7 +26,7 @@ namespace DiamondShop.Controllers
             var productViewModels = products.Select(static p => new ProductViewModel
             {
                 ProductId = p.ProductId,
-                Price = p.Price,
+                BasePrice = p.BasePrice,
                 ProductName = p.ProductName
             }).ToList();
             return Ok(productViewModels);

@@ -22,8 +22,7 @@ namespace DiamondShop.Repositories
 			{
 				FeedbackId = f.FeedbackId,
 				UserId = f.UserId,
-				ProductId = f.ProductId,
-				IsDeleted = f.IsDeleted,
+				ProductId = f.ProductID,
 				Description = f.Description
 			}).ToList();
 
@@ -43,7 +42,7 @@ namespace DiamondShop.Repositories
 			{
 				FeedbackId = feedback.FeedbackId,
 				UserId = feedback.UserId,
-				ProductId = feedback.ProductId,
+				ProductId = feedback.ProductID,
 				Description = feedback.Description
 			};
 
@@ -63,8 +62,7 @@ namespace DiamondShop.Repositories
 				var feedback = new Feedback()
 				{
 					UserId = feedbackModel.UserId,
-					IsDeleted = false,
-					ProductId = feedbackModel.ProductId,
+					ProductID = feedbackModel.ProductId,
 					Description = feedbackModel.Description
 				};
 				await _context.Feedbacks.AddAsync(feedback);
@@ -90,8 +88,7 @@ namespace DiamondShop.Repositories
 
 			if (feedback.FeedbackId == id)
 			{
-				feedback.IsDeleted = false;
-				_context.Feedbacks.Update(feedback);
+				_context.Feedbacks.Remove(feedback);
 				result = await _context.SaveChangesAsync() > 0;
 			}
 
@@ -110,9 +107,8 @@ namespace DiamondShop.Repositories
 
 			try
 			{
-				feedback.ProductId = feedbackModel.ProductId;
+				feedback.ProductID = feedbackModel.ProductId;
 				feedback.Description = feedbackModel.Description;
-				feedback.IsDeleted = feedbackModel.IsDeleted;
 				feedback.UserId = feedback.UserId;
 				feedback.FeedbackId = feedback.FeedbackId;
 				_context.Feedbacks.Update(feedback);

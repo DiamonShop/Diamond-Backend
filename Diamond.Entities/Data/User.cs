@@ -23,13 +23,16 @@ namespace DiamondShop.Data
 		[Required]
 		[StringLength(50)]
 		public string Password { get; set; }
-		public bool IsActive { get; set; }
+        [Required]
+		[StringLength(200)]
+        public string Address { get; set; }
+        public int LoyaltyPoints { get; set; }
+        [Required]
+        public bool IsActive { get; set; }
 
 		public virtual Role Role { get; set; }
 		public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
-		public virtual ICollection<Warranty> Warranties { get; set; } = new List<Warranty>();
 		public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
-		public virtual ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
 		public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; } = new List<ShoppingCart>();
 	}
 }
