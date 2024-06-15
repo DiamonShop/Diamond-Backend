@@ -7,6 +7,8 @@ using Diamond.Entities.Model;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Claims;
 using DiamondShop.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace DiamondShop.Controllers
 {
@@ -23,8 +25,9 @@ namespace DiamondShop.Controllers
             _vnPayRepo = vnPayRepo;
         }
 
-        [HttpGet("get-all-order")]
-        public async Task<ActionResult<List<OrderViewModel>>> GetAllOrders()
+        [HttpGet("GetAllOrders")]
+		[Authorize(Roles = "Manager,Staff,Delivery")]
+		public async Task<ActionResult<List<OrderViewModel>>> GetAllOrders()
         {
             var orders = await _context.Orders
                 .Include(o => o.User)
@@ -49,8 +52,9 @@ namespace DiamondShop.Controllers
             return Ok(orders);
         }
 
-        [HttpGet("get/{id}")]
-        public async Task<ActionResult<OrderViewModel>> GetOrderById(int id)
+        [HttpGet("get/GetOrderById")]
+		[Authorize(Roles = "Manager,Staff,Delivery")]
+		public async Task<ActionResult<OrderViewModel>> GetOrderById(int id)
         {
             var order = await _context.Orders
                 .Include(o => o.User)
@@ -82,9 +86,9 @@ namespace DiamondShop.Controllers
             return Ok(order);
         }
 
-
-        [HttpPost]
-        public async Task<ActionResult<OrderViewModel>> CreateOrder([FromBody] Order order)
+        [HttpPost("CreatOrder")]
+        [Authorize(Roles = "Manager,Staff,Delivery,Member")]
+		public async Task<ActionResult<OrderViewModel>> CreateOrder([FromBody] Order order)
         {
             if (!ModelState.IsValid)
             {
@@ -114,24 +118,25 @@ namespace DiamondShop.Controllers
             return CreatedAtAction(nameof(GetOrderById), new { id = order.OrderId }, orderViewModel);
         }
 
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(int id)
+        [HttpDelete("DoneStatusChange")]
+		[Authorize(Roles = "Manager,Staff,Delivery")]
+        public async Task<IActionResult> ChangeToDoneStatus(int id)
         {
             var order = await _context.Orders.FindAsync(id);
             if (order == null)
             {
                 return NotFound();
             }
-
-            _context.Orders.Remove(order);
+            order.Status = "Done";
+            _context.Orders.Update(order);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         [HttpPost("Checkout")]
-        public IActionResult CreatePaymentUrl(PaymentInformationModel model)
+		[Authorize(Roles = "Manager,Staff,Member")]
+		public IActionResult CreatePaymentUrl(PaymentInformationModel model)
         {
             /*var order = _context.Orders.Include(o => o.CartItems)
 				.Include(o => o.User)                
@@ -143,6 +148,7 @@ namespace DiamondShop.Controllers
         }
 
         [HttpGet("result")]
+		[Authorize(Roles = "Manager,Staff,Member")]
 		public IActionResult PaymentCallback()
 		{
 			var response = _vnPayRepo.PaymentExecute(Request.Query);

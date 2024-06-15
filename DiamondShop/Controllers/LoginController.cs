@@ -90,7 +90,13 @@ namespace DiamondShop.Controllers
 			}
 		}
 
-		[HttpPost("SignUp")]
+        /*[HttpPost("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            
+        }*/
+
+        [HttpPost("SignUp")]
 		public async Task<IActionResult> SignUp(UserSignUpModel userSignUpModel)
 		{
 			bool result = await _userRepository.SignUpUser(userSignUpModel);

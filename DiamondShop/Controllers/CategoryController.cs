@@ -3,9 +3,10 @@ using DiamondShop.Data;
 using Microsoft.AspNetCore.Cors;
 using DiamondShop.Repositories.Interfaces;
 using DiamondShop.Model;
+using Microsoft.AspNetCore.Authorization;
 namespace DiamondShop.Controllers
 {
-	[Route("api/categories")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class CategoryController : Controller
 	{
@@ -45,7 +46,8 @@ namespace DiamondShop.Controllers
 			return BadRequest("Category is not found");
 		}
 
-		[HttpPost("CreateACategory")]
+		[HttpPost("CreateCategory")]
+		[Authorize(Roles = "Manager")]
 		public async Task<IActionResult> CreateCategory([FromBody] CategoryModel categoryModel)
 		{
 			bool result = await _cateRepository.CreateCategory(categoryModel);
@@ -56,7 +58,8 @@ namespace DiamondShop.Controllers
 			return BadRequest("Category cannot be null");
 		}
 
-		[HttpPut("{id}")]
+		[HttpPut("UpdateCategory")]
+		[Authorize(Roles = "Manager")]
 		public async Task<IActionResult> UpdateCategory(int id, [FromBody] Category category)
 		{
 			bool result = await _cateRepository.UpdateCategory(id, category);

@@ -1,5 +1,4 @@
-﻿
-namespace DiamondShop.Repositories.Interfaces
+﻿namespace Diamond.DataAccess.Repositories.Interfaces
 {
     public interface IGenericRepository<T>
     {

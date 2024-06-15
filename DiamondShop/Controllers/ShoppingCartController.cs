@@ -1,6 +1,7 @@
 ﻿using DiamondShop.Data;
 using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpGet("GetAllShoppingCarts")]
+		[Authorize(Roles = "Manager,Staff")]
 		public async Task<IActionResult> GetAllShoppingCarts()
 		{
 			var cartList = await _shoppingCartRepository.GetAll();
@@ -29,6 +31,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpGet("GetShoppingCartById")]
+		[Authorize(Roles = "Manager,Staff")]
 		public async Task<IActionResult> GetShoppingCartById(int id)
 		{
 			var cartList = await _shoppingCartRepository.GetById(id);
@@ -40,6 +43,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpPost("CreateShoppingCart")]
+		[Authorize(Roles = "Manager")]
 		public async Task<IActionResult> CreateShoppingCart([FromBody] ShoppingCartViewModel cartModel)
 		{
 			if (ModelState.IsValid)
@@ -54,6 +58,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpPut("UpdateShoppingCart")]
+		[Authorize(Roles = "Manager,Staff")]
 		public async Task<IActionResult> UpdateShoppingCart(int id, [FromBody] ShoppingCart shoppingCart)
 		{
 			if (id != shoppingCart.CartId)

@@ -18,6 +18,7 @@ using DiamondShop.Controllers;
 using Microsoft.OpenApi.Models;
 
 using Microsoft.Extensions.Options;
+using Diamond.DataAccess.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,10 +77,12 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
 		ValidateAudience = true,
+		ValidateLifetime = true,
 		ValidateIssuerSigningKey = true,
         ValidIssuer = jwt.Issuer,
         ValidAudience = jwt.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(key)
+		ClockSkew = TimeSpan.Zero,
+		IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 })
 .AddCookie()
