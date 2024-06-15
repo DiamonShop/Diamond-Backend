@@ -18,6 +18,7 @@ using DiamondShop.Controllers;
 using Microsoft.OpenApi.Models;
 
 using Microsoft.Extensions.Options;
+using Diamond.DataAccess.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +38,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddSignInManager<SignInManager<IdentityUser>>()
     .AddDefaultTokenProviders();
 
-    
+
 
 // Register services
 builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
@@ -75,10 +76,12 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-		ValidateAudience = true,
-		ValidateIssuerSigningKey = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
         ValidIssuer = jwt.Issuer,
         ValidAudience = jwt.Audience,
+        ClockSkew = TimeSpan.Zero,
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 })
@@ -121,8 +124,6 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
 
-//VnPayService
-//builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
 
 // Configure and build the application

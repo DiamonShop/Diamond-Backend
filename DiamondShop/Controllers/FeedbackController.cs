@@ -2,13 +2,14 @@
 using DiamondShop.Model;
 using DiamondShop.Repositories;
 using DiamondShop.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DiamondShop.Controllers
 {
-	[Route("api/feedbacks")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class FeedbackController : ControllerBase
 	{
@@ -19,23 +20,14 @@ namespace DiamondShop.Controllers
 			_feedbackRepository = feedbackRepository;
 		}
 
-		[HttpGet]
+		[HttpGet("GetAllFeedbacks")]
 		public async Task<IActionResult> GetAllFeedbacks()
 		{
 			return Ok(await _feedbackRepository.GetAllFeedbacks());
 		}
-
-		[HttpGet("GetFeedbackById")]
-		public async Task<IActionResult> GetFeedbackById(int id)
-		{
-			if (await _feedbackRepository.GetFeedbackById(id) == null)
-			{
-				return BadRequest("Feedback is not found");
-			}
-			return Ok(await _feedbackRepository.GetFeedbackById(id));
-		}
 	
 		[HttpPost("CreateFeedback")]
+		[Authorize(Roles = "Member")]
 		public async Task<IActionResult> CreateFeedback(FeedbackModel feedbackModel)
 		{
 			bool result = await _feedbackRepository.CreateFeedback(feedbackModel);
@@ -47,6 +39,7 @@ namespace DiamondShop.Controllers
 		}
 		
 		[HttpPut("UpdateFeedback")]
+		[Authorize(Roles = "Member")]
 		public async Task<IActionResult> UpdateFeedback(int id, [FromBody] FeedbackModel feedbackModel)
 		{
 			bool result = await _feedbackRepository.UpdateFeedback(id, feedbackModel);
@@ -58,6 +51,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpDelete("DeleteFeedback")]
+		[Authorize(Roles = "Member")]
 		public async Task<IActionResult> DeleteFeedback(int id)
 		{
 			bool result = await _feedbackRepository.DeleteFeedback(id);

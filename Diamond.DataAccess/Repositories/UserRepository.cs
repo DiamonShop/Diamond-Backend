@@ -211,5 +211,10 @@ namespace DiamondShop.Repositories
 			}
 			return result;
 		}
-	}
+
+        public Task<bool> Logout(UserSignUpModel userSignUpModel)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

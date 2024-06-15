@@ -1,5 +1,6 @@
 ﻿using DiamondShop.Data;
 using DiamondShop.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiamondShop.Controllers
@@ -13,15 +14,17 @@ namespace DiamondShop.Controllers
             _cartItemRepository = cartItemRepository;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<CartItem>>> GetAll()
+        [HttpGet("GetAllCartItem")]
+		[Authorize(Roles = "Manager,Staff,Member")]
+		public async Task<ActionResult<List<CartItem>>> GetAll()
         {
             var items = await _cartItemRepository.GetAll();
             return Ok(items);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CartItem>> GetById(int id)
+        [HttpGet("GetCartItemById")]
+		[Authorize(Roles = "Manager,Staff,Member")]
+		public async Task<ActionResult<CartItem>> GetById(int id)
         {
             var item = await _cartItemRepository.GetById(id);
             if (item == null)
@@ -31,7 +34,8 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Insert([FromBody] CartItem cartItem)
+		[Authorize(Roles = "Member")]
+		public async Task<ActionResult> Insert([FromBody] CartItem cartItem)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -43,8 +47,9 @@ namespace DiamondShop.Controllers
             return CreatedAtAction(nameof(GetById), new { id = cartItem.CartItemId }, cartItem);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, [FromBody] CartItem cartItem)
+        [HttpPut("UpdateCartItem")]
+		[Authorize(Roles = "Member")]
+		public async Task<ActionResult> Update(int id, [FromBody] CartItem cartItem)
         {
             if (id != cartItem.CartItemId)
                 return BadRequest("CartItem ID mismatch");
@@ -63,8 +68,9 @@ namespace DiamondShop.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        [HttpDelete("DeleteCartItem")]
+		[Authorize(Roles = "Member")]
+		public async Task<ActionResult> Delete(int id)
         {
             var existingItem = await _cartItemRepository.GetById(id);
             if (existingItem == null)

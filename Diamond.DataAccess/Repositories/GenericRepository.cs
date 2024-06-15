@@ -1,5 +1,5 @@
 ﻿
-using DiamondShop.Repositories.Interfaces;
+using Diamond.DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 

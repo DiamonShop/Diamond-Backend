@@ -13,5 +13,7 @@ namespace DiamondShop.Repositories.Interfaces
 		public Task<bool> DeleteUserAsync(int userId);
 		public Task<bool> UpdateUserProfile(int userId, UpdateUserModel userModel);
 		public Task<bool> SignUpUser(UserSignUpModel userSignUpModel);
-	}
+
+        public Task<bool> Logout(UserSignUpModel userSignUpModel);
+    }
 }
