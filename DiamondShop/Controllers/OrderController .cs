@@ -6,6 +6,7 @@ using Diamond.Entities.Model;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Claims;
 using DiamondShop.Repositories.Interfaces;
+using System.Linq;
 
 namespace DiamondShop.Controllers
 {
@@ -135,7 +136,7 @@ namespace DiamondShop.Controllers
 		public IActionResult CreatePaymentUrl(OrderCheckOutModel orderModel)
         {
             var order = _context.Orders.Include(o => o.CartItems)
-                .Include(o => o.User)
+				.Include(o => o.User)
                 .FirstOrDefault(o => o.UserId == orderModel.UserId
                 && o.OrderId == orderModel.OrderId);
 
@@ -143,15 +144,18 @@ namespace DiamondShop.Controllers
             PaymentInformationModel model = new PaymentInformationModel 
             {
                 Amount = (double)order.CartItems.Sum(c => c.Price * c.Quantity),
-                Name = order.User.FullName
+                Name = order.User.FullName,
+                OrderDescription="AAA",
+				ItemInOrder = $"{order.CartItems.ToString()}"
             };
 			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
 
-            return Redirect(url);
+            return Ok(url);
         }
 
         [HttpGet("result")]
 		public IActionResult PaymentCallback()
+
 		{
 			var response = _vnPayRepo.PaymentExecute(Request.Query);
 
