@@ -124,8 +124,6 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
 
-//VnPayService
-//builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
 
 // Configure and build the application

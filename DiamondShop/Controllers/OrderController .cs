@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DiamondShop.Data;
-using Diamond.Libraries;
+
 using DiamondShop.Model;
 using Diamond.Entities.Model;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
