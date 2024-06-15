@@ -14,10 +14,9 @@ using System.Text;
 using DiamondShop.Data;
 using DiamondShop.Repositories;
 using DiamondShop.Repositories.Interfaces;
-using DiamondShop.Controllers;
 using Microsoft.OpenApi.Models;
-
-using Microsoft.Extensions.Options;
+using Diamond.DataAccess.Repositories.Interfaces;
+using DiamondShop.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +25,7 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false);
 
 // Configure services
 builder.Services.Configure<Jwt>(builder.Configuration.GetSection("Jwt"));
+
 builder.Services.AddDbContext<DiamondDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DB"));
@@ -37,8 +37,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddSignInManager<SignInManager<IdentityUser>>()
     .AddDefaultTokenProviders();
 
-    
-
 // Register services
 builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
@@ -47,7 +45,10 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 builder.Services.AddScoped<IVnPayRepository, VnPayRepository>();
+
 
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
@@ -63,6 +64,7 @@ builder.Services.AddCors(options =>
 // Register JWT Authentication
 var jwt = builder.Configuration.GetSection("Jwt").Get<Jwt>();
 var key = Encoding.ASCII.GetBytes(jwt.SecretKey);
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -70,16 +72,18 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false;
+    options.RequireHttpsMetadata = false; // Consider true in production
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = true,
 		ValidateAudience = true,
 		ValidateIssuerSigningKey = true,
         ValidIssuer = jwt.Issuer,
         ValidAudience = jwt.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(key)
+        ClockSkew = TimeSpan.Zero // Optional: Adjust to reduce tolerance for token expiration
     };
 })
 .AddCookie()
@@ -95,14 +99,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Standard Authorization header using the Bearer scheme (\"{token}\")",
-        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
         Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
-        BearerFormat = "JWT"
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
     });
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -112,17 +115,15 @@ builder.Services.AddSwaggerGen(options =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "oauth2"
+                    Id = "Bearer"
                 }
             },
-            Array.Empty<string>()
+            new string[] {}
         }
     });
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
 
-//VnPayService
-//builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
 
 // Configure and build the application
