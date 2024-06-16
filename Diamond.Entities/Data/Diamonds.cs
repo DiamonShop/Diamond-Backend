@@ -30,6 +30,7 @@ namespace Diamond.Entities.Data
         [Required]
         [StringLength(50)]
         public string Color { get; set; }
+        public decimal BasePrice { get; set; }
 
         public virtual Certification Certification { get; set; }
         public virtual Product Product { get; set; } = null!;

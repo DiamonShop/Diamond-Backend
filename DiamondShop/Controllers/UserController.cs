@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using DiamondShop.Data;
 using DiamondShop.Repositories.Interfaces;
 using DiamondShop.Model;
 using Microsoft.AspNetCore.Authorization;
+using Diamond.Entities.DTO;
 
 namespace DiamondShop.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	public class UserController : ControllerBase
 	{
@@ -72,7 +72,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpPut("UpdateUserProfile")]
-		[Authorize(Roles = "Admin,Manager,Staff,Member")]
+		[Authorize(Roles = "Admin,Manager,Staff,Delivery,Member")]
 		public async Task<IActionResult> UpdateUserProfile(int id, [FromBody] UpdateUserModel userModel)
 		{
 			bool result = await _userRepository.UpdateUserProfile(id, userModel);

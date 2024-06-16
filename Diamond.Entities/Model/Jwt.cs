@@ -1,4 +1,4 @@
-﻿namespace DiamondShop.Data
+﻿namespace Diamond.Entities.Model
 {
     public class Jwt
     {

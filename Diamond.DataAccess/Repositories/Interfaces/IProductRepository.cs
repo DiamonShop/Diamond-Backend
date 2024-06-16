@@ -14,6 +14,5 @@ namespace DiamondShop.Repositories.Interfaces
         Task<bool> CreateProduct(ProductViewModel productModel);
         Task<bool> UpdateProduct(int id, ProductViewModel productModel);
         Task<bool> DeleteProduct(int id);
-        Task<List<ProductViewModel>> GetProductsBySimilarName(string keyword);
     }
 }

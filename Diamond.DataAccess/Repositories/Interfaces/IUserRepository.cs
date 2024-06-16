@@ -1,9 +1,10 @@
-﻿using DiamondShop.Data;
+﻿using Diamond.Entities.DTO;
+using DiamondShop.Controllers;
 using DiamondShop.Model;
 
 namespace DiamondShop.Repositories.Interfaces
 {
-	public interface IUserRepository
+    public interface IUserRepository
 	{
 		public Task<UserViewModel> GetByUserID(int userId);
 		public Task<List<UserViewModel>> GetByUserName(string userName);
@@ -12,8 +13,8 @@ namespace DiamondShop.Repositories.Interfaces
 		public Task<List<UserViewModel>> GetAllUsersAsync();
 		public Task<bool> DeleteUserAsync(int userId);
 		public Task<bool> UpdateUserProfile(int userId, UpdateUserModel userModel);
-		public Task<bool> SignUpUser(UserSignUpModel userSignUpModel);
-
+        public Task<ApiResponse> Login(LoginModel loginModel);
+        public Task<bool> SignUpUser(UserSignUpModel userSignUpModel);
         public Task<bool> Logout(UserSignUpModel userSignUpModel);
     }
 }

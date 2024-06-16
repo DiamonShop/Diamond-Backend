@@ -1,5 +1,4 @@
 ﻿using DiamondShop.Data;
-using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
