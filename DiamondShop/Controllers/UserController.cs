@@ -48,7 +48,19 @@ namespace DiamondShop.Controllers
 			return BadRequest("User is not found");
 		}
 
-		[HttpGet("GetUserById")]
+        [HttpGet("GetUserProfile")]
+        [Authorize(Roles = "Admin,Manager,Staff,Delivery,Member")]
+        public async Task<IActionResult> GetUserProfile(int id)
+        {
+            var userProfile = await _userRepository.GetUserProfile(id);
+            if (userProfile == null)
+            {
+                return BadRequest("User profile not found");
+            }
+            return Ok(userProfile);
+        }
+
+        [HttpGet("GetUserById")]
 		[Authorize(Roles = "Admin,Manager")]
 		public async Task<IActionResult> GetUserById(int id)
 		{

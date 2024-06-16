@@ -24,6 +24,32 @@ namespace DiamondShop.Repositories
             _jwtSettings = jwtSettings.Value;
             _context = context;
         }
+        public async Task<UserProfileViewModel> GetUserProfile(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            // Map User entity to UserProfileViewModel
+            var userProfile = new UserProfileViewModel
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                FullName = user.FullName,
+                Email = user.Email,
+                Address = user.Address,
+                LoyaltyPoints = user.LoyaltyPoints,
+                IsActive = user.IsActive,
+                RoleName = user.Role?.RoleName // Optional chaining for RoleName
+            };
+
+            return userProfile;
+        }
 
         public async Task<UserViewModel> GetByUserID(int userId)
         {
@@ -181,29 +207,54 @@ namespace DiamondShop.Repositories
 
         public async Task<bool> UpdateUserProfile(int userId, UpdateUserModel userModel)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-
-            if (user == null)
-            {
-                return false;
-            }
-
             try
             {
-                user.Username = userModel.Username;
-                user.Password = userModel.Password;
-                user.FullName = userModel.FullName;
-                user.Email = userModel.Email;
-                user.Address = userModel.Address;
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+                if (user == null)
+                {
+                    return false; // Không tìm thấy người dùng để cập nhật
+                }
+
+                // Cập nhật thông tin người dùng từ userModel
+                if (!string.IsNullOrEmpty(userModel.Username))
+                {
+                    user.Username = userModel.Username;
+                }
+
+                // Mã hóa mật khẩu nếu có thay đổi
+                if (!string.IsNullOrEmpty(userModel.Password))
+                {
+                    // Mã hóa mật khẩu ở đây (ví dụ: hash mật khẩu trước khi lưu)
+                    user.Password = userModel.Password;
+                }
+
+                if (!string.IsNullOrEmpty(userModel.FullName))
+                {
+                    user.FullName = userModel.FullName;
+                }
+
+                if (!string.IsNullOrEmpty(userModel.Email))
+                {
+                    user.Email = userModel.Email;
+                }
+
+                if (!string.IsNullOrEmpty(userModel.Address))
+                {
+                    user.Address = userModel.Address;
+                }
 
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
+
+                return true; // Cập nhật thành công
             }
-            catch (Exception)
+            catch (DbUpdateException ex)
             {
+                // Xử lý ngoại lệ khi cập nhật vào cơ sở dữ liệu không thành công
+                // Log lỗi ex.Message để xem lỗi chi tiết
                 return false;
             }
-            return true;
         }
 
         public async Task<bool> SignUpUser(UserSignUpModel userSignUpModel)
@@ -338,6 +389,7 @@ namespace DiamondShop.Repositories
                 return null;
             }
         }
+
 
     }
 }

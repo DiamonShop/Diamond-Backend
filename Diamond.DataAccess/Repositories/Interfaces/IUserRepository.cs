@@ -5,16 +5,17 @@ using DiamondShop.Model;
 namespace DiamondShop.Repositories.Interfaces
 {
     public interface IUserRepository
-	{
-		public Task<UserViewModel> GetByUserID(int userId);
-		public Task<List<UserViewModel>> GetByUserName(string userName);
-		public Task<List<UserViewModel>> GetByUserEmail(string email);
-		public Task<bool> CreateAnNewUser(UserDTO userDTO);
-		public Task<List<UserViewModel>> GetAllUsersAsync();
-		public Task<bool> DeleteUserAsync(int userId);
-		public Task<bool> UpdateUserProfile(int userId, UpdateUserModel userModel);
-        public Task<ApiResponse> Login(LoginModel loginModel);
-        public Task<bool> SignUpUser(UserSignUpModel userSignUpModel);
-        public Task<bool> Logout(UserSignUpModel userSignUpModel);
+    {
+        Task<UserProfileViewModel> GetUserProfile(int id);
+        Task<UserViewModel> GetByUserID(int userId);
+        Task<List<UserViewModel>> GetByUserName(string userName);
+        Task<List<UserViewModel>> GetByUserEmail(string email);
+        Task<bool> CreateAnNewUser(UserDTO userDTO);
+        Task<List<UserViewModel>> GetAllUsersAsync();
+        Task<bool> DeleteUserAsync(int userId);
+        Task<bool> UpdateUserProfile(int userId, UpdateUserModel userModel);
+        Task<ApiResponse> Login(LoginModel loginModel);
+        Task<bool> SignUpUser(UserSignUpModel userSignUpModel);
+        Task<bool> Logout(UserSignUpModel userSignUpModel);
     }
 }
