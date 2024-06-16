@@ -12,7 +12,6 @@ namespace Diamond.Entities.Data
     public class Diamonds
     {
         [Key]
-        [Required]
         public int DiamondID { get; set; }
         [ForeignKey("Product")]
         public int ProductID { get; set; }
@@ -33,6 +32,6 @@ namespace Diamond.Entities.Data
         public decimal BasePrice { get; set; }
 
         public virtual Certification Certification { get; set; }
-        public virtual Product Product { get; set; } = null!;
+        public virtual Product Product { get; set; }
     }
 }

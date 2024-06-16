@@ -22,7 +22,6 @@ namespace DiamondShop.Controllers
             _userRepository = userRepository;
         }
 
-
         [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginModel model)
@@ -54,7 +53,6 @@ namespace DiamondShop.Controllers
 
             return Ok(response);
         }
-
 
         [HttpPost("Logout")]
         [Authorize]

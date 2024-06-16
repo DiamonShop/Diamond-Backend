@@ -11,7 +11,6 @@ namespace DiamondShop.Data
 		public int UserId { get; set; }
 		[ForeignKey("Role")]
 		public int RoleId { get; set; }
-		[Required]
 		[StringLength(200)]
 		public string Email { get; set; }		
 		[StringLength(50)]

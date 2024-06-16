@@ -103,7 +103,6 @@ namespace DiamondShop.Repositories
             }).ToList();
 
             return userList;
-
         }
 
         public async Task<List<UserViewModel>> GetAllUsersAsync()
@@ -245,97 +244,111 @@ namespace DiamondShop.Repositories
 
         public async Task<ApiResponse> Login(LoginModel loginModel)
         {
-            if (loginModel == null || string.IsNullOrEmpty(loginModel.UserName) || string.IsNullOrEmpty(loginModel.Password))
-            {
-                return new ApiResponse
-                {
-                    Success = false,
-                    Message = "Invalid login attempt"
-                };
-            }
-
             try
             {
+                // Kiểm tra dữ liệu đầu vào
+                if (loginModel == null || string.IsNullOrEmpty(loginModel.UserName) || string.IsNullOrEmpty(loginModel.Password))
+                {
+                    return null;
+                }
+
+                // Tìm kiếm người dùng trong cơ sở dữ liệu
                 var user = await _context.Users
-                    .Include(u => u.Role)
-                    .FirstOrDefaultAsync(u => u.Username == loginModel.UserName && u.Password == loginModel.Password);
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u =>
+                    u.Username == loginModel.UserName &&
+                    u.Password == loginModel.Password);
 
                 if (user == null)
                 {
+                    // Không tìm thấy người dùng, trả về lỗi
                     return new ApiResponse
                     {
                         Success = false,
                         Message = "Invalid login attempt"
                     };
                 }
-
-                var token = GenerateToken(user);
-
-                return new ApiResponse
+                else
                 {
-                    Success = true,
-                    Message = "Login successful",
-                    Data = new
+                    // Người dùng được tìm thấy, sinh token
+                    var token = GenerateToken(user);
+
+                    return new ApiResponse
                     {
-                        user.Username,
-                        user.FullName,
-                        user.Email,
-                        user.Role.RoleName,
-                        Token = token
-                    }
-                };
+                        Success = true,
+                        Message = "Login successful",
+                        Data = new
+                        {
+                            user.Username,
+                            user.FullName,
+                            user.Email,
+                            user.Role.RoleName,
+                            Token = token
+                        }
+                    };
+                }
             }
             catch (Exception ex)
             {
+                // Ghi log lỗi nếu có lỗi xảy ra
                 _logger.LogError($"Exception occurred in Login method: {ex}");
-                return new ApiResponse
-                {
-                    Success = false,
-                    Message = "An error occurred while processing your request"
-                };
+                return null;
             }
-        }
 
+        }
 
         private string GenerateToken(User user)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user), "User cannot be null");
-            }
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
-
-            if (string.IsNullOrEmpty(_jwtSettings.SecretKey))
-            {
-                throw new ArgumentException("JWT Secret Key is null or empty", nameof(_jwtSettings.SecretKey));
-            }
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.RoleName)
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
-                Issuer = _jwtSettings.Issuer,
-                Audience = _jwtSettings.Audience,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
             try
             {
+                if (user == null)
+                {
+                    throw new ArgumentNullException(nameof(user), "User cannot be null");
+                }
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
+
+                // Check if the JWT Secret Key is null or empty
+                if (string.IsNullOrEmpty(_jwtSettings.SecretKey))
+                {
+                    throw new ArgumentException("JWT Secret Key is null or empty", nameof(_jwtSettings.SecretKey));
+                }
+
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                  new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                  new Claim(ClaimTypes.Name, user.Username),
+                  new Claim(ClaimTypes.Email, user.Email),
+                  new Claim(ClaimTypes.Role, user.Role.RoleName)
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
+                    Issuer = _jwtSettings.Issuer,
+                    Audience = _jwtSettings.Audience,
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 return tokenHandler.WriteToken(token);
             }
+            catch (ArgumentNullException ex)
+            {
+                Console.WriteLine($"ArgumentNullException occurred in GenerateToken method: {ex.Message}");
+                throw;
+            }
+            catch (ArgumentException ex)
+            {
+                // Log the specific error message for debugging purposes
+                Console.WriteLine($"ArgumentException occurred in GenerateToken method: {ex.Message}");
+                throw; // Rethrow the exception to handle it in the calling method
+            }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception occurred while generating token: {ex}");
-                return null;
+                // Log the exception for debugging purposes
+                Console.WriteLine($"Exception occurred in GenerateToken method: {ex}");
+                return null; // Return null or handle the error as appropriate for your application
             }
         }
 
