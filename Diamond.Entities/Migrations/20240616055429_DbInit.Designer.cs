@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diamond.Entities.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    [Migration("20240616051630_DbInit")]
+    [Migration("20240616055429_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />

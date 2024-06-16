@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DiamondShop.Controllers
 {
-    [Route("api/Register-SignIn")]
+    [Route("api/Register")]
     [ApiController]
     public class LoginController : ControllerBase
     {
@@ -28,6 +28,7 @@ namespace DiamondShop.Controllers
         public async Task<IActionResult> Login(LoginModel model)
         {
             var reponse = _userRepository.Login(model);
+
             if (reponse == null)
             {
                 return BadRequest(new ApiResponse
