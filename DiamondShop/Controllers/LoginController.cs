@@ -24,12 +24,10 @@ namespace DiamondShop.Controllers
 
 
         [HttpPost("Login")]
-        [AllowAnonymous] // Cho phép truy cập mà không cần xác thực
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            var reponse = _userRepository.Login(model);
-
-            if (reponse == null)
+            if (model == null || string.IsNullOrEmpty(model.UserName) || string.IsNullOrEmpty(model.Password))
             {
                 return BadRequest(new ApiResponse
                 {
@@ -38,8 +36,25 @@ namespace DiamondShop.Controllers
                 });
             }
 
-            return Ok(reponse);
+            var response = await _userRepository.Login(model);
+
+            if (response == null)
+            {
+                return StatusCode(500, new ApiResponse
+                {
+                    Message = "Internal server error",
+                    Success = false
+                });
+            }
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
         }
+
 
         [HttpPost("Logout")]
         [Authorize]
