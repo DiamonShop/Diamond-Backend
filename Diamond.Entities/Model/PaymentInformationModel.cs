@@ -8,9 +8,13 @@ namespace Diamond.Entities.Model
 {
 	public class PaymentInformationModel
 	{
-		public string ItemInOrder { get; set; }
-		public double Amount { get; set; }
-		public string OrderDescription { get; set; }
-		public string Name { get; set; }
+		public string fullName { get; set; }
+		public int phoneNumber { get; set; }
+		public string birthday { get; set; }
+		public string email { get; set; }
+		public string streetAddress { get; set; }
+		public string orderNote { get; set; }
+		public double price { get; set; }
+		
 	}
 }
