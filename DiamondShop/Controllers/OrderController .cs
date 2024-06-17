@@ -132,9 +132,9 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPost("Checkout")]
-        [Authorize(Roles = "Manager,Staff,Member")]
-        public IActionResult CreatePaymentUrl(OrderCheckOutModel orderModel)
-        {
+        //[Authorize(Roles = "Manager,Staff,Member")]
+        public IActionResult CreatePaymentUrl(PaymentInformationModel model)
+        {   /*
             var order = _context.Orders.Include(o => o.CartItems)
 				.Include(o => o.User)
                 .FirstOrDefault(o => o.UserID == orderModel.UserId
@@ -147,10 +147,10 @@ namespace DiamondShop.Controllers
                 Name = order.User.FullName,
                 OrderDescription="AAA",
 				ItemInOrder = $"{order.CartItems.ToString()}"
-            };
+            };*/
 			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
 
-            return Ok(url);
+            return Redirect(url);
         }
 
         [HttpGet("result")]
