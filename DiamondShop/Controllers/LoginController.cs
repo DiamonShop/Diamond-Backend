@@ -85,14 +85,19 @@ namespace DiamondShop.Controllers
             return BadRequest("Failed To Create User");
         }
 
-        [HttpPost("GoogleLogin")]
+        [HttpGet("GoogleLogin")]
+        [AllowAnonymous]
         public IActionResult GoogleLogin()
         {
-            var props = new AuthenticationProperties { RedirectUri = "/api/Login/GoogleLoginCallback" };
-            return Challenge(props, GoogleDefaults.AuthenticationScheme);
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("GoogleLoginCallback")
+            };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
         [HttpGet("GoogleLoginCallback")]
+        [AllowAnonymous]
         public async Task<IActionResult> GoogleLoginCallback()
         {
             var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
@@ -104,6 +109,15 @@ namespace DiamondShop.Controllers
             var name = result.Principal.FindFirstValue(ClaimTypes.Name);
             var givenName = result.Principal.FindFirstValue(ClaimTypes.GivenName);
             var email = result.Principal.FindFirstValue(ClaimTypes.Email);
+
+            // Nếu cần thiết, bạn có thể xử lý thêm việc lưu thông tin người dùng vào cơ sở dữ liệu tại đây
+            // Ví dụ:
+            // var user = await _userRepository.FindByEmailAsync(email);
+            // if (user == null)
+            // {
+            //     user = new User { Username = name, FullName = givenName, Email = email };
+            //     await _userRepository.AddAsync(user);
+            // }
 
             var userViewModel = new UserViewModel()
             {

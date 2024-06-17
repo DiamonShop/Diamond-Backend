@@ -1,91 +1,91 @@
-﻿using DiamondShop.Data;
-using DiamondShop.Repositories.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿	using DiamondShop.Data;
+	using DiamondShop.Repositories.Interfaces;
+	using Microsoft.AspNetCore.Authorization;
+	using Microsoft.AspNetCore.Mvc;
+	using Microsoft.EntityFrameworkCore;
 
-namespace DiamondShop.Controllers
-{
-	[Route("api/[controller]")]
-	[ApiController]
-	public class ShoppingCartController : ControllerBase
+	namespace DiamondShop.Controllers
 	{
-		private readonly IShoppingCartRepository _shoppingCartRepository;
-
-		public ShoppingCartController(IShoppingCartRepository shoppingCartRepository)
+		[Route("api/[controller]")]
+		[ApiController]
+		public class ShoppingCartController : ControllerBase
 		{
-			_shoppingCartRepository = shoppingCartRepository;
-		}
+			private readonly IShoppingCartRepository _shoppingCartRepository;
 
-		[HttpGet("GetAllShoppingCarts")]
-		[Authorize(Roles = "Manager,Staff")]
-		public async Task<IActionResult> GetAllShoppingCarts()
-		{
-			var cartList = await _shoppingCartRepository.GetAll();
-			if (cartList != null)
+			public ShoppingCartController(IShoppingCartRepository shoppingCartRepository)
 			{
-				return Ok(cartList);
+				_shoppingCartRepository = shoppingCartRepository;
 			}
-			return NotFound();
-		}
 
-		[HttpGet("GetShoppingCartById")]
-		[Authorize(Roles = "Manager,Staff")]
-		public async Task<IActionResult> GetShoppingCartById(int id)
-		{
-			var cartList = await _shoppingCartRepository.GetById(id);
-			if (cartList != null)
+			[HttpGet("GetAllShoppingCarts")]
+			[Authorize(Roles = "Manager,Staff")]
+			public async Task<IActionResult> GetAllShoppingCarts()
 			{
-				return Ok(cartList);
-			}
-			return NotFound();
-		}
-
-		[HttpPost("CreateShoppingCart")]
-		[Authorize(Roles = "Manager")]
-		public async Task<IActionResult> CreateShoppingCart([FromBody] ShoppingCartViewModel cartModel)
-		{
-			if (ModelState.IsValid)
-			{
-				bool result = await _shoppingCartRepository.CreateCart(cartModel);
-				if (result)
+				var cartList = await _shoppingCartRepository.GetAll();
+				if (cartList != null)
 				{
-					return Ok("Create Shopping Cart Successfully");
+					return Ok(cartList);
 				}
-			}
-			return BadRequest("Failed To Create Shopping Cart");
-		}
-
-		[HttpPut("UpdateShoppingCart")]
-		[Authorize(Roles = "Manager,Staff")]
-		public async Task<IActionResult> UpdateShoppingCart(int id, [FromBody] ShoppingCart shoppingCart)
-		{
-			if (id != shoppingCart.CartId)
-			{
-				return BadRequest();
+				return NotFound();
 			}
 
-			try
+			[HttpGet("GetShoppingCartById")]
+			[Authorize(Roles = "Manager,Staff")]
+			public async Task<IActionResult> GetShoppingCartById(int id)
 			{
-				/*await _shoppingCartRepository.UpdateCart(shoppingCart);*/
+				var cartList = await _shoppingCartRepository.GetById(id);
+				if (cartList != null)
+				{
+					return Ok(cartList);
+				}
+				return NotFound();
 			}
-			catch (DbUpdateConcurrencyException)
+
+			[HttpPost("CreateShoppingCart")]
+			[Authorize(Roles = "Manager")]
+			public async Task<IActionResult> CreateShoppingCart([FromBody] ShoppingCartViewModel cartModel)
 			{
-				if (await _shoppingCartRepository.GetById(id) == null)
+				if (ModelState.IsValid)
 				{
-					return NotFound();
+					bool result = await _shoppingCartRepository.CreateCart(cartModel);
+					if (result)
+					{
+						return Ok("Create Shopping Cart Successfully");
+					}
 				}
-				else
-				{
-					throw;
-				}
+				return BadRequest("Failed To Create Shopping Cart");
 			}
-			return NoContent();
-		}
+
+			[HttpPut("UpdateShoppingCart")]
+			[Authorize(Roles = "Manager,Staff")]
+			public async Task<IActionResult> UpdateShoppingCart(int id, [FromBody] ShoppingCart shoppingCart)
+			{
+				if (id != shoppingCart.CartId)
+				{
+					return BadRequest();
+				}
+
+				try
+				{
+					/*await _shoppingCartRepository.UpdateCart(shoppingCart);*/
+				}
+				catch (DbUpdateConcurrencyException)
+				{
+					if (await _shoppingCartRepository.GetById(id) == null)
+					{
+						return NotFound();
+					}
+					else
+					{
+						throw;
+					}
+				}
+				return NoContent();
+			}
 
 		
+		}
 	}
-}
 
 
 
