@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Diamond.DataAccess.Repositories.Interfaces;
-using DiamondShop.Data;
+using Diamond.Entities.Model;
 
 public class TokenService : ITokenService
 {

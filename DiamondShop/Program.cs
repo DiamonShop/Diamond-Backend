@@ -1,24 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Text;
-using DiamondShop.Data;
 using DiamondShop.Repositories;
 using DiamondShop.Repositories.Interfaces;
 using DiamondShop.Controllers;
 using Microsoft.OpenApi.Models;
-
-using Microsoft.Extensions.Options;
-using Diamond.DataAccess.Repositories.Interfaces;
+using Diamond.Entities.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,7 +34,6 @@ builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IVnPayRepository, VnPayRepository>();
@@ -85,12 +73,12 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 })
-.AddCookie()
-.AddGoogle(options =>
+.AddGoogle(googleOptions =>
 {
-    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    options.CallbackPath = "/api/Login/GoogleLoginCallback";
+    IConfigurationSection googleAuthNSection = builder.Configuration.GetSection("Authentication:Google");
+    googleOptions.ClientId = googleAuthNSection["ClientId"];
+    googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
+    googleOptions.CallbackPath = "/api/Login/GoogleLoginCallback"; // Đảm bảo đường dẫn này khớp với cấu hình trong Google Console
 });
 
 // Register other services and configure the application
@@ -123,8 +111,6 @@ builder.Services.AddSwaggerGen(options =>
     });
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
-
-
 
 // Configure and build the application
 var app = builder.Build();

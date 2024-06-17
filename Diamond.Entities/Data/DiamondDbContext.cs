@@ -49,7 +49,7 @@ public class DiamondDbContext : DbContext
 
         modelBuilder.Entity<CartItem>(e =>
         {
-            e.Property(e => e.Price).HasColumnType("decimal(18,2)");
+            e.Property(e => e.UnitPrice).HasColumnType("decimal(18,2)");
 
             e.HasOne(x => x.ShoppingCart)
                 .WithMany(x => x.CartItems)
@@ -70,6 +70,7 @@ public class DiamondDbContext : DbContext
         modelBuilder.Entity<Diamonds>(e =>
         {
             e.Property(e => e.Carat).HasColumnType("decimal(18,2)");
+            e.Property(e => e.BasePrice).HasColumnType("decimal(18,2)");
 
             e.HasOne(x => x.Product)
                 .WithOne(x => x.Diamond)

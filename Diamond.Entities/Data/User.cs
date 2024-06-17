@@ -14,7 +14,6 @@ namespace DiamondShop.Data
 		[Required]
 		[StringLength(200)]
 		public string Email { get; set; }		
-		[Required]
 		[StringLength(50)]
 		public string FullName { get; set; }
 		[Required]
@@ -23,9 +22,8 @@ namespace DiamondShop.Data
 		[Required]
 		[StringLength(50)]
 		public string Password { get; set; }
-        [Required]
 		[StringLength(200)]
-        public string Address { get; set; }
+        public string? Address { get; set; }
         public int LoyaltyPoints { get; set; }
         [Required]
         public bool IsActive { get; set; }

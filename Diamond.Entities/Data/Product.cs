@@ -21,8 +21,9 @@ namespace DiamondShop.Data
         [StringLength(300)]
         public string? Description { get; set; }
         [Required]
-        public int? Stock { get; set; }
+        public int Stock { get; set; }
         public decimal MarkupRate { get; set; } //tỉ lệ áp giá
+        [Required]
         public int BasePrice { get; set; }
         [Required]
         public bool IsActive { get; set; }

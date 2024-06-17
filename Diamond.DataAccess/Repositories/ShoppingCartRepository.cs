@@ -32,7 +32,7 @@ namespace DiamondShop.Repositories
 				{
 					ProductId = ci.ProductId,
 					ProductName = ci.Product.ProductName,
-					Price = ci.Price,
+					Price = ci.UnitPrice,
 					Quantity = ci.Quantity
 				}).ToList()
 			}).ToList();
@@ -59,7 +59,7 @@ namespace DiamondShop.Repositories
 				{
 					ProductId = ci.ProductId,
 					ProductName = ci.Product.ProductName,
-					Price = ci.Price,
+					Price = ci.UnitPrice,
 					Quantity = ci.Quantity
 				}).ToList()
 			};

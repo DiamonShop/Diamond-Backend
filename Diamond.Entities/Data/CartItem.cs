@@ -15,7 +15,7 @@ namespace DiamondShop.Data
 		[ForeignKey("ShoppingCart")]
 		public int CartId { get; set; }
 		[Required]
-		public decimal Price { get; set; }
+		public decimal UnitPrice { get; set; }
 		[Required]
 		public int Quantity { get; set; }
 

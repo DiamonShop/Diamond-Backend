@@ -28,6 +28,8 @@ namespace DiamondShop.Repositories
             {
                 ProductId = p.ProductId,
                 CategoryId = p.CategoryId,
+                JewelrySettingID = p.JewelrySettingID,
+                MarkupRate = p.MarkupRate,
                 Description = p.Description,
                 BasePrice = p.BasePrice,
                 IsActive = p.IsActive,
@@ -50,6 +52,8 @@ namespace DiamondShop.Repositories
                 CategoryId = product.CategoryId,
                 Description = product.Description,
                 BasePrice = product.BasePrice,
+                JewelrySettingID = product.JewelrySettingID,
+                MarkupRate = product.MarkupRate,
                 IsActive = product.IsActive,
                 Stock = product.Stock,
                 ProductName = product.ProductName
@@ -61,7 +65,6 @@ namespace DiamondShop.Repositories
         public async Task<List<ProductViewModel>> GetProductsByCategoryName(string categoryName)
         {
             var productList = await _context.Products
-                .Include(p => p.Category)
                 .Where(p => p.Category.CategoryName.Contains(categoryName)) //Tìm gần đúng
                 .ToListAsync();
 
@@ -71,6 +74,8 @@ namespace DiamondShop.Repositories
             {
                 ProductId = product.ProductId,
                 CategoryId = product.CategoryId,
+                JewelrySettingID= product.JewelrySettingID,
+                MarkupRate = product.MarkupRate,
                 Description = product.Description,
                 BasePrice = product.BasePrice,
                 IsActive = product.IsActive,
@@ -84,7 +89,6 @@ namespace DiamondShop.Repositories
         public async Task<List<ProductViewModel>> GetProductsByName(string productName)
         {
             var productList = await _context.Products
-                .Include(p => p.Category)
                 .Where(p => p.ProductName.Contains(productName)) //Tìm gần đúng
                 .ToListAsync();
 
@@ -94,6 +98,8 @@ namespace DiamondShop.Repositories
             {
                 ProductId = product.ProductId,
                 CategoryId = product.CategoryId,
+                JewelrySettingID = product.JewelrySettingID,
+                MarkupRate = product.MarkupRate,
                 Description = product.Description,
                 BasePrice = product.BasePrice,
                 IsActive = product.IsActive,
@@ -114,15 +120,17 @@ namespace DiamondShop.Repositories
 
             if (productList == null) { return null; }
 
-            var productModel = productList.Select(p => new ProductViewModel()
+            var productModel = productList.Select(product => new ProductViewModel()
             {
-                ProductId = p.ProductId,
-                CategoryId = p.CategoryId,
-                Description = p.Description,
-                BasePrice = p.BasePrice,
-                IsActive = p.IsActive,
-                Stock = p.Stock,
-                ProductName = p.ProductName
+                ProductId = product.ProductId,
+                CategoryId = product.CategoryId,
+                JewelrySettingID = product.JewelrySettingID,
+                MarkupRate = product.MarkupRate,
+                Description = product.Description,
+                BasePrice = product.BasePrice,
+                IsActive = product.IsActive,
+                Stock = product.Stock,
+                ProductName = product.ProductName
             }).ToList();
 
             return productModel;
@@ -131,22 +139,22 @@ namespace DiamondShop.Repositories
         public async Task<List<ProductViewModel>> GetProductsByPriceAsc()
         {
             var productList = await _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.Diamond)
                 .OrderBy(p => p.BasePrice)
                 .ToListAsync();
 
             if (productList == null) { return null; }
 
-            var productModel = productList.Select(p => new ProductViewModel()
+            var productModel = productList.Select(product => new ProductViewModel()
             {
-                ProductId = p.ProductId,
-                CategoryId = p.CategoryId,
-                Description = p.Description,
-                BasePrice = p.BasePrice,
-                IsActive = p.IsActive,
-                Stock = p.Stock,
-                ProductName = p.ProductName
+                ProductId = product.ProductId,
+                CategoryId = product.CategoryId,
+                JewelrySettingID = product.JewelrySettingID,
+                MarkupRate = product.MarkupRate,
+                Description = product.Description,
+                BasePrice = product.BasePrice,
+                IsActive = product.IsActive,
+                Stock = product.Stock,
+                ProductName = product.ProductName
             }).ToList();
 
             return productModel;
@@ -163,6 +171,8 @@ namespace DiamondShop.Repositories
                 {
                     ProductId = productModel.ProductId,
                     CategoryId = productModel.CategoryId,
+                    JewelrySettingID = productModel.JewelrySettingID,
+                    MarkupRate = productModel.MarkupRate,
                     Description = productModel.Description,
                     BasePrice = productModel.BasePrice,
                     IsActive = productModel.IsActive,
@@ -184,7 +194,6 @@ namespace DiamondShop.Repositories
             bool result = false;
 
             var product = await _context.Products
-                .Include(u => u.Category)
                 .FirstOrDefaultAsync(u => u.ProductId == id);
 
             if (product == null)
@@ -196,10 +205,13 @@ namespace DiamondShop.Repositories
             {
                 product.ProductName = productModel.ProductName;
                 product.CategoryId = productModel.CategoryId;
+                product.JewelrySettingID= productModel.JewelrySettingID;
                 product.Description = productModel.Description;
                 product.BasePrice = productModel.BasePrice;
                 product.IsActive = productModel.IsActive;
                 product.ProductName = product.ProductName;
+                product.Stock = productModel.Stock;
+                product.MarkupRate = productModel.MarkupRate;
 
                 _context.Products.Update(product);
                 result = await _context.SaveChangesAsync() > 0;
@@ -228,28 +240,6 @@ namespace DiamondShop.Repositories
             }
 
             return true;
-        }
-        public async Task<List<ProductViewModel>> GetProductsBySimilarName(string keyword)
-        {
-            var products = await _context.Products
-                .Include(p => p.Category)
-                .Where(p => p.ProductName.Contains(keyword)) // Tìm kiếm sản phẩm với tên gần đúng
-                .ToListAsync();
-
-            if (products == null) { return null; }
-
-            var productModels = products.Select(p => new ProductViewModel
-            {
-                ProductId = p.ProductId,
-                CategoryId = p.CategoryId,
-                Description = p.Description,
-                BasePrice = p.BasePrice,
-                IsActive = p.IsActive,
-                Stock = p.Stock,
-                ProductName = p.ProductName
-            }).ToList();
-
-            return productModels;
         }
     }
 }

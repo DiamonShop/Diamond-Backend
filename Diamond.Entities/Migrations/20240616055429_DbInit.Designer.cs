@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diamond.Entities.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    [Migration("20240615145730_DbInit")]
+    [Migration("20240616055429_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -31,6 +31,9 @@ namespace Diamond.Entities.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DiamondID"));
+
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Carat")
                         .HasColumnType("decimal(18,2)");
@@ -111,14 +114,14 @@ namespace Diamond.Entities.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("CartItemId");
 
@@ -265,8 +268,7 @@ namespace Diamond.Entities.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("Stock")
-                        .IsRequired()
+                    b.Property<int>("Stock")
                         .HasColumnType("int");
 
                     b.HasKey("ProductId");
@@ -323,7 +325,6 @@ namespace Diamond.Entities.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 

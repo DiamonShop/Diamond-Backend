@@ -3,13 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using DiamondShop.Data;
 using DiamondShop.Model;
 using Diamond.Entities.Model;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Security.Claims;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DiamondShop.Controllers
 {
@@ -44,7 +40,7 @@ namespace DiamondShop.Controllers
                     CartItems = o.CartItems.Select(od => new CartItemModel
                     {
                         ProductId = od.ProductId,
-                        Price = od.Price,
+                        Price = od.UnitPrice,
                         Quantity = od.Quantity
                     }).ToList()
                 })
@@ -53,7 +49,7 @@ namespace DiamondShop.Controllers
             return Ok(orders);
         }
 
-        [HttpGet("get/GetOrderById")]
+        [HttpGet("GetOrderById")]
         [Authorize(Roles = "Manager,Staff,Delivery")]
         public async Task<ActionResult<OrderViewModel>> GetOrderById(int id)
         {
@@ -73,7 +69,7 @@ namespace DiamondShop.Controllers
                     {
                         ProductId = od.ProductId,
                         ProductName = od.Product.Description,
-                        Price = od.Price,
+                        Price = od.UnitPrice,
                         Quantity = od.Quantity
                     }).ToList()
                 })
@@ -111,7 +107,7 @@ namespace DiamondShop.Controllers
                 CartItems = order.CartItems.Select(od => new CartItemModel
                 {
                     ProductId = od.ProductId,
-                    Price = od.Price,
+                    Price = od.UnitPrice,
                     Quantity = od.Quantity
                 }).ToList()
             };
@@ -141,13 +137,13 @@ namespace DiamondShop.Controllers
         {   /*
             var order = _context.Orders.Include(o => o.CartItems)
 				.Include(o => o.User)
-                .FirstOrDefault(o => o.UserId == orderModel.UserId
+                .FirstOrDefault(o => o.UserID == orderModel.UserId
                 && o.OrderId == orderModel.OrderId);
 
 
             PaymentInformationModel model = new PaymentInformationModel 
             {
-                Amount = (double)order.CartItems.Sum(c => c.Price * c.Quantity),
+                Amount = (double)order.CartItems.Sum(c => c.UnitPrice * c.Quantity),
                 Name = order.User.FullName,
                 OrderDescription="AAA",
 				ItemInOrder = $"{order.CartItems.ToString()}"
