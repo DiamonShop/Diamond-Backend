@@ -78,7 +78,7 @@ builder.Services.AddAuthentication(options =>
     IConfigurationSection googleAuthNSection = builder.Configuration.GetSection("Authentication:Google");
     googleOptions.ClientId = googleAuthNSection["ClientId"];
     googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
-    googleOptions.CallbackPath = "/api/Login/GoogleLoginCallback"; // Đảm bảo đường dẫn này khớp với cấu hình trong Google Console
+    googleOptions.CallbackPath = "/api/Register/GoogleLoginCallback"; // Đảm bảo đường dẫn này khớp với cấu hình trong Google Console
 });
 
 // Register other services and configure the application
