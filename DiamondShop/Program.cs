@@ -73,12 +73,12 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 })
-.AddCookie()
-.AddGoogle(options =>
+.AddGoogle(googleOptions =>
 {
-    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    options.CallbackPath = "/api/Login/GoogleLoginCallback";
+    IConfigurationSection googleAuthNSection = builder.Configuration.GetSection("Authentication:Google");
+    googleOptions.ClientId = googleAuthNSection["ClientId"];
+    googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
+    googleOptions.CallbackPath = "/api/Login/GoogleLoginCallback"; // Đảm bảo đường dẫn này khớp với cấu hình trong Google Console
 });
 
 // Register other services and configure the application
@@ -111,8 +111,6 @@ builder.Services.AddSwaggerGen(options =>
     });
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
-
-
 
 // Configure and build the application
 var app = builder.Build();
