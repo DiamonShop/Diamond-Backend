@@ -19,21 +19,16 @@ namespace DiamondShop.Controllers
 
         // Lấy tất cả thông tin sản phẩm
         [HttpGet("GetAllProduct")]
-        [Authorize(Roles = "Manager,Staff,Delivery,Member")]
         public async Task<IActionResult> GetAllProducts()
         {
             var products = await _productRepository.GetAllProducts();
-            var productViewModels = products.Select(static p => new ProductViewModel
-            {
-                ProductId = p.ProductId,
-                BasePrice = p.BasePrice,
-                ProductName = p.ProductName
-            }).ToList();
-            return Ok(productViewModels);
+
+            if (products == null) { return NotFound("Product is empty"); }
+
+            return Ok(products);
         }
 
         // Lấy tất cả thông tin sản phẩm
-
 
 
         // Lấy thông tin sản phẩm theo ID
@@ -52,7 +47,6 @@ namespace DiamondShop.Controllers
 
         // Tìm sản phẩm theo tên loại
         [HttpGet("GetProductsByCategoryName")]
-        [Authorize(Roles = "Manager,Staff,Delivery,Member")]
         public async Task<IActionResult> GetProductsByCategoryName(string categoryName)
         {
             var products = await _productRepository.GetProductsByCategoryName(categoryName);
@@ -67,7 +61,6 @@ namespace DiamondShop.Controllers
 
         // Tìm sản phẩm theo tên sản phẩm
         [HttpGet("GetProductsByName")]
-        [Authorize(Roles = "Manager,Staff,Delivery,Member")]
         public async Task<IActionResult> GetProductsByName(string productName)
         {
             var products = await _productRepository.GetProductsByName(productName);
@@ -146,5 +139,3 @@ namespace DiamondShop.Controllers
         }
     }
 }
-
-
