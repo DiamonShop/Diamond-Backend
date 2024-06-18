@@ -27,8 +27,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddSignInManager<SignInManager<IdentityUser>>()
     .AddDefaultTokenProviders();
 
-
-
 // Register services
 builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
@@ -47,6 +45,23 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+});
+
+// Add session and cookie configuration
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.LoginPath = "/api/Register/Login";
+    options.LogoutPath = "/api/Register/Logout";
+    options.SlidingExpiration = true;
 });
 
 // Register JWT Authentication
@@ -78,8 +93,10 @@ builder.Services.AddAuthentication(options =>
     IConfigurationSection googleAuthNSection = builder.Configuration.GetSection("Authentication:Google");
     googleOptions.ClientId = googleAuthNSection["ClientId"];
     googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
-    googleOptions.CallbackPath = "/api/Register/GoogleLoginCallback"; // Đảm bảo đường dẫn này khớp với cấu hình trong Google Console
+    googleOptions.CallbackPath = "/api/Register/GoogleLoginCallback"; // Ensure this matches Google Console
+    googleOptions.SaveTokens = true;
 });
+
 
 // Register other services and configure the application
 builder.Services.AddControllers();
@@ -117,18 +134,25 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Use CORS to connect front-end
-app.UseCors("AllowSpecificOrigin");
-
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
+app.UseSession();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseCors("AllowSpecificOrigin");
+
+app.UseEndpoints(endpoints => {
+    endpoints.MapControllers();
+});
 
 app.Run();

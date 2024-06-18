@@ -91,7 +91,7 @@ namespace DiamondShop.Controllers
         {
             var properties = new AuthenticationProperties
             {
-                RedirectUri = Url.Action("GoogleLoginCallback")
+                RedirectUri = Url.Action(nameof(GoogleLoginCallback))
             };
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
@@ -106,28 +106,35 @@ namespace DiamondShop.Controllers
                 return BadRequest("Failed to authenticate with Google.");
             }
 
-            var name = result.Principal.FindFirstValue(ClaimTypes.Name);
-            var givenName = result.Principal.FindFirstValue(ClaimTypes.GivenName);
-            var email = result.Principal.FindFirstValue(ClaimTypes.Email);
+            var claims = result.Principal.Identities.FirstOrDefault()?.Claims;
+            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var name = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
-            // Nếu cần thiết, bạn có thể xử lý thêm việc lưu thông tin người dùng vào cơ sở dữ liệu tại đây
-            // Ví dụ:
-            // var user = await _userRepository.FindByEmailAsync(email);
-            // if (user == null)
-            // {
-            //     user = new User { Username = name, FullName = givenName, Email = email };
-            //     await _userRepository.AddAsync(user);
-            // }
-
-            var userViewModel = new UserViewModel()
+            if (string.IsNullOrEmpty(email))
             {
-                Username = name,
-                FullName = givenName,
-                Email = email,
-            };
+                return BadRequest("Google authentication did not return an email.");
+            }
 
-            return Ok(userViewModel);
+            var user = await _userRepository.FindByEmailAsync(email);
+            if (user == null)
+            {
+                // If user doesn't exist, create a new user or handle as needed
+            }
+
+            var token = await _userRepository.GenerateJwtToken(user);
+
+            return Ok(new
+            {
+                Token = token,
+                User = new
+                {
+                    user.Username,
+                    user.FullName,
+                    user.Email
+                }
+            });
         }
 
     }
 }
+

@@ -1,5 +1,6 @@
 ﻿using Diamond.Entities.DTO;
 using DiamondShop.Controllers;
+using DiamondShop.Data;
 using DiamondShop.Model;
 
 namespace DiamondShop.Repositories.Interfaces
@@ -17,5 +18,8 @@ namespace DiamondShop.Repositories.Interfaces
         Task<ApiResponse> Login(LoginModel loginModel);
         Task<bool> SignUpUser(UserSignUpModel userSignUpModel);
         Task<bool> Logout(UserSignUpModel userSignUpModel);
+        Task<string> GenerateJwtToken(User user);
+        Task<User> FindByEmailAsync(string email);
+        Task AddAsync(User user);
     }
 }
