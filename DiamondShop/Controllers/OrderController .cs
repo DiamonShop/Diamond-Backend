@@ -134,27 +134,14 @@ namespace DiamondShop.Controllers
         [HttpPost("Checkout")]
         //[Authorize(Roles = "Manager,Staff,Member")]
         public IActionResult CreatePaymentUrl(PaymentInformationModel model)
-        {   /*
-            var order = _context.Orders.Include(o => o.CartItems)
-				.Include(o => o.User)
-                .FirstOrDefault(o => o.UserID == orderModel.UserId
-                && o.OrderId == orderModel.OrderId);
-
-
-            PaymentInformationModel model = new PaymentInformationModel 
-            {
-                Amount = (double)order.CartItems.Sum(c => c.UnitPrice * c.Quantity),
-                Name = order.User.FullName,
-                OrderDescription="AAA",
-				ItemInOrder = $"{order.CartItems.ToString()}"
-            };*/
+        {   
 			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
 
             return Redirect(url);
         }
 
         [HttpGet("result")]
-		[Authorize(Roles = "Manager,Staff,Member")]
+		//[Authorize(Roles = "Manager,Staff,Member")]
         public IActionResult PaymentCallback()
         {
             var response = _vnPayRepo.PaymentExecute(Request.Query);
