@@ -20,6 +20,6 @@ namespace DiamondShop.Data
 		public DateTime OrderDate { get; set; }
 
 		public virtual User User { get; set; } = null!;
-		public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+		public virtual ICollection<OrderDetail> CartItems { get; set; } = new List<OrderDetail>();
 	}
 }

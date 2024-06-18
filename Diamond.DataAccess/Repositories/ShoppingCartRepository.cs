@@ -1,4 +1,4 @@
-﻿using DiamondShop.Data;
+﻿/*using DiamondShop.Data;
 using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -90,7 +90,7 @@ namespace DiamondShop.Repositories
 
 		public async Task<bool> UpdateCart(ShoppingCartViewModel cartModel)
 		{
-			/*_context.ShoppingCarts.Update(cartModel);*/
+			*//*_context.ShoppingCarts.Update(cartModel);*//*
 			return await _context.SaveChangesAsync() > 0;
 		}
 
@@ -106,3 +106,4 @@ namespace DiamondShop.Repositories
 		}
 	}
 }
+*/

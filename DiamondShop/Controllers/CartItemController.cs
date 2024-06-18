@@ -16,7 +16,7 @@ namespace DiamondShop.Controllers
 
         [HttpGet("GetAllCartItem")]
 		[Authorize(Roles = "Manager,Staff,Member")]
-		public async Task<ActionResult<List<CartItem>>> GetAll()
+		public async Task<ActionResult<List<OrderDetail>>> GetAll()
         {
             var items = await _cartItemRepository.GetAll();
             return Ok(items);
@@ -24,7 +24,7 @@ namespace DiamondShop.Controllers
 
         [HttpGet("GetCartItemById")]
 		[Authorize(Roles = "Manager,Staff,Member")]
-		public async Task<ActionResult<CartItem>> GetById(int id)
+		public async Task<ActionResult<OrderDetail>> GetById(int id)
         {
             var item = await _cartItemRepository.GetById(id);
             if (item == null)
@@ -35,7 +35,7 @@ namespace DiamondShop.Controllers
 
         [HttpPost]
 		[Authorize(Roles = "Member")]
-		public async Task<ActionResult> Insert([FromBody] CartItem cartItem)
+		public async Task<ActionResult> Insert([FromBody] OrderDetail cartItem)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -44,14 +44,14 @@ namespace DiamondShop.Controllers
             if (!success)
                 return StatusCode(500, "A problem happened while handling your request.");
 
-            return CreatedAtAction(nameof(GetById), new { id = cartItem.CartItemId }, cartItem);
+            return CreatedAtAction(nameof(GetById), new { id = cartItem.OrderDetailId }, cartItem);
         }
 
         [HttpPut("UpdateCartItem")]
 		[Authorize(Roles = "Member")]
-		public async Task<ActionResult> Update(int id, [FromBody] CartItem cartItem)
+		public async Task<ActionResult> Update(int id, [FromBody] OrderDetail cartItem)
         {
-            if (id != cartItem.CartItemId)
+            if (id != cartItem.OrderDetailId)
                 return BadRequest("CartItem ID mismatch");
 
             if (!ModelState.IsValid)

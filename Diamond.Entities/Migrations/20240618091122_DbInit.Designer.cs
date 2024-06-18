@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diamond.Entities.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    [Migration("20240618032747_Init")]
-    partial class Init
+    [Migration("20240618091122_DbInit")]
+    partial class DbInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -98,40 +98,6 @@ namespace Diamond.Entities.Migrations
                     b.HasKey("JewelrySettingID");
 
                     b.ToTable("JewelrySetting");
-                });
-
-            modelBuilder.Entity("DiamondShop.Data.CartItem", b =>
-                {
-                    b.Property<int>("CartItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartItemId"));
-
-                    b.Property<int>("CartId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("CartItemId");
-
-                    b.HasIndex("CartId");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("DiamondShop.Data.Category", b =>
@@ -235,6 +201,35 @@ namespace Diamond.Entities.Migrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("DiamondShop.Data.OrderDetail", b =>
+                {
+                    b.Property<int>("OrderDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailId"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("OrderDetailId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderDetails");
+                });
+
             modelBuilder.Entity("DiamondShop.Data.Product", b =>
                 {
                     b.Property<int>("ProductId")
@@ -243,8 +238,8 @@ namespace Diamond.Entities.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
 
-                    b.Property<int>("BasePrice")
-                        .HasColumnType("int");
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -296,24 +291,6 @@ namespace Diamond.Entities.Migrations
                     b.HasKey("RoleId");
 
                     b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("DiamondShop.Data.ShoppingCart", b =>
-                {
-                    b.Property<int>("CartId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartId"));
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CartId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ShoppingCart", (string)null);
                 });
 
             modelBuilder.Entity("DiamondShop.Data.User", b =>
@@ -395,33 +372,6 @@ namespace Diamond.Entities.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("DiamondShop.Data.CartItem", b =>
-                {
-                    b.HasOne("DiamondShop.Data.ShoppingCart", "ShoppingCart")
-                        .WithMany("CartItems")
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("DiamondShop.Data.Order", "Order")
-                        .WithMany("CartItems")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("DiamondShop.Data.Product", "Product")
-                        .WithMany("CartItems")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("ShoppingCart");
-                });
-
             modelBuilder.Entity("DiamondShop.Data.Certification", b =>
                 {
                     b.HasOne("Diamond.Entities.Data.Diamonds", "Diamond")
@@ -463,6 +413,25 @@ namespace Diamond.Entities.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DiamondShop.Data.OrderDetail", b =>
+                {
+                    b.HasOne("DiamondShop.Data.Order", "Order")
+                        .WithMany("CartItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("DiamondShop.Data.Product", "Product")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("DiamondShop.Data.Product", b =>
                 {
                     b.HasOne("DiamondShop.Data.Category", "Category")
@@ -480,17 +449,6 @@ namespace Diamond.Entities.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("JewelrySetting");
-                });
-
-            modelBuilder.Entity("DiamondShop.Data.ShoppingCart", b =>
-                {
-                    b.HasOne("DiamondShop.Data.User", "User")
-                        .WithMany("ShoppingCarts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DiamondShop.Data.User", b =>
@@ -538,12 +496,12 @@ namespace Diamond.Entities.Migrations
 
             modelBuilder.Entity("DiamondShop.Data.Product", b =>
                 {
-                    b.Navigation("CartItems");
-
                     b.Navigation("Diamond")
                         .IsRequired();
 
                     b.Navigation("Feedbacks");
+
+                    b.Navigation("OrderDetails");
 
                     b.Navigation("Warranty")
                         .IsRequired();
@@ -554,18 +512,11 @@ namespace Diamond.Entities.Migrations
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("DiamondShop.Data.ShoppingCart", b =>
-                {
-                    b.Navigation("CartItems");
-                });
-
             modelBuilder.Entity("DiamondShop.Data.User", b =>
                 {
                     b.Navigation("Feedbacks");
 
                     b.Navigation("Orders");
-
-                    b.Navigation("ShoppingCarts");
                 });
 #pragma warning restore 612, 618
         }
