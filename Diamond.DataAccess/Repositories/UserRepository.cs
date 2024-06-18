@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace DiamondShop.Repositories
 {
@@ -19,11 +20,39 @@ namespace DiamondShop.Repositories
         private readonly DiamondDbContext _context;
         private readonly Jwt _jwtSettings;
         private readonly ILogger<UserRepository> _logger;
-        public UserRepository(DiamondDbContext context, IOptions<Jwt> jwtSettings, ILogger<UserRepository> logger)
+        private readonly IConfiguration _configuration;
+        public UserRepository(DiamondDbContext context, IOptions<Jwt> jwtSettings, ILogger<UserRepository> logger, IConfiguration configuration)
         {
             _jwtSettings = jwtSettings.Value;
             _context = context;
+            _configuration = configuration;
         }
+        public async Task<string> GenerateJwtToken(User user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            var claims = new[]
+            {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.Role, user.Role.RoleName)
+    };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+
         public async Task<UserProfileViewModel> GetUserProfile(int userId)
         {
             var user = await _context.Users
@@ -259,10 +288,16 @@ namespace DiamondShop.Repositories
 
         public async Task<bool> SignUpUser(UserSignUpModel userSignUpModel)
         {
-            bool result = false;
             if (userSignUpModel == null)
             {
                 return false;
+            }
+
+            // Check if username or email already exists
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == userSignUpModel.Username || u.Email == userSignUpModel.Email);
+            if (existingUser != null)
+            {
+                return false; // Username or email already exists
             }
 
             try
@@ -276,18 +311,19 @@ namespace DiamondShop.Repositories
                     Address = "",
                     LoyaltyPoints = 0,
                     IsActive = true,
-                    RoleId = 3 //Member
+                    RoleId = 3 // Member
                 };
 
                 await _context.AddAsync(user);
-                result = _context.SaveChanges() > 0;
+                await _context.SaveChangesAsync();
+                return true; // User created successfully
             }
             catch (Exception)
             {
-                return false;
+                return false; // Failed to create user
             }
-            return result;
         }
+
 
         public Task<bool> Logout(UserSignUpModel userSignUpModel)
         {
@@ -298,11 +334,7 @@ namespace DiamondShop.Repositories
         {
             if (loginModel == null || string.IsNullOrEmpty(loginModel.UserName) || string.IsNullOrEmpty(loginModel.Password))
             {
-                return new ApiResponse
-                {
-                    Success = false,
-                    Message = "Invalid login attempt"
-                };
+                return new ApiResponse { Success = false, Message = "Invalid login attempt" };
             }
 
             try
@@ -313,14 +345,10 @@ namespace DiamondShop.Repositories
 
                 if (user == null)
                 {
-                    return new ApiResponse
-                    {
-                        Success = false,
-                        Message = "Invalid login attempt"
-                    };
+                    return new ApiResponse { Success = false, Message = "Invalid login attempt" };
                 }
 
-                var token = GenerateToken(user);
+                var token = await GenerateJwtToken(user);
 
                 return new ApiResponse
                 {
@@ -339,15 +367,21 @@ namespace DiamondShop.Repositories
             catch (Exception ex)
             {
                 _logger.LogError($"Exception occurred in Login method: {ex}");
-                return new ApiResponse
-                {
-                    Success = false,
-                    Message = "An error occurred while processing your request"
-                };
+                return new ApiResponse { Success = false, Message = "An error occurred while processing your request" };
             }
         }
 
 
+        public async Task<User> FindByEmailAsync(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task AddAsync(User user)
+        {
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+        }
         private string GenerateToken(User user)
         {
             if (user == null)
