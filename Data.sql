@@ -74,12 +74,6 @@ INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (3, 60
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (4, 89.89, 'Completed', '2023-05-23 07:12:33.765');
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 199.99, 'Pending', '2023-05-24 06:23:44.654');
 
-/* Insert Orders */
-INSERT INTO [dbo].[ShoppingCart] (UserId) VALUES (1);
-INSERT INTO [dbo].[ShoppingCart] (UserId) VALUES (2);
-INSERT INTO [dbo].[ShoppingCart] (UserId) VALUES (3);
-INSERT INTO [dbo].[ShoppingCart] (UserId) VALUES (4);
-
 /* Insert Diamond */
 INSERT INTO [dbo].[Diamonds] (ProductID, Origin, Carat, Clarity, Cut, Color, BasePrice) 
 VALUES (1, 'South Africa', 0.5, 'VS1', 'Round', 'D', 5000);

@@ -6,10 +6,10 @@ namespace DiamondShop.Repositories.Interfaces
 {
     public interface ICartItemRepository
     {
-        Task<List<CartItem>> GetAll();
-        Task<CartItem> GetById(int id);
-        Task<bool> Insert(CartItem entity);
-        Task<bool> Update(CartItem entity);
+        Task<List<OrderDetail>> GetAll();
+        Task<OrderDetail> GetById(int id);
+        Task<bool> Insert(OrderDetail entity);
+        Task<bool> Update(OrderDetail entity);
         Task<bool> Delete(int id);
     }
 }

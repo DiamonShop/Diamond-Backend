@@ -11,10 +11,9 @@ public class DiamondDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
-    public DbSet<ShoppingCart> ShoppingCarts { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Product> Products { get; set; }
-    public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<OrderDetail> OrderDetails { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Certification> Certificates { get; set; }
     public DbSet<Diamonds> Diamonds { get; set; }
@@ -47,17 +46,12 @@ public class DiamondDbContext : DbContext
                 .HasForeignKey(x => x.UserID);
         });
 
-        modelBuilder.Entity<CartItem>(e =>
+        modelBuilder.Entity<OrderDetail>(e =>
         {
             e.Property(e => e.UnitPrice).HasColumnType("decimal(18,2)");
 
-            e.HasOne(x => x.ShoppingCart)
-                .WithMany(x => x.CartItems)
-                .HasForeignKey(x => x.CartId)
-                .OnDelete(DeleteBehavior.NoAction);
-
             e.HasOne(x => x.Product)
-                .WithMany(x => x.CartItems)
+                .WithMany(x => x.OrderDetails)
                 .HasForeignKey(x => x.ProductId)
                 .OnDelete(DeleteBehavior.NoAction);
 
@@ -81,6 +75,7 @@ public class DiamondDbContext : DbContext
         {
             e.ToTable("Product");
             e.Property(e => e.MarkupRate).HasColumnType("decimal(18,2)");
+            e.Property(e => e.BasePrice).HasColumnType("decimal(18,2)");
 
             e.HasOne(x => x.Category)
                 .WithMany(x => x.Products)
@@ -107,16 +102,6 @@ public class DiamondDbContext : DbContext
 
             e.HasOne(x => x.User)
                 .WithMany(x => x.Feedbacks)
-                .HasForeignKey(x => x.UserId);
-        });
-
-        modelBuilder.Entity<ShoppingCart>(e =>
-        {
-            e.ToTable("ShoppingCart");
-            e.HasKey(x => x.CartId);
-            e.Property(e => e.UserId);
-            e.HasOne(x => x.User)
-                .WithMany(x => x.ShoppingCarts)
                 .HasForeignKey(x => x.UserId);
         });
 

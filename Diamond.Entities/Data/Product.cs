@@ -24,7 +24,7 @@ namespace DiamondShop.Data
         public int Stock { get; set; }
         public decimal MarkupRate { get; set; } //tỉ lệ áp giá
         [Required]
-        public int BasePrice { get; set; }
+        public decimal BasePrice { get; set; }
         [Required]
         public bool IsActive { get; set; }
 
@@ -32,7 +32,7 @@ namespace DiamondShop.Data
         public Diamonds Diamond { get; set; } = null!;
         public Warranty Warranty { get; set; } = null!;
         public JewelrySetting JewelrySetting { get; set; } = null!;
-        public ICollection<CartItem> CartItems { get; } = new List<CartItem>();
+        public ICollection<OrderDetail> OrderDetails { get; } = new List<OrderDetail>();
         public ICollection<Feedback> Feedbacks { get; } = new List<Feedback>();
     }
 }
