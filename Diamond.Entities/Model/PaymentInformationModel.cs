@@ -13,8 +13,8 @@ namespace Diamond.Entities.Model
 		public string birthday { get; set; }
 		public string email { get; set; }
 		public string streetAddress { get; set; }
-		public string? orderNote { get; set; }
-		public int price { get; set; }
+		public string orderNote { get; set; }
+		public double price { get; set; }
 		
 	}
 }
