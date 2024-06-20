@@ -182,15 +182,17 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPost("Checkout")]
+        //[Authorize(Roles = "Manager")]
         [Authorize(Roles = "Manager,Staff,Member")]
         public IActionResult CreatePaymentUrl(PaymentInformationModel model)
         {
             var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
 
-            return Redirect(url);
+            return Ok(url);
         }
 
         [HttpGet("result")]
+        //[Authorize(Roles = "Manager")]
         [Authorize(Roles = "Manager,Staff,Member")]
         public IActionResult PaymentCallback()
         {
