@@ -24,7 +24,7 @@ namespace DiamondShop.Data
         public int Stock { get; set; }
         public decimal MarkupRate { get; set; } //tỉ lệ áp giá
         [Required]
-        public decimal BasePrice { get; set; }
+        public int BasePrice { get; set; }
         [Required]
         public bool IsActive { get; set; }
 

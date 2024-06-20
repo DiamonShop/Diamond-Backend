@@ -170,6 +170,7 @@ namespace DiamondShop.Controllers
         public async Task<IActionResult> ChangeToDoneStatus(int id)
         {
             var order = await _context.Orders.FindAsync(id);
+
             if (order == null)
             {
                 return NotFound();
