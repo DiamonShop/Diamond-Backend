@@ -20,38 +20,12 @@ namespace DiamondShop.Repositories
         private readonly DiamondDbContext _context;
         private readonly Jwt _jwtSettings;
         private readonly ILogger<UserRepository> _logger;
-        private readonly IConfiguration _configuration;
-        public UserRepository(DiamondDbContext context, IOptions<Jwt> jwtSettings, ILogger<UserRepository> logger, IConfiguration configuration)
+
+        public UserRepository(DiamondDbContext context, IOptions<Jwt> jwtSettings)
         {
             _jwtSettings = jwtSettings.Value;
             _context = context;
-            _configuration = configuration;
         }
-        public async Task<string> GenerateJwtToken(User user)
-        {
-            if (user == null) throw new ArgumentNullException(nameof(user));
-
-            var claims = new[]
-            {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-        new Claim(JwtRegisteredClaimNames.Email, user.Email),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new Claim(ClaimTypes.Role, user.Role.RoleName)
-    };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _jwtSettings.Issuer,
-                audience: _jwtSettings.Audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
 
         public async Task<UserProfileViewModel> GetUserProfile(int userId)
         {
@@ -356,6 +330,7 @@ namespace DiamondShop.Repositories
                     Message = "Login successful",
                     Data = new
                     {
+                        user.UserId,
                         user.Username,
                         user.FullName,
                         user.Email,
@@ -382,48 +357,31 @@ namespace DiamondShop.Repositories
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
         }
-        private string GenerateToken(User user)
+
+        public async Task<string> GenerateJwtToken(User user)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user), "User cannot be null");
-            }
+            if (user == null) throw new ArgumentNullException(nameof(user));
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
-
-            if (string.IsNullOrEmpty(_jwtSettings.SecretKey))
+            var claims = new[]
             {
-                throw new ArgumentException("JWT Secret Key is null or empty", nameof(_jwtSettings.SecretKey));
-            }
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.RoleName)
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
-                Issuer = _jwtSettings.Issuer,
-                Audience = _jwtSettings.Audience,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                new Claim(JwtRegisteredClaimNames.Sid, user.UserId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, user.Role.RoleName)
             };
 
-            try
-            {
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                return tokenHandler.WriteToken(token);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Exception occurred while generating token: {ex}");
-                return null;
-            }
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-
     }
 }

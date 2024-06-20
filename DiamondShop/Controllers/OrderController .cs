@@ -68,7 +68,7 @@ namespace DiamondShop.Controllers
                     CartItems = o.CartItems.Select(od => new CartItemModel
                     {
                         ProductId = od.ProductId,
-                        ProductName = od.Product.Description,
+                        ProductName = od.Product.ProductName,
                         Price = od.UnitPrice,
                         Quantity = od.Quantity
                     }).ToList()
@@ -84,38 +84,88 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPost("CreatOrder")]
-        [Authorize(Roles = "Manager,Staff,Delivery,Member")]
-        public async Task<ActionResult<OrderViewModel>> CreateOrder([FromBody] Order order)
+        /*[Authorize(Roles = "Manager,Staff,Member")]*/
+        public async Task<IActionResult> CreateOrder(int userId)
         {
-            if (!ModelState.IsValid)
+            bool result = false;
+            var user = _context.Users.FirstOrDefault(user => user.UserId == userId);
+
+            if (user == null) { return NotFound("User is not found"); }
+
+            Order order = new Order()
             {
-                return BadRequest(ModelState);
-            }
+                UserID = userId,
+                OrderDate = DateTime.Now,
+                CartItems = null!,
+                Status = "Ordering",
+                TotalPrice = 0
+            };
 
             // Thêm order vào cơ sở dữ liệu
             _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+            result = await _context.SaveChangesAsync() > 0;
 
-            // Tạo OrderViewModel từ order vừa thêm vào
-            var orderViewModel = new OrderViewModel
+            if (result == false)
             {
-                OrderId = order.OrderId,
-                UserName = order.User.FullName,
-                TotalPrice = order.TotalPrice,
-                Status = order.Status,
-                OrderDate = order.OrderDate,
-                CartItems = order.CartItems.Select(od => new CartItemModel
-                {
-                    ProductId = od.ProductId,
-                    Price = od.UnitPrice,
-                    Quantity = od.Quantity
-                }).ToList()
-            };
-
-            return CreatedAtAction(nameof(GetOrderById), new { id = order.OrderId }, orderViewModel);
+                return BadRequest("Create Order Failed");
+            }
+            return Ok("Create Order Succesfully");
         }
 
-        [HttpDelete("DoneStatusChange")]
+        [HttpPost("CreateOrderDetail")]
+        /*[Authorize(Roles = "Manager,Staff,Member")]*/
+        public async Task<IActionResult> CreateOrderDetail(int orderId, int productId)
+        {
+            bool result = false;
+            var order = _context.Orders.FirstOrDefault(order => order.OrderId == orderId);
+
+            if (order == null) { return NotFound("Order is not found"); }
+
+            if (order.Status.Equals("Completed")) { return BadRequest("Create OrderDatail Failed"); }
+            
+            OrderDetail orderDetail = new OrderDetail()
+            {
+                OrderId = order.OrderId,
+                UnitPrice = 0,
+                Quantity = 0,
+                ProductId = productId
+            };
+
+            // Thêm order vào cơ sở dữ liệu
+            _context.OrderDetails.Add(orderDetail);
+            result = await _context.SaveChangesAsync() > 0;
+
+            if (result == false)
+            {
+                return BadRequest("Create OrderDatail Failed");
+            }
+            return Ok("Create OrderDetail Succesfully");
+        }
+
+        [HttpPut("UpdateOrderDetail")]
+        /*[Authorize(Roles = "Manager,Staff,Member")]*/
+        public async Task<IActionResult> UpdateOrderDetail(int orderDetailId, int quantity)
+        {
+            bool result = false;
+            var orderDetail = _context.OrderDetails.FirstOrDefault(orderDetail => orderDetail.OrderDetailId == orderDetailId);
+
+            if (orderDetail == null) { return NotFound("Order is not found"); }
+
+            orderDetail.Quantity = quantity;
+            
+
+            // Thêm order vào cơ sở dữ liệu
+            _context.OrderDetails.Add(orderDetail);
+            result = await _context.SaveChangesAsync() > 0;
+
+            if (result == false)
+            {
+                return BadRequest("Create OrderDatail Failed");
+            }
+            return Ok("Create OrderDetail Succesfully");
+        }
+
+        [HttpDelete("ChangeToDoneStatus")]
         [Authorize(Roles = "Manager,Staff,Delivery")]
         public async Task<IActionResult> ChangeToDoneStatus(int id)
         {
@@ -134,14 +184,14 @@ namespace DiamondShop.Controllers
         [HttpPost("Checkout")]
         [Authorize(Roles = "Manager,Staff,Member")]
         public IActionResult CreatePaymentUrl(PaymentInformationModel model)
-        {   
-			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
+        {
+            var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
 
             return Redirect(url);
         }
 
         [HttpGet("result")]
-		[Authorize(Roles = "Manager,Staff,Member")]
+        [Authorize(Roles = "Manager,Staff,Member")]
         public IActionResult PaymentCallback()
         {
             var response = _vnPayRepo.PaymentExecute(Request.Query);

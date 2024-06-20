@@ -1,4 +1,4 @@
-USE [DiamondStore]
+﻿USE [DiamondStore]
 
 /* Insert Category */
 INSERT INTO [dbo].[Categories] (CategoryName) VALUES ('Diamond Rings');
@@ -48,17 +48,78 @@ VALUES ('Elegant', 'White Gold', 700, 'Elegant white gold setting');
 
 /* Insert Product */
 INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
-VALUES ( 1, 1, 'Gold Ring', 'A beautiful gold ring', 50, 1.2, 1000, 1);
+VALUES ( 1, 1, 'Nhẫn Kim Cương Vàng 14k Timeless Diamond', 'A beautiful gold ring', 50, 1.2, 56,419,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive)
+VALUES ( 1, 1, 'Nhẫn Vàng trắng 14K đính đá ECZ', 'A beautiful gold ring', 50, 1.2, 8,359,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES ( 1, 1, 'Nhẫn Kim Cương Vàng 14k Timeless Diamond', 'A beautiful gold ring', 50, 1.2, 124,398,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (1, 1, 'Nhẫn Kim cương Vàng trắng 14K', 'A beautiful gold ring', 50, 1.2, 43,544,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (1, 1, 'Nhẫn Kim cương Vàng trắng 14K DDDDW006782', 'A beautiful gold ring', 50, 1.2, 92,246,400, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (1, 1, 'Nhẫn nam Kim cương Vàng trắng 14K DDDDW000287', 'A beautiful gold ring', 50, 1.2, 41,657,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (1, 1, 'Nhẫn nam Kim cương Vàng 14K DD00H000294', 'A beautiful gold ring', 50, 1.2, 78,219,900, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (1, 1, 'Nhẫn cưới nam Kim cương Vàng trắng 14K DD00W000471', 'A beautiful gold ring', 50, 1.2, 6,185,000, 1);
 
 INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
 VALUES (1, 2, 'Silver Necklace', 'Elegant silver necklace', 30, 1.5, 500, 1);
 
 INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
-VALUES (2, 1, 'Diamond Earrings', 'Sparkling diamond earrings', 20, 1.3, 1500, 1);
+VALUES (2, 1, 'Dây chuyền Bạc Ý 0000W060096', 'Sparkling diamond earrings', 20, 1.3, 1.995, 1);
 
 INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
-VALUES (3, 3, 'Platinum Bracelet', 'Luxury platinum bracelet', 10, 1.4, 2000, 1);
+VALUES (2, 1, 'Dây chuyền Vàng trắng Ý 18K 0000W000871', 'Sparkling diamond earrings', 20, 1.3, 16,963,000, 1);
 
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (2, 1, 'Dây chuyền Vàng Ý 18K 0000Y060507', 'Sparkling diamond earrings', 20, 1.3, 20,534,400, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (2, 1, 'Dây chuyền nam Vàng trắng Ý 18K 0000W061242', 'Sparkling diamond earrings', 20, 1.3, 11,320,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (2, 1, 'Dây chuyền nam Vàng trắng Ý 18K 0000W061240', 'Sparkling diamond earrings', 20, 1.3, 33,386,800, 1);
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (2, 1, 'Dây chuyền Vàng Ý 18K PNJ 0000C000043', 'Sparkling diamond earrings', 20, 1.3, 18,077,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (2, 1, 'Dây chuyền nam Vàng Ý 18K 0000Y060509', 'Sparkling diamond earrings', 20, 1.3, 42,494,800, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (2, 1, 'Dây chuyền nam Vàng Ý 18K 0000C060176', 'Sparkling diamond earrings', 20, 1.3, 73,690,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (3, 3, 'Mặt dây chuyền Vàng 14K đính đá Ruby Disney', 'Luxury platinum bracelet', 10, 1.4, 6,283,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (3, 3, 'Mặt dây chuyền Vàng 18K đính đá CZ', 'Luxury platinum bracelet', 10, 1.4, 17,590,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (3, 3, 'Mặt dây chuyền Vàng 14K đính đá', 'Luxury platinum bracelet', 10, 1.4, 7,190,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (3, 3, 'Mặt dây chuyền Vàng 14K đính đá Synthetic HELLO KITTY', 'Luxury platinum bracelet', 10, 1.4, 3,180,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (3, 3, 'Mặt dây chuyền Vàng 14K đính đá Synthetic HELLO KITTY', 'Luxury platinum bracelet', 10, 1.4, 4,105,500, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (3, 3, 'Mặt dây chuyền Vàng 14K đính đá Synthetic HELLO KITTY', 'Luxury platinum bracelet', 10, 1.4, 3,170,500, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (3, 3, 'Mặt dây chuyền Vàng Trắng 14K đính ngọc trai Akoya PAXMW000101', 'Luxury platinum bracelet', 10, 1.4, 11,567,000, 1);
+
+INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
+VALUES (3, 3, 'Mặt dây chuyền Vàng trắng 14K đính đá Topaz PNJ TPXMW000417', 'Luxury platinum bracelet', 10, 1.4, 6,346,000, 1);
 INSERT INTO [dbo].[Product] (CategoryId, JewelrySettingID, ProductName, Description, Stock, MarkupRate, BasePrice, IsActive) 
 VALUES (4, 4, 'Emerald Pendant', 'Beautiful emerald pendant', 25, 1.6, 750, 1);
 
@@ -74,6 +135,12 @@ INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (3, 60
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (4, 89.89, 'Completed', '2023-05-23 07:12:33.765');
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 199.99, 'Pending', '2023-05-24 06:23:44.654');
 
+/* Insert Orders */
+INSERT INTO [dbo].[ShoppingCart] (UserId) VALUES (1);
+INSERT INTO [dbo].[ShoppingCart] (UserId) VALUES (2);
+INSERT INTO [dbo].[ShoppingCart] (UserId) VALUES (3);
+INSERT INTO [dbo].[ShoppingCart] (UserId) VALUES (4);
+
 /* Insert Diamond */
 INSERT INTO [dbo].[Diamonds] (ProductID, Origin, Carat, Clarity, Cut, Color, BasePrice) 
 VALUES (1, 'South Africa', 0.5, 'VS1', 'Round', 'D', 5000);
@@ -86,4 +153,3 @@ VALUES (3, 'Australia', 1.0, 'IF', 'Oval', 'F', 10000);
 
 INSERT INTO [dbo].[Diamonds] (ProductID, Origin, Carat, Clarity, Cut, Color, BasePrice) 
 VALUES (4, 'Canada', 0.6, 'SI1', 'Cushion', 'G', 6000);
-
