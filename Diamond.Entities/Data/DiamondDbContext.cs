@@ -73,9 +73,7 @@ public class DiamondDbContext : DbContext
 
         modelBuilder.Entity<Product>(e =>
         {
-            e.ToTable("Product");
             e.Property(e => e.MarkupRate).HasColumnType("decimal(18,2)");
-            e.Property(e => e.BasePrice).HasColumnType("decimal(18,2)");
 
             e.HasOne(x => x.Category)
                 .WithMany(x => x.Products)

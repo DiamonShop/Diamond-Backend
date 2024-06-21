@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diamond.Entities.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    [Migration("20240620031319_DbInit")]
+    [Migration("20240621034837_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -238,8 +238,8 @@ namespace Diamond.Entities.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
 
-                    b.Property<decimal>("BasePrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("BasePrice")
+                        .HasColumnType("int");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -272,7 +272,7 @@ namespace Diamond.Entities.Migrations
 
                     b.HasIndex("JewelrySettingID");
 
-                    b.ToTable("Product", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("DiamondShop.Data.Role", b =>

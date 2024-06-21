@@ -54,7 +54,7 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Product",
+                name: "Products",
                 columns: table => new
                 {
                     ProductId = table.Column<int>(type: "int", nullable: false)
@@ -65,20 +65,20 @@ namespace Diamond.Entities.Migrations
                     Description = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false),
                     MarkupRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    BasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BasePrice = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Product", x => x.ProductId);
+                    table.PrimaryKey("PK_Products", x => x.ProductId);
                     table.ForeignKey(
-                        name: "FK_Product_Categories_CategoryId",
+                        name: "FK_Products_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "CategoryId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Product_JewelrySetting_JewelrySettingID",
+                        name: "FK_Products_JewelrySetting_JewelrySettingID",
                         column: x => x.JewelrySettingID,
                         principalTable: "JewelrySetting",
                         principalColumn: "JewelrySettingID",
@@ -129,9 +129,9 @@ namespace Diamond.Entities.Migrations
                 {
                     table.PrimaryKey("PK_Diamonds", x => x.DiamondID);
                     table.ForeignKey(
-                        name: "FK_Diamonds_Product_ProductID",
+                        name: "FK_Diamonds_Products_ProductID",
                         column: x => x.ProductID,
-                        principalTable: "Product",
+                        principalTable: "Products",
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -149,9 +149,9 @@ namespace Diamond.Entities.Migrations
                 {
                     table.PrimaryKey("PK_Warranties", x => x.WarrantyId);
                     table.ForeignKey(
-                        name: "FK_Warranties_Product_WarrantyId",
+                        name: "FK_Warranties_Products_WarrantyId",
                         column: x => x.WarrantyId,
-                        principalTable: "Product",
+                        principalTable: "Products",
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -170,9 +170,9 @@ namespace Diamond.Entities.Migrations
                 {
                     table.PrimaryKey("PK_Feedbacks", x => x.FeedbackId);
                     table.ForeignKey(
-                        name: "FK_Feedbacks_Product_ProductID",
+                        name: "FK_Feedbacks_Products_ProductID",
                         column: x => x.ProductID,
-                        principalTable: "Product",
+                        principalTable: "Products",
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -246,9 +246,9 @@ namespace Diamond.Entities.Migrations
                         principalTable: "Orders",
                         principalColumn: "OrderId");
                     table.ForeignKey(
-                        name: "FK_OrderDetails_Product_ProductId",
+                        name: "FK_OrderDetails_Products_ProductId",
                         column: x => x.ProductId,
-                        principalTable: "Product",
+                        principalTable: "Products",
                         principalColumn: "ProductId");
                 });
 
@@ -290,13 +290,13 @@ namespace Diamond.Entities.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Product_CategoryId",
-                table: "Product",
+                name: "IX_Products_CategoryId",
+                table: "Products",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Product_JewelrySettingID",
-                table: "Product",
+                name: "IX_Products_JewelrySettingID",
+                table: "Products",
                 column: "JewelrySettingID");
 
             migrationBuilder.CreateIndex(
@@ -327,7 +327,7 @@ namespace Diamond.Entities.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Product");
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Users");
