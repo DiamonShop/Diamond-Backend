@@ -32,7 +32,7 @@ namespace DiamondShop.Data
         public Category Category { get; set; } = null!;
         public Diamonds Diamond { get; set; } = null!;
         public Warranty Warranty { get; set; } = null!;
-        public JewelrySetting JewelrySetting { get; set; } = null!;
+        public JewelrySettings JewelrySetting { get; set; } = null!;
         public ICollection<OrderDetail> OrderDetails { get; } = new List<OrderDetail>();
         public ICollection<Feedback> Feedbacks { get; } = new List<Feedback>();
     }

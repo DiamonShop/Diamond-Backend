@@ -18,6 +18,7 @@ public class DiamondDbContext : DbContext
     public DbSet<Diamonds> Diamonds { get; set; }
     public DbSet<Warranty> Warranties { get; set; }
     public DbSet<Feedback> Feedbacks { get; set; }
+    public DbSet<JewelrySettings> JewelrySetting { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -102,8 +103,9 @@ public class DiamondDbContext : DbContext
                 .HasForeignKey(x => x.UserId);
         });
 
-        modelBuilder.Entity<JewelrySetting>(e =>
+        modelBuilder.Entity<JewelrySettings>(e =>
         {
+            e.ToTable("JewelrySetting");
             e.Property(e => e.BasePrice).HasColumnType("decimal(18,2)");
         });
     }
