@@ -1,7 +1,6 @@
-﻿using Diamond.Entities.Data;
+﻿using Microsoft.EntityFrameworkCore;
 using DiamondShop.Data;
-using DiamondShop.Model;
-using Microsoft.EntityFrameworkCore;
+using Diamond.Entities.Data;
 
 public class DiamondDbContext : DbContext
 {
@@ -56,7 +55,7 @@ public class DiamondDbContext : DbContext
                 .OnDelete(DeleteBehavior.NoAction);
 
             e.HasOne(x => x.Order)
-                .WithMany(x => x.CartItems)
+                .WithMany(x => x.OrderDetails)
                 .HasForeignKey(x => x.OrderId)
                 .OnDelete(DeleteBehavior.NoAction);
         });

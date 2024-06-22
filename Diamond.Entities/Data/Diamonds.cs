@@ -15,7 +15,8 @@ namespace Diamond.Entities.Data
         [Required]
         public int DiamondID { get; set; }
         [ForeignKey("Product")]
-        public int ProductID { get; set; }
+        [StringLength(50)]
+        public string ProductID { get; set; }
         [StringLength(50)]
         [Required]
         public string Origin { get; set; }

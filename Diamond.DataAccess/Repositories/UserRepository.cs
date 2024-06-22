@@ -54,6 +54,17 @@ namespace DiamondShop.Repositories
             return userProfile;
         }
 
+        public async Task<User> FindByEmailAsync(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task AddAsync(User user)
+        {
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<UserViewModel> GetByUserID(int userId)
         {
             var user = await _context.Users
@@ -344,18 +355,6 @@ namespace DiamondShop.Repositories
                 _logger.LogError($"Exception occurred in Login method: {ex}");
                 return new ApiResponse { Success = false, Message = "An error occurred while processing your request" };
             }
-        }
-
-
-        public async Task<User> FindByEmailAsync(string email)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        }
-
-        public async Task AddAsync(User user)
-        {
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<string> GenerateJwtToken(User user)

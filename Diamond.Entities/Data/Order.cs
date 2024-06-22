@@ -12,7 +12,7 @@ namespace DiamondShop.Data
 		[ForeignKey("User")]
 		public int UserID { get; set; }
 		[Required]
-		public decimal TotalPrice { get; set; }
+		public int TotalPrice { get; set; }
 		[Required]
 		[StringLength(30)]
 		public string Status { get; set; }
@@ -20,6 +20,6 @@ namespace DiamondShop.Data
 		public DateTime OrderDate { get; set; }
 
 		public virtual User User { get; set; } = null!;
-		public virtual ICollection<OrderDetail> CartItems { get; set; } = new List<OrderDetail>();
+		public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 	}
 }

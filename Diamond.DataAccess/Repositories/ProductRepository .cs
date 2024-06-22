@@ -42,7 +42,7 @@ namespace DiamondShop.Repositories
 
         public async Task<ProductViewModel> GetProductById(int id)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId.Equals(id));
 
             if (product == null) { return null; }
 
@@ -194,7 +194,7 @@ namespace DiamondShop.Repositories
             bool result = false;
 
             var product = await _context.Products
-                .FirstOrDefaultAsync(u => u.ProductId == id);
+                .FirstOrDefaultAsync(u => u.ProductId.Equals(id));
 
             if (product == null)
             {
@@ -225,14 +225,14 @@ namespace DiamondShop.Repositories
 
         public async Task<bool> DeleteProduct(int id)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(u => u.ProductId == id);
+            var product = await _context.Products.FirstOrDefaultAsync(u => u.ProductId.Equals(id));
 
             if (product == null)
             {
                 return false;
             }
 
-            if (product.ProductId == id)
+            if (product.ProductId.Equals(id))
             {
                 product.IsActive = false;
                 _context.Products.Update(product);

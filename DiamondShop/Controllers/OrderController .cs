@@ -23,12 +23,12 @@ namespace DiamondShop.Controllers
         }
 
         [HttpGet("GetAllOrders")]
-        [Authorize(Roles = "Manager,Staff,Delivery")]
-        public async Task<ActionResult<List<OrderViewModel>>> GetAllOrders()
+        /*[Authorize(Roles = "Manager,Staff,Delivery")]*/
+        public async Task<IActionResult> GetAllOrders()
         {
             var orders = await _context.Orders
                 .Include(o => o.User)
-                .Include(o => o.CartItems)
+                .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Product)
                 .Select(o => new OrderViewModel
                 {
@@ -37,10 +37,9 @@ namespace DiamondShop.Controllers
                     TotalPrice = o.TotalPrice,
                     Status = o.Status,
                     OrderDate = o.OrderDate,
-                    CartItems = o.CartItems.Select(od => new CartItemModel
+                    OrderDetails = o.OrderDetails.Select(od => new CartItemModel
                     {
                         ProductId = od.ProductId,
-                        Price = od.UnitPrice,
                         Quantity = od.Quantity
                     }).ToList()
                 })
@@ -55,7 +54,7 @@ namespace DiamondShop.Controllers
         {
             var order = await _context.Orders
                 .Include(o => o.User)
-                .Include(o => o.CartItems)
+                .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Product)
                 .Where(o => o.OrderId == id)
                 .Select(o => new OrderViewModel
@@ -65,11 +64,10 @@ namespace DiamondShop.Controllers
                     TotalPrice = o.TotalPrice,
                     Status = o.Status,
                     OrderDate = o.OrderDate,
-                    CartItems = o.CartItems.Select(od => new CartItemModel
+                    OrderDetails = o.OrderDetails.Select(od => new CartItemModel
                     {
                         ProductId = od.ProductId,
                         ProductName = od.Product.ProductName,
-                        Price = od.UnitPrice,
                         Quantity = od.Quantity
                     }).ToList()
                 })
@@ -81,6 +79,32 @@ namespace DiamondShop.Controllers
             }
 
             return Ok(order);
+        }
+
+        [HttpGet("GetOrderByUserId")]
+        /*[Authorize(Roles = "Manager,Staff,Delivery")]*/
+        public async Task<IActionResult> GetOrderByUserId(int userId)
+        {
+            var userOrders = await _context.Users
+                .Where(u => u.UserId == userId)
+                .Include(u => u.Orders)
+                .ThenInclude(o => o.OrderDetails)
+                .SelectMany(u => u.Orders)
+                .Select(o => new OrderViewModel
+                {
+                    OrderId = o.OrderId,
+                    UserName = o.User.FullName,  // Assumes Order entity has a User navigation property
+                    TotalPrice = o.TotalPrice,
+                    Status = o.Status,
+                    OrderDate = o.OrderDate,
+                    OrderDetails = o.OrderDetails.Select(od => new CartItemModel
+                    {
+                        ProductId = od.ProductId,
+                        Quantity = od.Quantity
+                    }).ToList()
+                }).ToListAsync();
+
+            return Ok(userOrders);
         }
 
         [HttpPost("CreatOrder")]
@@ -96,7 +120,7 @@ namespace DiamondShop.Controllers
             {
                 UserID = userId,
                 OrderDate = DateTime.Now,
-                CartItems = null!,
+                OrderDetails = null!,
                 Status = "Ordering",
                 TotalPrice = 0
             };
@@ -107,14 +131,24 @@ namespace DiamondShop.Controllers
 
             if (result == false)
             {
-                return BadRequest("Create Order Failed");
+                return BadRequest(new ApiResponse()
+                {
+                    Message = "Create Order Failed",
+                    Success = false,
+                    Data = null
+                });
             }
-            return Ok("Create Order Succesfully");
+            return Ok(new ApiResponse()
+            {
+                Message = "Create Order Successfully",
+                Success = false,
+                Data = order.OrderId
+            });
         }
 
         [HttpPost("CreateOrderDetail")]
         /*[Authorize(Roles = "Manager,Staff,Member")]*/
-        public async Task<IActionResult> CreateOrderDetail(int orderId, int productId)
+        public async Task<IActionResult> CreateOrderDetail(int orderId, string productId)
         {
             bool result = false;
             var order = _context.Orders.FirstOrDefault(order => order.OrderId == orderId);
@@ -122,7 +156,7 @@ namespace DiamondShop.Controllers
             if (order == null) { return NotFound("Order is not found"); }
 
             if (order.Status.Equals("Completed")) { return BadRequest("Create OrderDatail Failed"); }
-            
+
             OrderDetail orderDetail = new OrderDetail()
             {
                 OrderId = order.OrderId,
@@ -152,7 +186,7 @@ namespace DiamondShop.Controllers
             if (orderDetail == null) { return NotFound("Order is not found"); }
 
             orderDetail.Quantity = quantity;
-            
+
 
             // Thêm order vào cơ sở dữ liệu
             _context.OrderDetails.Add(orderDetail);
@@ -184,7 +218,7 @@ namespace DiamondShop.Controllers
 
         [HttpPost("Checkout")]
         //[Authorize(Roles = "Manager")]
-        [Authorize(Roles = "Manager,Staff,Member")]
+        /*[Authorize(Roles = "Manager,Staff,Member")]*/
         public IActionResult CreatePaymentUrl(PaymentInformationModel model)
         {
             var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
@@ -194,7 +228,6 @@ namespace DiamondShop.Controllers
 
         [HttpGet("result")]
         //[Authorize(Roles = "Manager")]
-        [Authorize(Roles = "Manager,Staff,Member")]
         public IActionResult PaymentCallback()
         {
             var response = _vnPayRepo.PaymentExecute(Request.Query);
