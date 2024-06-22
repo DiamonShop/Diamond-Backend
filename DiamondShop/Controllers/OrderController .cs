@@ -6,6 +6,8 @@ using Diamond.Entities.Model;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using System.Threading.Tasks;
+using System;
 
 namespace DiamondShop.Controllers
 {
