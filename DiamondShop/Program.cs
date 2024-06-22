@@ -34,6 +34,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IVnPayRepository, VnPayRepository>();
+builder.Services.AddScoped<IJewelrySettingRepository, JewelrySettingRepository>();
 
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
