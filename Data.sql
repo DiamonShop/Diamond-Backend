@@ -112,7 +112,7 @@ VALUES ('VT-001', 4, 1, N'Emerald Pendant', N'Beautiful emerald pendant', 25, 1.
 
 /* Insert Orders */
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 99.99, 'Completed', '2023-05-15 12:34:56.123');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (2, 49.49, 'Pending', '2023-05-16 14:21:22.456');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (2, 49.49, 'Ordering', '2023-05-16 14:21:22.456');
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (3, 75.00, 'Shipped', '2023-05-17 16:45:33.789');
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (4, 120.50, 'Completed', '2023-05-18 11:12:12.012');
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 200.99, 'Cancelled', '2023-05-19 10:01:44.321');
@@ -120,7 +120,7 @@ INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 15
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (2, 250.00, 'Completed', '2023-05-21 09:30:11.987');
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (3, 60.60, 'Shipped', '2023-05-22 08:45:22.876');
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (4, 89.89, 'Completed', '2023-05-23 07:12:33.765');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 199.99, 'Pending', '2023-05-24 06:23:44.654');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 199.99, 'Ordering', '2023-05-24 06:23:44.654');
 
 /* Insert Diamond */
 INSERT INTO [dbo].[Diamonds] (ProductID, Origin, Carat, Clarity, Cut, Color, BasePrice) 

@@ -47,8 +47,6 @@ public class DiamondDbContext : DbContext
 
         modelBuilder.Entity<OrderDetail>(e =>
         {
-            e.Property(e => e.UnitPrice).HasColumnType("decimal(18,2)");
-
             e.HasOne(x => x.Product)
                 .WithMany(x => x.OrderDetails)
                 .HasForeignKey(x => x.ProductId)

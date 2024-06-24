@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using System.Threading.Tasks;
 using System;
+using Microsoft.Data.SqlClient;
 
 namespace DiamondShop.Controllers
 {
@@ -87,11 +88,8 @@ namespace DiamondShop.Controllers
         /*[Authorize(Roles = "Manager,Staff,Delivery")]*/
         public async Task<IActionResult> GetOrderByUserId(int userId)
         {
-            var userOrders = await _context.Users
-                .Where(u => u.UserId == userId)
-                .Include(u => u.Orders)
-                .ThenInclude(o => o.OrderDetails)
-                .SelectMany(u => u.Orders)
+            var userOrders = await _context.Orders
+                .Where(u => u.UserID == userId)
                 .Select(o => new OrderViewModel
                 {
                     OrderId = o.OrderId,
@@ -106,7 +104,22 @@ namespace DiamondShop.Controllers
                     }).ToList()
                 }).ToListAsync();
 
-            return Ok(userOrders);
+            if(!userOrders.Any())
+            {
+                return Ok(new ApiResponse()
+                {
+                    Message = "Get Order by user id failed",
+                    Success = false,
+                    Data = null
+                });
+            }
+
+            return Ok(new ApiResponse()
+            {
+                Message = "Get Order by user id successfully",
+                Success = true,
+                Data = userOrders
+            }); 
         }
 
         [HttpPost("CreatOrder")]
@@ -114,9 +127,14 @@ namespace DiamondShop.Controllers
         public async Task<IActionResult> CreateOrder(int userId)
         {
             bool result = false;
-            var user = _context.Users.FirstOrDefault(user => user.UserId == userId);
-
+            var user = _context.Users.Include(u => u.Orders).FirstOrDefault(user => user.UserId == userId);
+            
             if (user == null) { return NotFound("User is not found"); }
+
+            //Nếu có order với status là Ordering thì không tạo Order khác nữa
+            var availableOrder = user.Orders.FirstOrDefault(od => od.Status.Equals("Ordering"));
+
+            if(availableOrder != null) { return Ok(availableOrder.OrderId); }
 
             Order order = new Order()
             {
@@ -143,39 +161,48 @@ namespace DiamondShop.Controllers
             return Ok(new ApiResponse()
             {
                 Message = "Create Order Successfully",
-                Success = false,
+                Success = true,
                 Data = order.OrderId
             });
         }
 
-        [HttpPost("CreateOrderDetail")]
+        [HttpPost("AddProductToOrderDetail")]
         /*[Authorize(Roles = "Manager,Staff,Member")]*/
-        public async Task<IActionResult> CreateOrderDetail(int orderId, string productId)
+        public async Task<IActionResult> AddProductToOrderDetail(int orderId, string productId, int quantity)
         {
             bool result = false;
-            var order = _context.Orders.FirstOrDefault(order => order.OrderId == orderId);
-
+            var order = _context.Orders.Include(order => order.OrderDetails).FirstOrDefault(order => order.OrderId == orderId);
             if (order == null) { return NotFound("Order is not found"); }
+            if (order.Status.Equals("Completed") || order.Status.Equals("Shipped")) { return BadRequest("Order is completed"); }
 
-            if (order.Status.Equals("Completed")) { return BadRequest("Create OrderDatail Failed"); }
-
-            OrderDetail orderDetail = new OrderDetail()
+            var product = _context.Products.SingleOrDefault(product => product.ProductId.Equals(productId));
+            if (product == null) { return BadRequest("Product is not existed"); }
+            //Kiểm tra xem orderDetail có productId chưa
+            var orderDetails = order.OrderDetails.FirstOrDefault(od => od.ProductId.Equals(productId));
+            if (orderDetails == null)
             {
-                OrderId = order.OrderId,
-                UnitPrice = 0,
-                Quantity = 0,
-                ProductId = productId
-            };
+                OrderDetail newOrderDetail = new OrderDetail()
+                {
+                    OrderId = orderId,
+                    UnitPrice = product.BasePrice,
+                    Quantity = quantity,
+                    ProductId = productId,
+                };
 
-            // Thêm order vào cơ sở dữ liệu
-            _context.OrderDetails.Add(orderDetail);
-            result = await _context.SaveChangesAsync() > 0;
-
+                // Thêm order vào cơ sở dữ liệu
+                _context.OrderDetails.Add(newOrderDetail);
+                result = await _context.SaveChangesAsync() > 0;
+            } else {
+                orderDetails.Quantity += quantity;
+                _context.OrderDetails.Update(orderDetails);
+                result = await _context.SaveChangesAsync() > 0;
+            }
+            
             if (result == false)
             {
-                return BadRequest("Create OrderDatail Failed");
+                return BadRequest("Add product to OrderDatail failed");
             }
-            return Ok("Create OrderDetail Succesfully");
+            return Ok("Add product to OrderDetail succesfully");
         }
 
         [HttpPut("UpdateOrderDetail")]
@@ -188,7 +215,6 @@ namespace DiamondShop.Controllers
             if (orderDetail == null) { return NotFound("Order is not found"); }
 
             orderDetail.Quantity = quantity;
-
 
             // Thêm order vào cơ sở dữ liệu
             _context.OrderDetails.Add(orderDetail);

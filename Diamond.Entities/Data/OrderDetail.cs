@@ -13,7 +13,7 @@ namespace DiamondShop.Data
 		[ForeignKey("Product")]
 		public string ProductId { get; set; }
 		[Required]
-		public decimal UnitPrice { get; set; }
+		public int UnitPrice { get; set; }
 		[Required]
 		public int Quantity { get; set; }
 
