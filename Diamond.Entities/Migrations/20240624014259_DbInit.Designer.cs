@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diamond.Entities.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    [Migration("20240623145424_DbInit")]
+    [Migration("20240624014259_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -71,7 +71,7 @@ namespace Diamond.Entities.Migrations
                     b.ToTable("Diamonds");
                 });
 
-            modelBuilder.Entity("Diamond.Entities.Data.JewelrySetting", b =>
+            modelBuilder.Entity("Diamond.Entities.Data.JewelrySettings", b =>
                 {
                     b.Property<int>("JewelrySettingID")
                         .ValueGeneratedOnAdd()
@@ -99,7 +99,7 @@ namespace Diamond.Entities.Migrations
 
                     b.HasKey("JewelrySettingID");
 
-                    b.ToTable("JewelrySetting");
+                    b.ToTable("JewelrySetting", (string)null);
                 });
 
             modelBuilder.Entity("DiamondShop.Data.Category", b =>
@@ -218,6 +218,10 @@ namespace Diamond.Entities.Migrations
                     b.Property<string>("ProductId")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -444,7 +448,7 @@ namespace Diamond.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Diamond.Entities.Data.JewelrySetting", "JewelrySetting")
+                    b.HasOne("Diamond.Entities.Data.JewelrySettings", "JewelrySetting")
                         .WithMany("Products")
                         .HasForeignKey("JewelrySettingID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -483,7 +487,7 @@ namespace Diamond.Entities.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Diamond.Entities.Data.JewelrySetting", b =>
+            modelBuilder.Entity("Diamond.Entities.Data.JewelrySettings", b =>
                 {
                     b.Navigation("Products");
                 });

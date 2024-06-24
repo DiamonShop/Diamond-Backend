@@ -101,7 +101,7 @@ namespace DiamondShop.Controllers
 
         // Tạo sản phẩm mới
         [HttpPost("CreateProduct")]
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> CreateProduct([FromBody] ProductViewModel productModel)
         {
             bool result = await _productRepository.CreateProduct(productModel);

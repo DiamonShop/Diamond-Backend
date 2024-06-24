@@ -43,10 +43,17 @@ namespace DiamondShop.Controllers
                     OrderDetails = o.OrderDetails.Select(od => new CartItemModel
                     {
                         ProductId = od.ProductId,
+                        ProductName = od.ProductName,
+                        UnitPrice = od.UnitPrice,
                         Quantity = od.Quantity
                     }).ToList()
                 })
                 .ToListAsync();
+
+            if (orders == null)
+            {
+                return NotFound();
+            }
 
             return Ok(orders);
         }
@@ -70,11 +77,12 @@ namespace DiamondShop.Controllers
                     OrderDetails = o.OrderDetails.Select(od => new CartItemModel
                     {
                         ProductId = od.ProductId,
-                        ProductName = od.Product.ProductName,
+                        ProductName = od.ProductName,
+                        UnitPrice = od.UnitPrice,
                         Quantity = od.Quantity
                     }).ToList()
                 })
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
             if (order == null)
             {
@@ -100,11 +108,13 @@ namespace DiamondShop.Controllers
                     OrderDetails = o.OrderDetails.Select(od => new CartItemModel
                     {
                         ProductId = od.ProductId,
+                        ProductName = od.ProductName,
+                        UnitPrice = od.UnitPrice,
                         Quantity = od.Quantity
                     }).ToList()
                 }).ToListAsync();
 
-            if(!userOrders.Any())
+            if (!userOrders.Any())
             {
                 return Ok(new ApiResponse()
                 {
@@ -119,7 +129,7 @@ namespace DiamondShop.Controllers
                 Message = "Get Order by user id successfully",
                 Success = true,
                 Data = userOrders
-            }); 
+            });
         }
 
         [HttpPost("CreatOrder")]
@@ -128,13 +138,13 @@ namespace DiamondShop.Controllers
         {
             bool result = false;
             var user = _context.Users.Include(u => u.Orders).FirstOrDefault(user => user.UserId == userId);
-            
+
             if (user == null) { return NotFound("User is not found"); }
 
             //Nếu có order với status là Ordering thì không tạo Order khác nữa
             var availableOrder = user.Orders.FirstOrDefault(od => od.Status.Equals("Ordering"));
 
-            if(availableOrder != null) { return Ok(availableOrder.OrderId); }
+            if (availableOrder != null) { return Ok(availableOrder.OrderId); }
 
             Order order = new Order()
             {
@@ -185,19 +195,25 @@ namespace DiamondShop.Controllers
                 {
                     OrderId = orderId,
                     UnitPrice = product.BasePrice,
+                    ProductName = product.ProductName,
                     Quantity = quantity,
                     ProductId = productId,
                 };
 
                 // Thêm order vào cơ sở dữ liệu
                 _context.OrderDetails.Add(newOrderDetail);
+                //Cập nhật lại total price của order
+                order.TotalPrice += quantity * newOrderDetail.UnitPrice;
+                _context.Orders.Update(order);
                 result = await _context.SaveChangesAsync() > 0;
-            } else {
+            }
+            else
+            {
                 orderDetails.Quantity += quantity;
                 _context.OrderDetails.Update(orderDetails);
                 result = await _context.SaveChangesAsync() > 0;
             }
-            
+
             if (result == false)
             {
                 return BadRequest("Add product to OrderDatail failed");
