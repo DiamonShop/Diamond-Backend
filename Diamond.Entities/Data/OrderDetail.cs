@@ -11,9 +11,9 @@ namespace DiamondShop.Data
 		[ForeignKey("Order")]
 		public int OrderId { get; set; }
 		[ForeignKey("Product")]
-		public int ProductId { get; set; }
+		public string ProductId { get; set; }
 		[Required]
-		public decimal UnitPrice { get; set; }
+		public int UnitPrice { get; set; }
 		[Required]
 		public int Quantity { get; set; }
 

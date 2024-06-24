@@ -1,11 +1,6 @@
 ﻿using DiamondShop.Data;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Diamond.Entities.Data
 {
@@ -15,7 +10,8 @@ namespace Diamond.Entities.Data
         [Required]
         public int DiamondID { get; set; }
         [ForeignKey("Product")]
-        public int ProductID { get; set; }
+        [StringLength(50)]
+        public string ProductID { get; set; }
         [StringLength(50)]
         [Required]
         public string Origin { get; set; }

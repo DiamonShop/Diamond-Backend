@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Diamond.Entities.Data
 {
-    public class JewelrySetting
+    public class JewelrySettings
     {
         [Key]
         [Required]

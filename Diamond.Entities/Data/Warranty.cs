@@ -7,9 +7,10 @@ namespace DiamondShop.Data
 	{
 		[Key]
 		[Required]
-		public int WarrantyId { get; set; }
+		public string WarrantyId { get; set; }
 		[ForeignKey("Product")]
-		public int ProductId { get; set; }
+        [StringLength(50)]
+        public string ProductId { get; set; }
 		[Required]
 		public int WarrantyPeriod { get; set; }
         [Required]
