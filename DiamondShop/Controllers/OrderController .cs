@@ -198,10 +198,19 @@ namespace DiamondShop.Controllers
         public IActionResult PaymentCallback()
         {
             var response = _vnPayRepo.PaymentExecute(Request.Query);
-            var url = "http://localhost:3000/";
+			var successUrl = "http://localhost:3000/?message=Payment%20Successful";
+			var failureUrl = "http://localhost:3000/Giohang?message=Payment%20Failed";
 
-			return Redirect(url);
-        }
+			if (response.VnPayResponseCode.Equals("00"))
+            {
+                return Redirect(successUrl);
+                //return Ok(response);
+            }
+            else
+            {
+                return Redirect(failureUrl);
+            }
+		}
     }
 }
 
