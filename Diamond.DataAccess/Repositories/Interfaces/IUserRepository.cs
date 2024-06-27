@@ -1,4 +1,5 @@
 ﻿using Diamond.Entities.DTO;
+using Diamond.Entities.Model;
 using DiamondShop.Controllers;
 using DiamondShop.Data;
 using DiamondShop.Model;
@@ -21,5 +22,9 @@ namespace DiamondShop.Repositories.Interfaces
         Task<string> GenerateJwtToken(User user);
         Task<User> FindByEmailAsync(string email);
         Task AddAsync(User user);
+        Task<bool> AddShipAddressAsync(int userId, ShipAddressViewModel shipAddress);
+        Task <bool> UpdateShipAddressAsync(int userId, ShipAddress shipAddress);
+        Task<bool> DeleteShipAddressAsync(int shipAddressId);
+        Task<List<ShipAddressViewModel>> GetAllShipAddresses(int userId);
     }
 }

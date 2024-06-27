@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Diamond.Entities.Migrations
 {
     /// <inheritdoc />
-    public partial class DbInit : Migration
+    public partial class DiamondStore : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -95,7 +95,6 @@ namespace Diamond.Entities.Migrations
                     FullName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Username = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     LoyaltyPoints = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -205,6 +204,29 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ShipAddresses",
+                columns: table => new
+                {
+                    ShipAddressId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ReceiverName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShipAddresses", x => x.ShipAddressId);
+                    table.ForeignKey(
+                        name: "FK_ShipAddresses_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Certificates",
                 columns: table => new
                 {
@@ -300,6 +322,11 @@ namespace Diamond.Entities.Migrations
                 column: "JewelrySettingID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ShipAddresses_UserId",
+                table: "ShipAddresses",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
                 table: "Users",
                 column: "RoleId");
@@ -316,6 +343,9 @@ namespace Diamond.Entities.Migrations
 
             migrationBuilder.DropTable(
                 name: "OrderDetails");
+
+            migrationBuilder.DropTable(
+                name: "ShipAddresses");
 
             migrationBuilder.DropTable(
                 name: "Warranties");

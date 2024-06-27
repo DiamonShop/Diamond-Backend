@@ -8,6 +8,7 @@ namespace Diamond.Entities.Model
 {
 	public class PaymentResponseModel
 	{
+		public string UserId { get; set; }
 		public string OrderDescription { get; set; }
 		public string TransactionId { get; set; }
 		public string OrderId { get; set; }

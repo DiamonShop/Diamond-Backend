@@ -1,4 +1,7 @@
-﻿namespace DiamondShop.Model
+﻿using Diamond.Entities.Data;
+using Diamond.Entities.Model;
+
+namespace DiamondShop.Model
 {
     public class UserViewModel
 	{
@@ -10,5 +13,6 @@
         public string Address { get; set; }
         public int LoyaltyPoints { get; set; }
         public bool IsActive { get; set; }
+        public List<ShipAddressViewModel> ShipAddresses { get; set; }
     }
 }
