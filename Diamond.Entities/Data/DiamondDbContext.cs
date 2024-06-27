@@ -19,6 +19,7 @@ public class DiamondDbContext : DbContext
     public DbSet<Warranty> Warranties { get; set; }
     public DbSet<Feedback> Feedbacks { get; set; }
     public DbSet<JewelrySettings> JewelrySetting { get; set; }
+    public DbSet<ShipAddress> ShipAddresses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +29,9 @@ public class DiamondDbContext : DbContext
             e.HasOne(x => x.Role)
                 .WithMany(x => x.Users)
                 .HasForeignKey(x => x.RoleId);
+            e.HasMany(x => x.ShipAddresses)
+              .WithOne(x => x.User)
+              .HasForeignKey(x => x.UserId);
         });
 
         modelBuilder.Entity<Certification>(e =>
