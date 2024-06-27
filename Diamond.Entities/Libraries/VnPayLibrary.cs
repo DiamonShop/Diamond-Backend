@@ -13,26 +13,28 @@ namespace DiamondShop.API.Libraries
 	        private readonly SortedList<string, string> _requestData = new SortedList<string, string>(new VnPayCompare());
 	        private readonly SortedList<string, string> _responseData = new SortedList<string, string>(new VnPayCompare());
 
-	        public PaymentResponseModel GetFullResponseData(IQueryCollection collection, string hashSecret)
-	        {
-	            var vnPay = new VnPayLibrary();
+		public PaymentResponseModel GetFullResponseData(IQueryCollection collection, string hashSecret)
+		{
+			var vnPay = new VnPayLibrary();
 
-	            foreach (var (key, value) in collection)
-	            {
-	                if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_"))
-	                {
-	                    vnPay.AddResponseData(key, value);
-	                }
-	            }
+			foreach (var (key, value) in collection)
+			{
+				if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_"))
+				{
+					vnPay.AddResponseData(key, value);
+				}
+			}
 
-	            var orderId = Convert.ToInt64(vnPay.GetResponseData("vnp_TxnRef"));
-	            var vnPayTranId = Convert.ToInt64(vnPay.GetResponseData("vnp_TransactionNo"));
-	            var vnpResponseCode = vnPay.GetResponseData("vnp_ResponseCode");
-	            var vnpSecureHash =
-	                collection.FirstOrDefault(k => k.Key == "vnp_SecureHash").Value; //hash của dữ liệu trả về
-	            var orderInfo = vnPay.GetResponseData("vnp_OrderInfo");
+			var orderId = Convert.ToInt64(vnPay.GetResponseData("vnp_TxnRef"));
+			var vnPayTranId = Convert.ToInt64(vnPay.GetResponseData("vnp_TransactionNo"));
+			var vnpResponseCode = vnPay.GetResponseData("vnp_ResponseCode");
+			var vnpSecureHash = collection.FirstOrDefault(k => k.Key == "vnp_SecureHash").Value;
+			var orderInfo = vnPay.GetResponseData("vnp_OrderInfo");
+			var userId = vnPay.GetResponseData("vnp_OrderType");
+			
 
-	            var checkSignature =
+
+			var checkSignature =
 	                vnPay.ValidateSignature(vnpSecureHash, hashSecret); //check Signature
 
 	            if (!checkSignature)
@@ -43,6 +45,7 @@ namespace DiamondShop.API.Libraries
 
 	            return new PaymentResponseModel()
 	            {
+					UserId = userId,
 	                Success = true,
 	                PaymentMethod = "VnPay",
 	                OrderDescription = orderInfo,

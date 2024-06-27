@@ -33,17 +33,12 @@ namespace DiamondShop.Controllers
 			pay.AddRequestData("vnp_CurrCode", _configuration["Vnpay:CurrCode"]);
 			pay.AddRequestData("vnp_IpAddr", pay.GetIpAddress(context));
 			pay.AddRequestData("vnp_Locale", _configuration["Vnpay:Locale"]);
-			pay.AddRequestData("vnp_OrderInfo", $"{model.fullName} {model.phoneNumber} {model.streetAddress} {model.birthday} {model.email}");
+			pay.AddRequestData("vnp_OrderInfo", $"{model.userId}/{model.fullName}/{model.phoneNumber}/" +
+				$" {model.streetAddress}/{model.birthday}/{model.email}/{model.orderNote}");
+			pay.AddRequestData("vnp_OrderType", "{model.userId}");
 			pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
 			pay.AddRequestData("vnp_TxnRef", tick);
-			if (!string.IsNullOrEmpty(model.orderNote))
-			{
-				pay.AddRequestData("vnp_OrderType", model.orderNote);
-			}
-			else
-			{
-				pay.AddRequestData("vnp_OrderType", " ");
-			}
+			
 
 			var paymentUrl =
 				pay.CreateRequestUrl(_configuration["Vnpay:BaseUrl"], _configuration["Vnpay:HashSecret"]);
