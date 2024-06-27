@@ -8,6 +8,8 @@ using DiamondShop.Repositories.Interfaces;
 using DiamondShop.Controllers;
 using Microsoft.OpenApi.Models;
 using Diamond.Entities.Model;
+using Diamond.DataAccess.Repositories.Interfaces;
+using Diamond.DataAccess.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +32,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 // Register services
 builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();

@@ -18,7 +18,7 @@ namespace DiamondShop.Controllers
 		}
 
 		[HttpGet("GetAllUsers")]
-		[Authorize(Roles = "Admin,Manager")]
+		/*[Authorize(Roles = "Admin,Manager")]*/
 		public async Task<IActionResult> GetAllUsers()
 		{
 			return Ok(await _userRepository.GetAllUsersAsync());
