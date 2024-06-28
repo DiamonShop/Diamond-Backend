@@ -146,7 +146,7 @@ namespace DiamondShop.Controllers
             return BadRequest("Failed to delete ship address");
         }
         [HttpGet("GetAllShipAddresses")]
-        [Authorize(Roles = "Admin,Manager,Staff,Delivery,Member")] // Bạn có thể chỉ định các vai trò cần thiết
+        /*[Authorize(Roles = "Admin,Manager,Staff,Delivery,Member")]*/ // Bạn có thể chỉ định các vai trò cần thiết
         public async Task<IActionResult> GetAllShipAddresses(int userId)
         {
             var shipAddresses = await _userRepository.GetAllShipAddresses(userId);
