@@ -20,6 +20,8 @@ namespace DiamondShop.Data
         [StringLength(50)]
         public string FullName { get; set; }
 
+        [StringLength(20)] 
+        public string NumberPhone { get; set; }
         [Required]
         [StringLength(30)]
         public string Username { get; set; }
@@ -44,7 +46,7 @@ namespace DiamondShop.Data
         // Quan hệ với Feedbacks
         public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
-        // Quan hệ với ShipAddresses
-        public virtual ICollection<ShipAddress> ShipAddresses { get; set; } = new List<ShipAddress>();
+        
+        
     }
 }

@@ -139,6 +139,10 @@ namespace DiamondShop.Controllers
             }
         }
 
+
+
+
+
         [HttpPut("UpdateStatusByUserId")]
         public async Task<IActionResult> UpdateStatusByUserId(int userId)
         {
@@ -149,6 +153,7 @@ namespace DiamondShop.Controllers
 			}
 			return Ok("Failed to Update status Order");
 		}
+        //---------------bill-------------
     }
 }
 
