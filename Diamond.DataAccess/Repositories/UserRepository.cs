@@ -31,7 +31,7 @@ namespace DiamondShop.Repositories
         {
             var user = await _context.Users
                 .Include(u => u.Role)
-                .Include(u => u.ShipAddresses) // Include ShipAddresses
+               
                 .FirstOrDefaultAsync(u => u.UserId == userId);
 
             if (user == null)
@@ -46,7 +46,7 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName,
                 Email = user.Email,
-                Address = user.ShipAddresses.FirstOrDefault()?.Address, // Get the first address
+                
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role?.RoleName // Optional chaining for RoleName
@@ -71,7 +71,7 @@ namespace DiamondShop.Repositories
         {
             var user = await _context.Users
                         .Include(user => user.Role)
-                        .Include(user => user.ShipAddresses) // Include ShipAddresses
+                       
                         .FirstOrDefaultAsync(user => user.UserId.Equals(userId));
 
             if (user == null)
@@ -85,7 +85,7 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName!,
                 Email = user.Email!,
-                Address = user.ShipAddresses.FirstOrDefault()?.Address, // Get the first address
+                
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
@@ -99,7 +99,7 @@ namespace DiamondShop.Repositories
         {
             var users = await _context.Users
                 .Include(user => user.Role)
-                .Include(user => user.ShipAddresses) // Include ShipAddresses
+                
                 .Where(user => user.Email.Contains(email)) //Tìm gần đúng
                 .ToListAsync();
 
@@ -114,8 +114,7 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName,
                 Email = user.Email,
-                Address = user.ShipAddresses.FirstOrDefault()?.Address, // Get the first address
-                LoyaltyPoints = user.LoyaltyPoints,
+                
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
             }).ToList();
@@ -128,7 +127,7 @@ namespace DiamondShop.Repositories
         {
             var users = await _context.Users
                 .Include(user => user.Role)
-                .Include(user => user.ShipAddresses) // Include ShipAddresses
+                
                 .Where(user => user.Username.Contains(userName)) //Tìm gần đúng
                 .ToListAsync();
 
@@ -143,7 +142,7 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName,
                 Email = user.Email,
-                Address = user.ShipAddresses.FirstOrDefault()?.Address, // Get the first address
+               
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
@@ -157,7 +156,7 @@ namespace DiamondShop.Repositories
         {
             var users = await _context.Users
                 .Include(user => user.Role)
-                .Include(user => user.ShipAddresses) // Include ShipAddresses
+                
                 .ToListAsync();
 
             if (users == null)
@@ -172,7 +171,7 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName,
                 Email = user.Email,
-                Address = user.ShipAddresses.FirstOrDefault()?.Address, // Get the first address
+               
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName // Lấy tên role của người dùng nếu có
@@ -199,14 +198,8 @@ namespace DiamondShop.Repositories
                     Email = userDTO.Email,
                     IsActive = true,
                     RoleId = userDTO.RoleId,
-                    ShipAddresses = new List<ShipAddress>
-            {
-                new ShipAddress
-                {
-                    Address = userDTO.Address,
-                    IsActive = true
-                }
-            }
+
+            
                 };
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
@@ -243,7 +236,7 @@ namespace DiamondShop.Repositories
             try
             {
                 var user = await _context.Users
-                    .Include(u => u.ShipAddresses) // Include ShipAddresses
+                  
                     .FirstOrDefaultAsync(u => u.UserId == userId);
 
                 if (user == null)
@@ -274,22 +267,9 @@ namespace DiamondShop.Repositories
                     user.Email = userModel.Email;
                 }
 
-                if (!string.IsNullOrEmpty(userModel.Address))
-                {
-                    var shipAddress = user.ShipAddresses.FirstOrDefault();
-                    if (shipAddress != null)
-                    {
-                        shipAddress.Address = userModel.Address;
-                    }
-                    else
-                    {
-                        user.ShipAddresses.Add(new ShipAddress
-                        {
-                            Address = userModel.Address,
-                            IsActive = true
-                        });
-                    }
-                }
+               
+                    
+                
 
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
@@ -327,7 +307,7 @@ namespace DiamondShop.Repositories
                     Email = userSignUpModel.Email,
                     Password = userSignUpModel.Password,
                     FullName = "",
-                  
+                    NumberPhone = "",
                     LoyaltyPoints = 0,
                     IsActive = true,
                     RoleId = 3 // Member
@@ -335,11 +315,11 @@ namespace DiamondShop.Repositories
 
                 await _context.AddAsync(user);
                 await _context.SaveChangesAsync();
-                return true; // User created successfully
+                return true; 
             }
             catch (Exception)
             {
-                return false; // Failed to create user
+                return false; 
             }
         }
 
@@ -360,7 +340,7 @@ namespace DiamondShop.Repositories
             {
                 var user = await _context.Users
                     .Include(u => u.Role)
-                      .Include(u => u.ShipAddresses)
+                     
                     .FirstOrDefaultAsync(u => u.Username == loginModel.UserName && u.Password == loginModel.Password);
 
                 if (user == null)
@@ -368,14 +348,6 @@ namespace DiamondShop.Repositories
                     return new ApiResponse { Success = false, Message = "Invalid login attempt" };
                 }
 
-                var shipAddressViewModels = user.ShipAddresses.Select(sa => new ShipAddressViewModel
-                {
-                    ShipAddressId = sa.ShipAddressId,
-                    Address = sa.Address,
-                    PhoneNumber = sa.PhoneNumber,
-                    
-                    IsActive = sa.IsActive
-                }).ToList();
 
                 var token = await GenerateJwtToken(user);
 
@@ -390,7 +362,7 @@ namespace DiamondShop.Repositories
                         user.FullName,
                         user.Email,
                         user.Role.RoleName,
-                        ShipAddresses = shipAddressViewModels,
+                        user.NumberPhone,
                         Token = token
                     }
                 };
@@ -403,48 +375,8 @@ namespace DiamondShop.Repositories
         }
        
 
-        public async Task<bool> UpdateShipAddressAsync(int shipAddressId, ShipAddress shipAddress)
-        {
-            try
-            {
-                var existingShipAddress = await _context.ShipAddresses.FirstOrDefaultAsync(sa => sa.ShipAddressId == shipAddressId);
-                if (existingShipAddress != null)
-                {
-                    existingShipAddress.Address = shipAddress.Address;
-                    existingShipAddress.PhoneNumber = shipAddress.PhoneNumber;
-                    existingShipAddress.ReceiverName = shipAddress.ReceiverName;
-                    existingShipAddress.IsActive = shipAddress.IsActive;
-
-                    _context.ShipAddresses.Update(existingShipAddress);
-                    await _context.SaveChangesAsync();
-                    return true;
-                }
-                return false; // Ship address not found
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-        public async Task<bool> DeleteShipAddressAsync(int shipAddressId)
-        {
-            try
-            {
-                var shipAddress = await _context.ShipAddresses.FirstOrDefaultAsync(sa => sa.ShipAddressId == shipAddressId);
-                if (shipAddress != null)
-                {
-                    shipAddress.IsActive = false; // Soft delete by marking inactive
-                    _context.ShipAddresses.Update(shipAddress);
-                    await _context.SaveChangesAsync();
-                    return true;
-                }
-                return false; // Ship address not found
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
+        
+        
 
         public async Task<string> GenerateJwtToken(User user)
         {
@@ -472,51 +404,7 @@ namespace DiamondShop.Repositories
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<bool> AddShipAddressAsync(int userId, ShipAddressViewModel shipAddressViewModel)
-        {
-            // Kiểm tra xem userId có tồn tại trong bảng Users hay không
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-            if (user == null)
-            {
-                return false; // Nếu không tìm thấy userId, trả về false hoặc xử lý thích hợp
-            }
-
-            var shipAddress = new ShipAddress
-            {
-                UserId = userId, // Gán UserId cho ShipAddress
-                Address = shipAddressViewModel.Address,
-                PhoneNumber = shipAddressViewModel.PhoneNumber,
-                ReceiverName = shipAddressViewModel.RecipientName,
-                IsActive = true // Set IsActive as needed
-            };
-
-            _context.ShipAddresses.Add(shipAddress);
-            await _context.SaveChangesAsync();
-            return true; // Thêm ShipAddress thành công
-        }
-        public async Task<List<ShipAddressViewModel>> GetAllShipAddresses(int userId)
-        {
-            var user = await _context.Users
-                .Include(u => u.ShipAddresses)
-                .FirstOrDefaultAsync(u => u.UserId == userId);
-
-            if (user == null)
-            {
-                return null; // hoặc trả về danh sách trống tùy theo logic ứng dụng của bạn
-            }
-
-            var shipAddresses = user.ShipAddresses.Select(sa => new ShipAddressViewModel
-            {
-                ShipAddressId = sa.ShipAddressId,
-                Address = sa.Address,
-                PhoneNumber = sa.PhoneNumber,
-                RecipientName = sa.ReceiverName,
-                IsActive = sa.IsActive
-            }).ToList();
-
-            return shipAddresses;
-        }
-
+       
 
 
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Diamond.Entities.Migrations
 {
     /// <inheritdoc />
-    public partial class DbInit : Migration
+    public partial class DiamondStore : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -93,6 +93,7 @@ namespace Diamond.Entities.Migrations
                     RoleId = table.Column<int>(type: "int", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NumberPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Username = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LoyaltyPoints = table.Column<int>(type: "int", nullable: false),
@@ -138,7 +139,7 @@ namespace Diamond.Entities.Migrations
                 name: "Warranties",
                 columns: table => new
                 {
-                    WarrantyId = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    WarrantyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProductId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     WarrantyPeriod = table.Column<int>(type: "int", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -147,10 +148,35 @@ namespace Diamond.Entities.Migrations
                 {
                     table.PrimaryKey("PK_Warranties", x => x.WarrantyId);
                     table.ForeignKey(
-                        name: "FK_Warranties_Products_WarrantyId",
-                        column: x => x.WarrantyId,
+                        name: "FK_Warranties_Products_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Bills",
+                columns: table => new
+                {
+                    BillId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    NumberPhone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    OrderNote = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bills", x => x.BillId);
+                    table.ForeignKey(
+                        name: "FK_Bills_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -198,29 +224,6 @@ namespace Diamond.Entities.Migrations
                     table.ForeignKey(
                         name: "FK_Orders_Users_UserID",
                         column: x => x.UserID,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ShipAddresses",
-                columns: table => new
-                {
-                    ShipAddressId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    ReceiverName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShipAddresses", x => x.ShipAddressId);
-                    table.ForeignKey(
-                        name: "FK_ShipAddresses_Users_UserId",
-                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
@@ -275,6 +278,11 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bills_UserId",
+                table: "Bills",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Certificates_DiamondID",
                 table: "Certificates",
                 column: "DiamondID",
@@ -322,19 +330,23 @@ namespace Diamond.Entities.Migrations
                 column: "JewelrySettingID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShipAddresses_UserId",
-                table: "ShipAddresses",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
                 table: "Users",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Warranties_ProductId",
+                table: "Warranties",
+                column: "ProductId",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Bills");
+
             migrationBuilder.DropTable(
                 name: "Certificates");
 
@@ -343,9 +355,6 @@ namespace Diamond.Entities.Migrations
 
             migrationBuilder.DropTable(
                 name: "OrderDetails");
-
-            migrationBuilder.DropTable(
-                name: "ShipAddresses");
 
             migrationBuilder.DropTable(
                 name: "Warranties");
