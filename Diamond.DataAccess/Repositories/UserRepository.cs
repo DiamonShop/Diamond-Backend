@@ -398,7 +398,11 @@ namespace DiamondShop.Repositories
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
+<<<<<<< HEAD
+                expires: DateTime.UtcNow.AddDays(_jwtSettings.ExpirationMinutes),
+=======
                 expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
+>>>>>>> 3098463cc63a2232f897c79078e7c0101ced0976
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

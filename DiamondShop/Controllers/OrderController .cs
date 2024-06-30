@@ -126,7 +126,7 @@ namespace DiamondShop.Controllers
         {
             var response = _vnPayRepo.PaymentExecute(Request.Query);
             var successUrl = "http://localhost:3000/?message=Payment%20Successful";
-            var failureUrl = "http://localhost:3000/Giohang?message=Payment%20Failed";
+            var failureUrl = "http://localhost:3000/?message=Payment%20Failed";
 
             if (response.VnPayResponseCode.Equals("00"))
             {
@@ -138,8 +138,22 @@ namespace DiamondShop.Controllers
                 return Redirect(failureUrl);
             }
         }
-        //---------------bill-------------
 
+
+
+
+
+        [HttpPut("UpdateStatusByUserId")]
+        public async Task<IActionResult> UpdateStatusByUserId(int userId)
+        {
+			bool result = await _orderRepository.UpdateStatusByUserId(userId);
+			if (result)
+			{
+				return Ok("Update status Order successfully");
+			}
+			return Ok("Failed to Update status Order");
+		}
+        //---------------bill-------------
     }
 }
 

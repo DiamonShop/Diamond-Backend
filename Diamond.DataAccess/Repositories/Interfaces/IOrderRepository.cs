@@ -13,5 +13,7 @@ namespace Diamond.DataAccess.Repositories.Interfaces
         public Task<bool> UpdateOrder(int orderId, int totalPrice);
         public Task<bool> UpdateStatus(int orderId);
         public Task<bool> UpdateOrderDetail(int orderDetailId, int quantity);
-    }
+        public Task<bool> UpdateStatusByUserId(int userId);
+
+	}
 }
