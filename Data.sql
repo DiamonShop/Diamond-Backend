@@ -15,20 +15,21 @@ INSERT INTO [dbo].[Roles] (RoleName) VALUES ('Delivery');
 INSERT INTO [dbo].[Roles] (RoleName) VALUES ('Staff');
 
 /* Insert User */
-INSERT INTO [dbo].[Users] (RoleId, Email, FullName, Username, Password,  LoyaltyPoints, IsActive) 
-VALUES (1, 'admin@example.com', 'Admin User', 'admin', '123',  100, 1);
+INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive) 
+VALUES (1, 'admin@example.com', 'Admin User', '123456789', 'admin', '123', 100, 1);
 
-INSERT INTO [dbo].[Users] (RoleId, Email, FullName, Username, Password,  LoyaltyPoints, IsActive) 
-VALUES (2, 'manager@example.com', 'Manager User', 'manager', '123',  200, 1);
+INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive) 
+VALUES (2, 'manager@example.com', 'Manager User', '987654321', 'manager', '123', 200, 1);
 
-INSERT INTO [dbo].[Users] (RoleId, Email, FullName, Username, Password,  LoyaltyPoints, IsActive) 
-VALUES (3, 'member@example.com', 'Member User', 'member', '123', 300, 1);
+INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive) 
+VALUES (3, 'member@example.com', 'Member User', '555666777', 'member', '123', 300, 1);
 
-INSERT INTO [dbo].[Users] (RoleId, Email, FullName, Username, Password,  LoyaltyPoints, IsActive) 
-VALUES (4, 'delivery@example.com', 'Delivery User', 'delivery', '123',  400, 1);
+INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive) 
+VALUES (4, 'delivery@example.com', 'Delivery User', '999888777', 'delivery', '123', 400, 1);
 
-INSERT INTO [dbo].[Users] (RoleId, Email, FullName, Username, Password,  LoyaltyPoints, IsActive) 
-VALUES (5, 'staff@example.com', 'Staff User', 'staff', '123', 500, 1);
+INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive) 
+VALUES (5, 'staff@example.com', 'Staff User', '111222333', 'staff', '123', 500, 1);
+
 
 /* Insert JewelrySetting */
 INSERT INTO [dbo].[JewelrySetting] (Name, Material, BasePrice, Description) 
