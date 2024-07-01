@@ -46,7 +46,7 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName,
                 Email = user.Email,
-                
+                NumberPhone = user.NumberPhone,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role?.RoleName // Optional chaining for RoleName
@@ -85,7 +85,7 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName!,
                 Email = user.Email!,
-                
+                NumberPhone = user.NumberPhone,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
@@ -114,7 +114,7 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName,
                 Email = user.Email,
-                
+                NumberPhone= user.NumberPhone,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
             }).ToList();
@@ -142,7 +142,7 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName,
                 Email = user.Email,
-               
+               NumberPhone = user.NumberPhone,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
@@ -171,7 +171,7 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName,
                 Email = user.Email,
-               
+               NumberPhone= user.NumberPhone,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName // Lấy tên role của người dùng nếu có
@@ -198,7 +198,7 @@ namespace DiamondShop.Repositories
                     Email = userDTO.Email,
                     IsActive = true,
                     RoleId = userDTO.RoleId,
-
+                   NumberPhone = userDTO.NumberPhone,
             
                 };
                 await _context.Users.AddAsync(user);
@@ -236,7 +236,6 @@ namespace DiamondShop.Repositories
             try
             {
                 var user = await _context.Users
-                  
                     .FirstOrDefaultAsync(u => u.UserId == userId);
 
                 if (user == null)
@@ -266,10 +265,10 @@ namespace DiamondShop.Repositories
                 {
                     user.Email = userModel.Email;
                 }
-
-               
-                    
-                
+                if (!string.IsNullOrEmpty(userModel.NumberPhone))
+                {
+                    user.NumberPhone = userModel.NumberPhone;
+                }
 
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
@@ -278,11 +277,12 @@ namespace DiamondShop.Repositories
             }
             catch (DbUpdateException ex)
             {
-                // Xử lý ngoại lệ khi cập nhật vào cơ sở dữ liệu không thành công
                 // Log lỗi ex.Message để xem lỗi chi tiết
+                Console.WriteLine($"An error occurred while updating the user profile: {ex.Message}");
                 return false;
             }
         }
+
 
 
         public async Task<bool> SignUpUser(UserSignUpModel userSignUpModel)
