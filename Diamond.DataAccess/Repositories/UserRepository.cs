@@ -307,7 +307,7 @@ namespace DiamondShop.Repositories
                     Email = userSignUpModel.Email,
                     Password = userSignUpModel.Password,
                     FullName = "",
-                    NumberPhone = userSignUpModel.NumberPhone,
+                    NumberPhone = "",
                     LoyaltyPoints = 0,
                     IsActive = true,
                     RoleId = 3 // Member
