@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DiamondShop.Data;
+using DiamondShop.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using DiamondShop.Data;
-using Google;
 
 namespace DiamondShop.Controllers
 {
@@ -9,23 +11,44 @@ namespace DiamondShop.Controllers
     [ApiController]
     public class BillController : ControllerBase
     {
-        private readonly DiamondDbContext _context;
+        private readonly IBillRepository _billRepository;
 
-        public BillController(DiamondDbContext context)
+        public BillController(IBillRepository billRepository)
         {
-            _context = context;
+            _billRepository = billRepository;
         }
 
         [HttpPost("CreateBill")]
+        [Authorize(Roles = "Member")]
         public async Task<IActionResult> CreateBill([FromBody] Bill bill)
         {
-            if (ModelState.IsValid)
+            if (bill == null)
             {
-                _context.Bills.Add(bill);
-                await _context.SaveChangesAsync();
-                return Ok(new { Message = "Bill created successfully", BillId = bill.BillId });
+                return BadRequest("Invalid bill data.");
             }
-            return BadRequest(ModelState);
+
+            var createdBill = await _billRepository.CreateBill(bill);
+            return Ok(createdBill);
+        }
+
+        [HttpGet("GetBillById/{id}")]
+        [Authorize(Roles = "Admin,Manager,Member")]
+        public async Task<IActionResult> GetBillById(int id)
+        {
+            var bill = await _billRepository.GetBillById(id);
+            if (bill == null)
+            {
+                return NotFound("Bill not found.");
+            }
+            return Ok(bill);
+        }
+
+        [HttpGet("GetAllBills")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> GetAllBills()
+        {
+            var bills = await _billRepository.GetAllBills();
+            return Ok(bills);
         }
     }
 }
