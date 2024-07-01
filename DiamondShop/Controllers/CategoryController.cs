@@ -1,74 +1,59 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using DiamondShop.Data;
-using Microsoft.AspNetCore.Cors;
+﻿using Diamond.Entities.Data;
 using DiamondShop.Repositories.Interfaces;
-using DiamondShop.Model;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace DiamondShop.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class CategoryController : Controller
-	{
-		private readonly ICategoryRepository _cateRepository;
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DiamondsController : ControllerBase
+    {
+        private readonly IDiamondsRepository _diamondsRepository;
 
-		public CategoryController(ICategoryRepository cateRepository)
-		{
-			_cateRepository = cateRepository;
-		}
+        public DiamondsController(IDiamondsRepository diamondsRepository)
+        {
+            _diamondsRepository = diamondsRepository;
+        }
 
-		/*[EnableCors("AllowSpecificOrigin")]*/
-		[HttpGet("GetAllCategories")]
-		public async Task<IActionResult> GetAllCategories()
-		{
-			return Ok(await _cateRepository.GetAllCategories());
-		}
+        [HttpGet("GetAllDiamonds")]
+        [Authorize(Roles = "Admin,Manager,Member")]
+        public async Task<IActionResult> GetAllDiamonds()
+        {
+            var diamonds = await _diamondsRepository.GetAllDiamonds();
+            return Ok(diamonds);
+        }
 
-		[HttpGet("GetCategoryById")]
-		public async Task<IActionResult> GetCategoryById(int id)
-		{
-			var category = await _cateRepository.GetCategoryById(id);
-			if (category != null)
-			{
-				return Ok(category);
-			}
-			return BadRequest("Category is not found");
-		}
+        [HttpPost("CreateDiamond")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> CreateDiamond([FromBody] Diamonds diamond)
+        {
+            if (diamond == null)
+            {
+                return BadRequest("Invalid diamond data.");
+            }
 
-		[HttpGet("GetCategoryByName")]
-		public async Task<IActionResult> GetCategoryByName(string name)
-		{
-			var category = await _cateRepository.GetCategoryByName(name);
-			if (category != null)
-			{
-				return Ok(category);
-			}
-			return BadRequest("Category is not found");
-		}
+            var createdDiamond = await _diamondsRepository.CreateDiamond(diamond);
+            return Ok(createdDiamond);
+        }
 
-		[HttpPost("CreateCategory")]
-		[Authorize(Roles = "Manager")]
-		public async Task<IActionResult> CreateCategory([FromBody] CategoryModel categoryModel)
-		{
-			bool result = await _cateRepository.CreateCategory(categoryModel);
-			if (result)
-			{
-				return Ok("Category created successfully");
-			}
-			return BadRequest("Category cannot be null");
-		}
+        [HttpPut("UpdateDiamond")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> UpdateDiamond([FromBody] Diamonds diamond)
+        {
+            if (diamond == null)
+            {
+                return BadRequest("Invalid diamond data.");
+            }
 
-		[HttpPut("UpdateCategory")]
-		[Authorize(Roles = "Manager")]
-		public async Task<IActionResult> UpdateCategory(int id, [FromBody] Category category)
-		{
-			bool result = await _cateRepository.UpdateCategory(id, category);
-			if (result)
-			{
-				return Ok("Category updated successfully");
-			}
-			return BadRequest("Category cannot be null");
-		}
-	}
+            var updatedDiamond = await _diamondsRepository.UpdateDiamond(diamond);
+            if (updatedDiamond == null)
+            {
+                return NotFound("Diamond not found.");
+            }
+            return Ok(updatedDiamond);
+        }
+    }
 }
-
