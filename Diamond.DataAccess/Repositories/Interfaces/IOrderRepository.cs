@@ -2,6 +2,7 @@
 using DiamondShop.Controllers;
 using DiamondShop.Data;
 using DiamondShop.Model;
+using System.Threading.Tasks;
 
 namespace Diamond.DataAccess.Repositories.Interfaces
 {
@@ -17,5 +18,6 @@ namespace Diamond.DataAccess.Repositories.Interfaces
         public Task<bool> UpdateOrderDetail(string orderDetailId, int quantity);
         public Task<bool> DeleteOrderDetail(string orderDetailId);
         public Task<List<OrderDetailModel>> GetAllOrderDetail();
+        public Task<bool> UpdateStatusByUserId(int userId);
     }
 }

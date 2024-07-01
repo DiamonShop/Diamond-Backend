@@ -110,52 +110,8 @@ namespace DiamondShop.Controllers
 			}
 			return BadRequest("Failed To Delete User");
 		}
-        //---------------shipaddress-------------------
-        [HttpPost("addshipaddress")]
-        public async Task<IActionResult> AddShipAddress(int UserId, [FromBody] ShipAddressViewModel shipAddressViewModel)
-        {
-            var success = await _userRepository.AddShipAddressAsync(UserId, shipAddressViewModel);
-            if (success)
-            {
-                return Ok("Ship address added successfully");
-            }
-            return BadRequest("Failed to add ship address");
-        }
 
-
-
-        [HttpPut("update-ship-address/{shipAddressId}")]
-        public async Task<IActionResult> UpdateShipAddress(int shipAddressId, ShipAddress shipAddress)
-        {
-            var success = await _userRepository.UpdateShipAddressAsync(shipAddressId, shipAddress);
-            if (success)
-            {
-                return Ok("Ship address updated successfully");
-            }
-            return BadRequest("Failed to update ship address");
-        }
-
-        [HttpDelete("delete-ship-address/{shipAddressId}")]
-        public async Task<IActionResult> DeleteShipAddress(int shipAddressId)
-        {
-            var success = await _userRepository.DeleteShipAddressAsync(shipAddressId);
-            if (success)
-            {
-                return Ok("Ship address deleted successfully");
-            }
-            return BadRequest("Failed to delete ship address");
-        }
-        [HttpGet("GetAllShipAddresses")]
-        /*[Authorize(Roles = "Admin,Manager,Staff,Delivery,Member")]*/ // Bạn có thể chỉ định các vai trò cần thiết
-        public async Task<IActionResult> GetAllShipAddresses(int userId)
-        {
-            var shipAddresses = await _userRepository.GetAllShipAddresses(userId);
-            if (shipAddresses == null)
-            {
-                return BadRequest("User not found or no ship addresses found");
-            }
-            return Ok(shipAddresses);
-        }
+       
 
 
     }

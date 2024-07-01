@@ -4,6 +4,8 @@ using DiamondShop.Controllers;
 using DiamondShop.Data;
 using DiamondShop.Model;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Diamond.DataAccess.Repositories
 {
@@ -337,7 +339,6 @@ namespace Diamond.DataAccess.Repositories
 
             return result;
         }
-
         public async Task<List<OrderDetailModel>> GetAllOrderDetail()
         {
             var orders = await _context.OrderDetails.ToListAsync();
@@ -360,4 +361,23 @@ namespace Diamond.DataAccess.Repositories
             return orderModel;
         }
     }
+
+    public async Task<bool> UpdateStatusByUserId(int userId)
+    {
+        bool result = false;
+        var order = await _context.Orders.Include(u => u.User)
+            .FirstOrDefaultAsync(u => u.UserID == userId &&
+        u.Status == "Ordering");
+
+        if (order == null)
+        {
+            return result;
+        }
+        order.Status = "Completed";
+        _context.Orders.Update(order);
+        result = await _context.SaveChangesAsync() > 0;
+
+        return result;
+    }
+}
 }

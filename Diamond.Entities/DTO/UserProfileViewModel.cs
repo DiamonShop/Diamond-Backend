@@ -12,5 +12,6 @@ namespace Diamond.Entities.DTO
         public string Address { get; set; }
         public int LoyaltyPoints { get; set; }
         public bool IsActive { get; set; }
+        public string NumberPhone { get; set; }
     }
 }

@@ -99,6 +99,52 @@ namespace Diamond.Entities.Migrations
                     b.ToTable("JewelrySetting", (string)null);
                 });
 
+            modelBuilder.Entity("DiamondShop.Data.Bill", b =>
+                {
+                    b.Property<int>("BillId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BillId"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NumberPhone")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("OrderNote")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BillId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Bills");
+                });
+
             modelBuilder.Entity("DiamondShop.Data.Category", b =>
                 {
                     b.Property<int>("CategoryId")
@@ -294,42 +340,6 @@ namespace Diamond.Entities.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("DiamondShop.Data.ShipAddress", b =>
-                {
-                    b.Property<int>("ShipAddressId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShipAddressId"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("ReceiverName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ShipAddressId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ShipAddresses");
-                });
-
             modelBuilder.Entity("DiamondShop.Data.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -354,6 +364,11 @@ namespace Diamond.Entities.Migrations
                     b.Property<int>("LoyaltyPoints")
                         .HasColumnType("int");
 
+                    b.Property<string>("NumberPhone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -377,7 +392,7 @@ namespace Diamond.Entities.Migrations
             modelBuilder.Entity("DiamondShop.Data.Warranty", b =>
                 {
                     b.Property<string>("WarrantyId")
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProductId")
                         .IsRequired()
@@ -393,6 +408,9 @@ namespace Diamond.Entities.Migrations
 
                     b.HasKey("WarrantyId");
 
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
                     b.ToTable("Warranties");
                 });
 
@@ -405,6 +423,17 @@ namespace Diamond.Entities.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("DiamondShop.Data.Bill", b =>
+                {
+                    b.HasOne("DiamondShop.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DiamondShop.Data.Certification", b =>
@@ -486,17 +515,6 @@ namespace Diamond.Entities.Migrations
                     b.Navigation("JewelrySetting");
                 });
 
-            modelBuilder.Entity("DiamondShop.Data.ShipAddress", b =>
-                {
-                    b.HasOne("DiamondShop.Data.User", "User")
-                        .WithMany("ShipAddresses")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("DiamondShop.Data.User", b =>
                 {
                     b.HasOne("DiamondShop.Data.Role", "Role")
@@ -512,7 +530,7 @@ namespace Diamond.Entities.Migrations
                 {
                     b.HasOne("DiamondShop.Data.Product", "Product")
                         .WithOne("Warranty")
-                        .HasForeignKey("DiamondShop.Data.Warranty", "WarrantyId")
+                        .HasForeignKey("DiamondShop.Data.Warranty", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -563,8 +581,6 @@ namespace Diamond.Entities.Migrations
                     b.Navigation("Feedbacks");
 
                     b.Navigation("Orders");
-
-                    b.Navigation("ShipAddresses");
                 });
 #pragma warning restore 612, 618
         }
