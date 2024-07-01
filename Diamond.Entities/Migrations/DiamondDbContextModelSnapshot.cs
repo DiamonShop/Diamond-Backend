@@ -203,11 +203,9 @@ namespace Diamond.Entities.Migrations
 
             modelBuilder.Entity("DiamondShop.Data.OrderDetail", b =>
                 {
-                    b.Property<int>("OrderDetailId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailId"));
+                    b.Property<string>("OrderDetailId")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");

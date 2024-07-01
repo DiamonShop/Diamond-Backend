@@ -6,8 +6,8 @@ namespace DiamondShop.Data
 	public class OrderDetail
 	{
 		[Key]
-		[Required]
-		public int OrderDetailId { get; set; }
+        [StringLength(10)]
+        public string OrderDetailId { get; set; }
 		[ForeignKey("Order")]
 		public int OrderId { get; set; }
 		[ForeignKey("Product")]

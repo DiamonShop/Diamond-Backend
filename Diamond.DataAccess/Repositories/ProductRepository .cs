@@ -5,6 +5,7 @@ using DiamondShop.Data;
 using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace DiamondShop.Repositories
@@ -88,9 +89,16 @@ namespace DiamondShop.Repositories
 
         public async Task<List<ProductViewModel>> GetProductsByName(string productName)
         {
+            if (productName.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            string productNameLowerCase = productName.ToLower();
+
             var productList = await _context.Products
-                .Where(p => p.ProductName.Contains(productName)) //Tìm gần đúng
-                .ToListAsync();
+                .Where(p => p.ProductName.ToLower().Contains(productNameLowerCase)) 
+                .ToListAsync(); //Tìm gần đúng
 
             if (productList == null) { return null; }
 

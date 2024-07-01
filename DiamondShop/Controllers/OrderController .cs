@@ -74,6 +74,13 @@ namespace DiamondShop.Controllers
             return Ok("Failed to add product to order detail");
         }
 
+        [HttpGet("GetAllOrderDetail")]
+        /*[Authorize(Roles = "Manager,Staff,Member")]*/
+        public async Task<IActionResult> GetAllOrderDetail()
+        {
+            return Ok(await _orderRepository.GetAllOrderDetail());
+        }
+
         [HttpPut("UpdateTotalPrice")]
         /*[Authorize(Roles = "Manager,Staff,Member")]*/
         public async Task<IActionResult> UpdateTotalPrice(int orderId, int totalPrice)
@@ -88,7 +95,7 @@ namespace DiamondShop.Controllers
 
         [HttpPut("UpdateOrderDetail")]
         /*[Authorize(Roles = "Manager,Staff,Member")]*/
-        public async Task<IActionResult> UpdateOrderDetail(int orderDetailId, int quantity)
+        public async Task<IActionResult> UpdateOrderDetail(string orderDetailId, int quantity)
         {
             bool result = await _orderRepository.UpdateOrderDetail(orderDetailId, quantity);
             if (result)
@@ -96,6 +103,18 @@ namespace DiamondShop.Controllers
                 return Ok("Update Order successfully");
             }
             return Ok("Failed to Update Order");
+        }
+
+        [HttpDelete("DeleteOrderDetail")]
+        /*[Authorize(Roles = "Manager,Staff,Member")]*/
+        public async Task<IActionResult> DeleteOrderDetail(string orderDetailId)
+        {
+            bool result = await _orderRepository.DeleteOrderDetail(orderDetailId);
+            if (result)
+            {
+                return Ok("Delete Order Detail successfully");
+            }
+            return Ok("Failed to Delete Order Detail");
         }
 
         [HttpDelete("UpdateStatus")]

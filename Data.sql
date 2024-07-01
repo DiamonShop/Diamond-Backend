@@ -1,4 +1,4 @@
-﻿USE [DiamondStore]
+﻿﻿USE [DiamondStore];
 
 /* Insert Category */
 INSERT INTO [dbo].[Categories] (CategoryName) VALUES ('Nhan');

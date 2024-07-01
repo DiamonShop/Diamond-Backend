@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DiamondShop.Repositories.Interfaces;
 using DiamondShop.Model;
-using DiamondShop.Repositories;
 using Microsoft.AspNetCore.Authorization;
 
 namespace DiamondShop.Controllers
@@ -65,12 +64,7 @@ namespace DiamondShop.Controllers
         {
             var products = await _productRepository.GetProductsByName(productName);
 
-            if (products != null)
-            {
-                return Ok(products);
-            }
-
-            return NotFound();
+            return Ok(products);
         }
 
         // Lọc sản phẩm theo giá từ cao tới thấp

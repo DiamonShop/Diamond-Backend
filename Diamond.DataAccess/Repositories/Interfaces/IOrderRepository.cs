@@ -1,4 +1,6 @@
-﻿using DiamondShop.Controllers;
+﻿using Diamond.Entities.Model;
+using DiamondShop.Controllers;
+using DiamondShop.Data;
 using DiamondShop.Model;
 
 namespace Diamond.DataAccess.Repositories.Interfaces
@@ -12,6 +14,8 @@ namespace Diamond.DataAccess.Repositories.Interfaces
         public Task<bool> AddProductToOrderDetail(int orderId, string productId, int quantity);
         public Task<bool> UpdateOrder(int orderId, int totalPrice);
         public Task<bool> UpdateStatus(int orderId);
-        public Task<bool> UpdateOrderDetail(int orderDetailId, int quantity);
+        public Task<bool> UpdateOrderDetail(string orderDetailId, int quantity);
+        public Task<bool> DeleteOrderDetail(string orderDetailId);
+        public Task<List<OrderDetailModel>> GetAllOrderDetail();
     }
 }
