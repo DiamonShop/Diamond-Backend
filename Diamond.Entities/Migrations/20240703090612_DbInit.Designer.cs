@@ -11,13 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diamond.Entities.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-<<<<<<<< HEAD:Diamond.Entities/Migrations/20240630095344_DbInit.Designer.cs
-    [Migration("20240630095344_DbInit")]
+    [Migration("20240703090612_DbInit")]
     partial class DbInit
-========
-    [Migration("20240630070905_Init")]
-    partial class Init
->>>>>>>> cbd2c8d164dcfb4bcd2a67ea45356698b632a7ea:Diamond.Entities/Migrations/20240630070905_Init.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,6 +36,7 @@ namespace Diamond.Entities.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Carat")
+                        .HasMaxLength(50)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Clarity")
@@ -58,11 +54,6 @@ namespace Diamond.Entities.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Origin")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("ProductID")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -76,6 +67,59 @@ namespace Diamond.Entities.Migrations
                     b.ToTable("Diamonds");
                 });
 
+            modelBuilder.Entity("Diamond.Entities.Data.Jewelry", b =>
+                {
+                    b.Property<int>("JewelryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JewelryID"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("JewelrySettingID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MainDiamond")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("MainDiamondPrice")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("MarkupRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ProductID")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SideDiamondPrice")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SideDiamonds")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SideDiamondsCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("JewelryID");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("JewelrySettingID");
+
+                    b.HasIndex("ProductID")
+                        .IsUnique();
+
+                    b.ToTable("Jewelry");
+                });
+
             modelBuilder.Entity("Diamond.Entities.Data.JewelrySettings", b =>
                 {
                     b.Property<int>("JewelrySettingID")
@@ -86,11 +130,6 @@ namespace Diamond.Entities.Migrations
 
                     b.Property<decimal>("BasePrice")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Material")
                         .IsRequired()
@@ -105,6 +144,52 @@ namespace Diamond.Entities.Migrations
                     b.HasKey("JewelrySettingID");
 
                     b.ToTable("JewelrySetting", (string)null);
+                });
+
+            modelBuilder.Entity("DiamondShop.Data.Bill", b =>
+                {
+                    b.Property<int>("BillId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BillId"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NumberPhone")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("OrderNote")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BillId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Bills");
                 });
 
             modelBuilder.Entity("DiamondShop.Data.Category", b =>
@@ -250,9 +335,6 @@ namespace Diamond.Entities.Migrations
                     b.Property<int>("BasePrice")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(300)
@@ -261,13 +343,12 @@ namespace Diamond.Entities.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int>("JewelrySettingID")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("MarkupRate")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ProductType")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -276,10 +357,6 @@ namespace Diamond.Entities.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ProductId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("JewelrySettingID");
 
                     b.ToTable("Products");
                 });
@@ -300,42 +377,6 @@ namespace Diamond.Entities.Migrations
                     b.HasKey("RoleId");
 
                     b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("DiamondShop.Data.ShipAddress", b =>
-                {
-                    b.Property<int>("ShipAddressId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShipAddressId"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("ReceiverName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ShipAddressId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ShipAddresses");
                 });
 
             modelBuilder.Entity("DiamondShop.Data.User", b =>
@@ -362,6 +403,11 @@ namespace Diamond.Entities.Migrations
                     b.Property<int>("LoyaltyPoints")
                         .HasColumnType("int");
 
+                    b.Property<string>("NumberPhone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -385,7 +431,7 @@ namespace Diamond.Entities.Migrations
             modelBuilder.Entity("DiamondShop.Data.Warranty", b =>
                 {
                     b.Property<string>("WarrantyId")
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProductId")
                         .IsRequired()
@@ -401,6 +447,9 @@ namespace Diamond.Entities.Migrations
 
                     b.HasKey("WarrantyId");
 
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
                     b.ToTable("Warranties");
                 });
 
@@ -413,6 +462,44 @@ namespace Diamond.Entities.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Diamond.Entities.Data.Jewelry", b =>
+                {
+                    b.HasOne("DiamondShop.Data.Category", "Category")
+                        .WithMany("Jewelry")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Diamond.Entities.Data.JewelrySettings", "JewelrySetting")
+                        .WithMany("Jewelry")
+                        .HasForeignKey("JewelrySettingID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DiamondShop.Data.Product", "Product")
+                        .WithOne("Jewelry")
+                        .HasForeignKey("Diamond.Entities.Data.Jewelry", "ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("JewelrySetting");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("DiamondShop.Data.Bill", b =>
+                {
+                    b.HasOne("DiamondShop.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DiamondShop.Data.Certification", b =>
@@ -475,36 +562,6 @@ namespace Diamond.Entities.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("DiamondShop.Data.Product", b =>
-                {
-                    b.HasOne("DiamondShop.Data.Category", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Diamond.Entities.Data.JewelrySettings", "JewelrySetting")
-                        .WithMany("Products")
-                        .HasForeignKey("JewelrySettingID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("JewelrySetting");
-                });
-
-            modelBuilder.Entity("DiamondShop.Data.ShipAddress", b =>
-                {
-                    b.HasOne("DiamondShop.Data.User", "User")
-                        .WithMany("ShipAddresses")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("DiamondShop.Data.User", b =>
                 {
                     b.HasOne("DiamondShop.Data.Role", "Role")
@@ -520,7 +577,7 @@ namespace Diamond.Entities.Migrations
                 {
                     b.HasOne("DiamondShop.Data.Product", "Product")
                         .WithOne("Warranty")
-                        .HasForeignKey("DiamondShop.Data.Warranty", "WarrantyId")
+                        .HasForeignKey("DiamondShop.Data.Warranty", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -535,12 +592,12 @@ namespace Diamond.Entities.Migrations
 
             modelBuilder.Entity("Diamond.Entities.Data.JewelrySettings", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("Jewelry");
                 });
 
             modelBuilder.Entity("DiamondShop.Data.Category", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("Jewelry");
                 });
 
             modelBuilder.Entity("DiamondShop.Data.Order", b =>
@@ -554,6 +611,9 @@ namespace Diamond.Entities.Migrations
                         .IsRequired();
 
                     b.Navigation("Feedbacks");
+
+                    b.Navigation("Jewelry")
+                        .IsRequired();
 
                     b.Navigation("OrderDetails");
 
@@ -571,8 +631,6 @@ namespace Diamond.Entities.Migrations
                     b.Navigation("Feedbacks");
 
                     b.Navigation("Orders");
-
-                    b.Navigation("ShipAddresses");
                 });
 #pragma warning restore 612, 618
         }

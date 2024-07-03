@@ -51,7 +51,6 @@ namespace DiamondShop.Repositories
             existingSetting.Name = jewelrySetting.Name;
             existingSetting.Material = jewelrySetting.Material;
             existingSetting.BasePrice = jewelrySetting.BasePrice;
-            existingSetting.Description = jewelrySetting.Description;
 
             _context.JewelrySetting.Update(existingSetting);
             return await _context.SaveChangesAsync() > 0;

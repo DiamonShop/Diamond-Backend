@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Diamond.Entities.Migrations
 {
     /// <inheritdoc />
-    public partial class DiamondStore : Migration
+    public partial class DbInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,12 +32,28 @@ namespace Diamond.Entities.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Material = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    BasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    BasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_JewelrySetting", x => x.JewelrySettingID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    ProductId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ProductName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ProductType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Stock = table.Column<int>(type: "int", nullable: false),
+                    BasePrice = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.ProductId);
                 });
 
             migrationBuilder.CreateTable(
@@ -54,33 +70,85 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Products",
+                name: "Diamonds",
                 columns: table => new
                 {
-                    ProductId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    JewelrySettingID = table.Column<int>(type: "int", nullable: false),
-                    ProductName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    Stock = table.Column<int>(type: "int", nullable: false),
-                    MarkupRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    BasePrice = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    DiamondID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductID = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Carat = table.Column<decimal>(type: "decimal(18,2)", maxLength: 50, nullable: false),
+                    Clarity = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Cut = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    BasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.ProductId);
+                    table.PrimaryKey("PK_Diamonds", x => x.DiamondID);
                     table.ForeignKey(
-                        name: "FK_Products_Categories_CategoryId",
+                        name: "FK_Diamonds_Products_ProductID",
+                        column: x => x.ProductID,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Jewelry",
+                columns: table => new
+                {
+                    JewelryID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    JewelrySettingID = table.Column<int>(type: "int", nullable: false),
+                    ProductID = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    MarkupRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MainDiamond = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MainDiamondPrice = table.Column<int>(type: "int", nullable: false),
+                    SideDiamonds = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SideDiamondPrice = table.Column<int>(type: "int", nullable: false),
+                    SideDiamondsCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Jewelry", x => x.JewelryID);
+                    table.ForeignKey(
+                        name: "FK_Jewelry_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "CategoryId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Products_JewelrySetting_JewelrySettingID",
+                        name: "FK_Jewelry_JewelrySetting_JewelrySettingID",
                         column: x => x.JewelrySettingID,
                         principalTable: "JewelrySetting",
                         principalColumn: "JewelrySettingID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Jewelry_Products_ProductID",
+                        column: x => x.ProductID,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Warranties",
+                columns: table => new
+                {
+                    WarrantyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProductId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    WarrantyPeriod = table.Column<int>(type: "int", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Warranties", x => x.WarrantyId);
+                    table.ForeignKey(
+                        name: "FK_Warranties_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -111,47 +179,23 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Diamonds",
+                name: "Certificates",
                 columns: table => new
                 {
-                    DiamondID = table.Column<int>(type: "int", nullable: false)
+                    CertificationID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductID = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Origin = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Carat = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Clarity = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Cut = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Color = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    BasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    DiamondID = table.Column<int>(type: "int", nullable: false),
+                    CertificationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CertificationDetails = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Diamonds", x => x.DiamondID);
+                    table.PrimaryKey("PK_Certificates", x => x.CertificationID);
                     table.ForeignKey(
-                        name: "FK_Diamonds_Products_ProductID",
-                        column: x => x.ProductID,
-                        principalTable: "Products",
-                        principalColumn: "ProductId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Warranties",
-                columns: table => new
-                {
-                    WarrantyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProductId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    WarrantyPeriod = table.Column<int>(type: "int", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Warranties", x => x.WarrantyId);
-                    table.ForeignKey(
-                        name: "FK_Warranties_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
-                        principalColumn: "ProductId",
+                        name: "FK_Certificates_Diamonds_DiamondID",
+                        column: x => x.DiamondID,
+                        principalTable: "Diamonds",
+                        principalColumn: "DiamondID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -230,32 +274,10 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Certificates",
-                columns: table => new
-                {
-                    CertificationID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DiamondID = table.Column<int>(type: "int", nullable: false),
-                    CertificationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CertificationDetails = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Certificates", x => x.CertificationID);
-                    table.ForeignKey(
-                        name: "FK_Certificates_Diamonds_DiamondID",
-                        column: x => x.DiamondID,
-                        principalTable: "Diamonds",
-                        principalColumn: "DiamondID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OrderDetails",
                 columns: table => new
                 {
-                    OrderDetailId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderDetailId = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     OrderId = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -305,6 +327,22 @@ namespace Diamond.Entities.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Jewelry_CategoryId",
+                table: "Jewelry",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Jewelry_JewelrySettingID",
+                table: "Jewelry",
+                column: "JewelrySettingID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Jewelry_ProductID",
+                table: "Jewelry",
+                column: "ProductID",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderDetails_OrderId",
                 table: "OrderDetails",
                 column: "OrderId");
@@ -318,16 +356,6 @@ namespace Diamond.Entities.Migrations
                 name: "IX_Orders_UserID",
                 table: "Orders",
                 column: "UserID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_CategoryId",
-                table: "Products",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_JewelrySettingID",
-                table: "Products",
-                column: "JewelrySettingID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
@@ -354,6 +382,9 @@ namespace Diamond.Entities.Migrations
                 name: "Feedbacks");
 
             migrationBuilder.DropTable(
+                name: "Jewelry");
+
+            migrationBuilder.DropTable(
                 name: "OrderDetails");
 
             migrationBuilder.DropTable(
@@ -363,6 +394,12 @@ namespace Diamond.Entities.Migrations
                 name: "Diamonds");
 
             migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "JewelrySetting");
+
+            migrationBuilder.DropTable(
                 name: "Orders");
 
             migrationBuilder.DropTable(
@@ -370,12 +407,6 @@ namespace Diamond.Entities.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "Categories");
-
-            migrationBuilder.DropTable(
-                name: "JewelrySetting");
 
             migrationBuilder.DropTable(
                 name: "Roles");

@@ -19,11 +19,12 @@ public class DiamondDbContext : DbContext
     public DbSet<Warranty> Warranties { get; set; }
     public DbSet<Feedback> Feedbacks { get; set; }
     public DbSet<JewelrySettings> JewelrySetting { get; set; }
+    public DbSet<Jewelry> Jewelry { get; set; }
     public DbSet<Bill> Bills { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
+
         modelBuilder.Entity<User>(e =>
         {
             e.HasOne(x => x.Role)
@@ -31,7 +32,6 @@ public class DiamondDbContext : DbContext
                 .HasForeignKey(x => x.RoleId);
         });
 
-        
         modelBuilder.Entity<Certification>(e =>
         {
             e.HasOne(x => x.Diamond)
@@ -39,7 +39,7 @@ public class DiamondDbContext : DbContext
                 .HasForeignKey<Certification>(x => x.DiamondID);
         });
 
-        
+
         modelBuilder.Entity<Order>(e =>
         {
             e.Property(e => e.TotalPrice).HasColumnType("decimal(18,2)");
@@ -49,7 +49,7 @@ public class DiamondDbContext : DbContext
                 .HasForeignKey(x => x.UserID);
         });
 
-        
+
         modelBuilder.Entity<OrderDetail>(e =>
         {
             e.HasOne(x => x.Product)
@@ -63,7 +63,6 @@ public class DiamondDbContext : DbContext
                 .OnDelete(DeleteBehavior.NoAction);
         });
 
-        
         modelBuilder.Entity<Diamonds>(e =>
         {
             e.Property(e => e.Carat).HasColumnType("decimal(18,2)");
@@ -74,29 +73,14 @@ public class DiamondDbContext : DbContext
                 .HasForeignKey<Diamonds>(x => x.ProductID);
         });
 
-        
+
         modelBuilder.Entity<Product>(e =>
         {
-            e.Property(e => e.MarkupRate).HasColumnType("decimal(18,2)");
-
-            e.HasOne(x => x.Category)
-                .WithMany(x => x.Products)
-                .HasForeignKey(x => x.CategoryId);
-
-            e.HasOne(x => x.Diamond)
-                .WithOne(x => x.Product)
-                .HasForeignKey<Diamonds>(x => x.ProductID);
-
             e.HasOne(x => x.Warranty)
                 .WithOne(x => x.Product)
                 .HasForeignKey<Warranty>(x => x.ProductId);
-
-            e.HasOne(x => x.JewelrySetting)
-                .WithMany(x => x.Products)
-                .HasForeignKey(x => x.JewelrySettingID);
         });
 
-        
         modelBuilder.Entity<Feedback>(e =>
         {
             e.HasOne(x => x.Product)
@@ -108,7 +92,23 @@ public class DiamondDbContext : DbContext
                 .HasForeignKey(x => x.UserId);
         });
 
-        
+        modelBuilder.Entity<Jewelry>(e =>
+        {
+            e.Property(e => e.MarkupRate).HasColumnType("decimal(18,2)");
+
+            e.HasOne(x => x.JewelrySetting)
+                .WithMany(x => x.Jewelry)
+                .HasForeignKey(x => x.JewelrySettingID);
+
+            e.HasOne(x => x.Category)
+            .WithMany(x => x.Jewelry)
+            .HasForeignKey(x => x.CategoryId);
+
+            e.HasOne(x => x.Product)
+                .WithOne(x => x.Jewelry)
+                .HasForeignKey<Jewelry>(x => x.ProductID);
+        });
+
         modelBuilder.Entity<JewelrySettings>(e =>
         {
             e.ToTable("JewelrySetting");

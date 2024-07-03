@@ -22,6 +22,5 @@ namespace DiamondShop.Repositories.Interfaces
         Task<string> GenerateJwtToken(User user);
         Task<User> FindByEmailAsync(string email);
         Task AddAsync(User user);
-        
     }
 }

@@ -21,9 +21,7 @@ namespace Diamond.Entities.Data
         public string Material { get; set; }
         [Required]
         public decimal BasePrice { get; set; }
-        [StringLength(200)]
-        public string Description { get; set; }
 
-        public ICollection<Product> Products { get; } = new List<Product>();
+        public ICollection<Jewelry> Jewelry { get; } = new List<Jewelry>();
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Diamond.Entities.Data;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,6 +13,6 @@ namespace DiamondShop.Data
 		[Required]
 		[StringLength(50)]
 		public string CategoryName { get; set; } 
-        public ICollection<Product> Products { get; } = new List<Product>();
+        public ICollection<Jewelry> Jewelry { get; } = new List<Jewelry>();
 	}
 }
