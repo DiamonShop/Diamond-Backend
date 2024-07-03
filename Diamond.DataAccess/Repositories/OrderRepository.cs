@@ -360,23 +360,26 @@ namespace Diamond.DataAccess.Repositories
 
             return orderModel;
         }
-        public async Task<bool> UpdateStatusByUserId(int userId)
-        {
-            bool result = false;
-            var order = await _context.Orders.Include(u => u.User)
-                .FirstOrDefaultAsync(u => u.UserID == userId &&
-            u.Status == "Ordering");
 
-            if (order == null)
-            {
-                return result;
-            }
-            order.Status = "Completed";
-            _context.Orders.Update(order);
-            result = await _context.SaveChangesAsync() > 0;
-
-            return result;
-        }
-    }
+		public async Task<bool> UpdateStatusByUserId(int userId)
+		{
+			bool result = false;
+			var order = await _context.Orders.Include(u => u.User)
+				.FirstOrDefaultAsync(u => u.UserID == userId &&
+			u.Status == "Ordering");
+        u.Status == "Ordering");
+			if (order == null)
+			{
+				return result;
+			}
+			order.Status = "Hoàn thành";
+			_context.Orders.Update(order);
+			result = await _context.SaveChangesAsync() > 0;
+        result = await _context.SaveChangesAsync() > 0;
+			return result;
+		}
+	}    
+    
+}
 }
 

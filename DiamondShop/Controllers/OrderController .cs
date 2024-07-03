@@ -21,11 +21,14 @@ namespace DiamondShop.Controllers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IVnPayRepository _vnPayRepo;
+        private readonly IBillRepository _billRepository;
 
-        public OrderController(IOrderRepository context, IVnPayRepository vnPayRepo)
+
+		public OrderController(IOrderRepository context, IVnPayRepository vnPayRepo, IBillRepository billRepository)
         {
             _orderRepository = context;
             _vnPayRepo = vnPayRepo;
+            _billRepository = billRepository;
         }
 
         [HttpGet("GetAllOrders")]
@@ -146,6 +149,27 @@ namespace DiamondShop.Controllers
             var response = _vnPayRepo.PaymentExecute(Request.Query);
             var successUrl = "http://localhost:3000/?message=Payment%20Successful";
             var failureUrl = "http://localhost:3000/?message=Payment%20Failed";
+
+            string[] orderDes = response.OrderDescription.Split('/');
+            int userId = int.Parse(orderDes[0]);
+            string fullname = orderDes[1];
+            string phoneNumber = orderDes[2]; 
+            string address = orderDes[3];
+            string email = orderDes[5];
+            string orderNote = orderDes[6];
+
+            Bill bill = new Bill
+            {
+                UserId = userId,
+                FullName = fullname,
+                NumberPhone = phoneNumber,
+                Address = address,
+                Email = email,
+                OrderNote = orderNote,
+                IsActive = true,
+            };
+
+            _billRepository.CreateBill(bill);
 
             if (response.VnPayResponseCode.Equals("00"))
             {
