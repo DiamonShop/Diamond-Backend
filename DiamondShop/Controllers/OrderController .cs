@@ -169,7 +169,9 @@ namespace DiamondShop.Controllers
                 IsActive = true,
             };
 
-            _billRepository.CreateBill(bill);
+             _billRepository.CreateBill(bill);
+
+            Console.WriteLine(bill);
 
             if (response.VnPayResponseCode.Equals("00"))
             {
