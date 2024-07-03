@@ -18,9 +18,10 @@ namespace DiamondShop.Data
         [Required]
         [StringLength(300)]
         public string? Description { get; set; }
+        public decimal MarkupRate { get; set; }
         [Required]
         public int Stock { get; set; }
-        public int BasePrice { get; set; }
+        public int MarkupPrice { get; set; }
         [Required]
         public bool IsActive { get; set; }
 

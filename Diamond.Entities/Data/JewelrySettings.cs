@@ -19,9 +19,7 @@ namespace Diamond.Entities.Data
         [Required]
         [StringLength(100)]
         public string Material { get; set; }
-        [Required]
-        public decimal BasePrice { get; set; }
-
+        
         public ICollection<Jewelry> Jewelry { get; } = new List<Jewelry>();
     }
 }

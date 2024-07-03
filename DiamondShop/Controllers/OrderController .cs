@@ -23,7 +23,6 @@ namespace DiamondShop.Controllers
         private readonly IVnPayRepository _vnPayRepo;
         private readonly IBillRepository _billRepository;
 
-
 		public OrderController(IOrderRepository context, IVnPayRepository vnPayRepo, IBillRepository billRepository)
         {
             _orderRepository = context;

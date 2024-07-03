@@ -39,7 +39,6 @@ namespace DiamondShop.Repositories
             }
 
             existingDiamond.ProductID = diamond.ProductID;
-            existingDiamond.Origin = diamond.Origin;
             existingDiamond.Carat = diamond.Carat;
             existingDiamond.Clarity = diamond.Clarity;
             existingDiamond.Cut = diamond.Cut;

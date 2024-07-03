@@ -76,6 +76,8 @@ public class DiamondDbContext : DbContext
 
         modelBuilder.Entity<Product>(e =>
         {
+            e.Property(e => e.MarkupRate).HasColumnType("decimal(18,2)");
+
             e.HasOne(x => x.Warranty)
                 .WithOne(x => x.Product)
                 .HasForeignKey<Warranty>(x => x.ProductId);
@@ -94,8 +96,6 @@ public class DiamondDbContext : DbContext
 
         modelBuilder.Entity<Jewelry>(e =>
         {
-            e.Property(e => e.MarkupRate).HasColumnType("decimal(18,2)");
-
             e.HasOne(x => x.JewelrySetting)
                 .WithMany(x => x.Jewelry)
                 .HasForeignKey(x => x.JewelrySettingID);
@@ -107,12 +107,6 @@ public class DiamondDbContext : DbContext
             e.HasOne(x => x.Product)
                 .WithOne(x => x.Jewelry)
                 .HasForeignKey<Jewelry>(x => x.ProductID);
-        });
-
-        modelBuilder.Entity<JewelrySettings>(e =>
-        {
-            e.ToTable("JewelrySetting");
-            e.Property(e => e.BasePrice).HasColumnType("decimal(18,2)");
         });
     }
 }

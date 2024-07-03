@@ -15,14 +15,7 @@ namespace Diamond.Entities.Data
         public string ProductID { get; set; }
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
-        public decimal MarkupRate { get; set; }
-        [StringLength(100)]
-        public string MainDiamond { get; set; }
-        public int MainDiamondPrice { get; set; }
-        [StringLength(100)]
-        public string SideDiamonds { get; set; }
-        public int SideDiamondPrice { get; set; }
-        public int SideDiamondsCount { get; set; }
+        public int BasePrice { get; set; }
 
         public Category Category { get; set; } = null!;
         public JewelrySettings JewelrySetting { get; set; } = null!;

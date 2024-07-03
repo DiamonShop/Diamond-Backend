@@ -29,7 +29,7 @@ namespace DiamondShop.Repositories
             {
                 ProductId = p.ProductId,
                 Description = p.Description,
-                BasePrice = p.BasePrice,
+                MarkupPrice = p.MarkupPrice,
                 IsActive = p.IsActive,
                 Stock = p.Stock,
                 ProductName = p.ProductName
@@ -48,7 +48,7 @@ namespace DiamondShop.Repositories
             {
                 ProductId = product.ProductId,
                 Description = product.Description,
-                BasePrice = product.BasePrice,
+                MarkupPrice = product.MarkupPrice,
                 IsActive = product.IsActive,
                 Stock = product.Stock,
                 ProductName = product.ProductName
@@ -69,7 +69,7 @@ namespace DiamondShop.Repositories
             {
                 ProductId = product.ProductId,
                 Description = product.Description,
-                BasePrice = product.BasePrice,
+                MarkupPrice = product.MarkupPrice,
                 IsActive = product.IsActive,
                 Stock = product.Stock,
                 ProductName = product.ProductName
@@ -97,7 +97,7 @@ namespace DiamondShop.Repositories
             {
                 ProductId = product.ProductId,
                 Description = product.Description,
-                BasePrice = product.BasePrice,
+                MarkupPrice = product.MarkupPrice,
                 IsActive = product.IsActive,
                 Stock = product.Stock,
                 ProductName = product.ProductName
@@ -110,7 +110,7 @@ namespace DiamondShop.Repositories
         {
             var productList = await _context.Products
                 .Include(p => p.Diamond)
-                .OrderByDescending(p => p.BasePrice)
+                .OrderByDescending(p => p.MarkupPrice)
                 .ToListAsync();
 
             if (productList == null) { return null; }
@@ -119,7 +119,7 @@ namespace DiamondShop.Repositories
             {
                 ProductId = product.ProductId,
                 Description = product.Description,
-                BasePrice = product.BasePrice,
+                MarkupPrice = product.MarkupPrice,
                 IsActive = product.IsActive,
                 Stock = product.Stock,
                 ProductName = product.ProductName
@@ -131,7 +131,7 @@ namespace DiamondShop.Repositories
         public async Task<List<ProductViewModel>> GetProductsByPriceAsc()
         {
             var productList = await _context.Products
-                .OrderBy(p => p.BasePrice)
+                .OrderBy(p => p.MarkupPrice)
                 .ToListAsync();
 
             if (productList == null) { return null; }
@@ -140,7 +140,7 @@ namespace DiamondShop.Repositories
             {
                 ProductId = product.ProductId,
                 Description = product.Description,
-                BasePrice = product.BasePrice,
+                MarkupPrice = product.MarkupPrice,
                 IsActive = product.IsActive,
                 Stock = product.Stock,
                 ProductName = product.ProductName
@@ -160,7 +160,7 @@ namespace DiamondShop.Repositories
                 {
                     ProductId = productModel.ProductId,
                     Description = productModel.Description,
-                    BasePrice = productModel.BasePrice,
+                    MarkupPrice = productModel.MarkupPrice,
                     IsActive = productModel.IsActive,
                     Stock = productModel.Stock,
                     ProductName = productModel.ProductName
@@ -191,7 +191,7 @@ namespace DiamondShop.Repositories
             {
                 product.ProductName = productModel.ProductName;
                 product.Description = productModel.Description;
-                product.BasePrice = productModel.BasePrice;
+                product.MarkupPrice = productModel.MarkupPrice;
                 product.IsActive = productModel.IsActive;
                 product.ProductName = product.ProductName;
                 product.Stock = productModel.Stock;

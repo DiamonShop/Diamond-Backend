@@ -1,9 +1,8 @@
 ﻿using DiamondShop.Data;
+using DiamondShop.Repositories;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DiamondShop.Controllers
 {
@@ -11,9 +10,9 @@ namespace DiamondShop.Controllers
     [ApiController]
     public class BillController : ControllerBase
     {
-        private readonly IBillRepository _billRepository;
+        private readonly BillRepository _billRepository;
 
-        public BillController(IBillRepository billRepository)
+        public BillController(BillRepository billRepository)
         {
             _billRepository = billRepository;
         }
