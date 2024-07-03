@@ -12,7 +12,7 @@ namespace DiamondShop.Data
 		[ForeignKey("User")]
 		public int UserID { get; set; }
 		[Required]
-		public int TotalPrice { get; set; }
+		public decimal TotalPrice { get; set; }
 		[Required]
 		[StringLength(30)]
 		public string Status { get; set; }

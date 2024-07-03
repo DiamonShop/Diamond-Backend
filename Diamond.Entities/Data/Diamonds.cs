@@ -14,6 +14,8 @@ namespace Diamond.Entities.Data
         public string ProductID { get; set; }
         [StringLength(50)]
         [Required]
+        public string Origin { get; set; }
+        [Required]
         public decimal Carat { get; set; }
         [Required]
         [StringLength(50)]
