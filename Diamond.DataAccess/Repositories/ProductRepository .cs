@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Diamond.Entities.Data;
 using DiamondShop.Data;
 using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DiamondShop.Repositories
 {
@@ -21,9 +21,15 @@ namespace DiamondShop.Repositories
 
         public async Task<List<ProductViewModel>> GetAllProducts()
         {
-            var productList = await _context.Products.ToListAsync();
+            var productList = await _context.Products
+                .Include(p => p.Jewelry)
+                .Include(p => p.Diamond)
+                .ToListAsync();
 
-            if (productList == null) { return null; }
+            if (productList == null || productList.Count == 0)
+            {
+                return null;
+            }
 
             var productModels = productList.Select(p => new ProductViewModel
             {
@@ -42,9 +48,15 @@ namespace DiamondShop.Repositories
 
         public async Task<ProductViewModel> GetProductById(string id)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId.Equals(id));
+            var product = await _context.Products
+                .Include(p => p.Jewelry)
+                .Include(p => p.Diamond)
+                .FirstOrDefaultAsync(p => p.ProductId.Equals(id));
 
-            if (product == null) { return null; }
+            if (product == null)
+            {
+                return null;
+            }
 
             var productModel = new ProductViewModel()
             {
@@ -64,12 +76,17 @@ namespace DiamondShop.Repositories
         public async Task<List<ProductViewModel>> GetProductsByCategoryName(string productType)
         {
             var productList = await _context.Products
-                .Where(p => p.ProductType.Contains(productType)) //Tìm gần đúng
+                .Include(p => p.Jewelry)
+                .Include(p => p.Diamond)
+                .Where(p => p.ProductType.Contains(productType))
                 .ToListAsync();
 
-            if (productList == null) { return null; }
+            if (productList == null || productList.Count == 0)
+            {
+                return null;
+            }
 
-            var productModel = productList.Select(product => new ProductViewModel
+            var productModels = productList.Select(p => new ProductViewModel
             {
                 ProductId = product.ProductId,
                 Description = product.Description,
@@ -81,12 +98,12 @@ namespace DiamondShop.Repositories
                 ProductName = product.ProductName
             }).ToList();
 
-            return productModel;
+            return productModels;
         }
 
         public async Task<List<ProductViewModel>> GetProductsByName(string productName)
         {
-            if (productName.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(productName))
             {
                 return null;
             }
@@ -97,9 +114,12 @@ namespace DiamondShop.Repositories
                 .Where(p => p.ProductName.ToLower().Contains(productNameLowerCase))
                 .ToListAsync(); //Tìm gần đúng
 
-            if (productList == null) { return null; }
+            if (productList == null || productList.Count == 0)
+            {
+                return null;
+            }
 
-            var productModel = productList.Select(product => new ProductViewModel
+            var productModels = productList.Select(p => new ProductViewModel
             {
                 ProductId = product.ProductId,
                 Description = product.Description,
@@ -111,19 +131,23 @@ namespace DiamondShop.Repositories
                 ProductName = product.ProductName
             }).ToList();
 
-            return productModel;
+            return productModels;
         }
 
         public async Task<List<ProductViewModel>> GetProductsByPriceDesc()
         {
             var productList = await _context.Products
+                .Include(p => p.Jewelry)
                 .Include(p => p.Diamond)
                 .OrderByDescending(p => p.MarkupPrice)
                 .ToListAsync();
 
-            if (productList == null) { return null; }
+            if (productList == null || productList.Count == 0)
+            {
+                return null;
+            }
 
-            var productModel = productList.Select(product => new ProductViewModel()
+            var productModels = productList.Select(p => new ProductViewModel
             {
                 ProductId = product.ProductId,
                 Description = product.Description,
@@ -135,18 +159,23 @@ namespace DiamondShop.Repositories
                 ProductName = product.ProductName
             }).ToList();
 
-            return productModel;
+            return productModels;
         }
 
         public async Task<List<ProductViewModel>> GetProductsByPriceAsc()
         {
             var productList = await _context.Products
+                .Include(p => p.Jewelry)
+                .Include(p => p.Diamond)
                 .OrderBy(p => p.MarkupPrice)
                 .ToListAsync();
 
-            if (productList == null) { return null; }
+            if (productList == null || productList.Count == 0)
+            {
+                return null;
+            }
 
-            var productModel = productList.Select(product => new ProductViewModel()
+            var productModels = productList.Select(p => new ProductViewModel
             {
                 ProductId = product.ProductId,
                 ProductType = product.ProductType,
@@ -158,13 +187,15 @@ namespace DiamondShop.Repositories
                 ProductName = product.ProductName
             }).ToList();
 
-            return productModel;
+            return productModels;
         }
 
         public async Task<bool> CreateProduct(ProductViewModel productModel)
         {
-            bool result = false;
-            if (productModel == null) { return result; }
+            if (productModel == null)
+            {
+                return false;
+            }
 
             try
             {
@@ -179,26 +210,26 @@ namespace DiamondShop.Repositories
                     Stock = productModel.Stock,
                     ProductName = productModel.ProductName
                 };
+
                 await _context.Products.AddAsync(product);
-                result = _context.SaveChanges() > 0;
+                return await _context.SaveChangesAsync() > 0;
             }
             catch (Exception)
             {
                 return false;
             }
-            return result;
         }
 
         public async Task<bool> UpdateProduct(string id, ProductViewModel productModel)
         {
-            bool result = false;
-
             var product = await _context.Products
-                .FirstOrDefaultAsync(u => u.ProductId.Equals(id));
+                .Include(p => p.Jewelry)
+                .Include(p => p.Diamond)
+                .FirstOrDefaultAsync(p => p.ProductId.Equals(id));
 
             if (product == null)
             {
-                return result;
+                return false;
             }
 
             try
@@ -208,36 +239,51 @@ namespace DiamondShop.Repositories
                 product.MarkupRate = productModel.MarkupRate;
                 product.MarkupPrice = productModel.MarkupPrice;
                 product.IsActive = productModel.IsActive;
-                product.ProductName = product.ProductName;
                 product.Stock = productModel.Stock;
 
+                product.UpdateDiamondsAndJewelryPrice(); 
+
                 _context.Products.Update(product);
-                result = await _context.SaveChangesAsync() > 0;
+                return await _context.SaveChangesAsync() > 0;
             }
             catch (Exception)
             {
                 return false;
             }
-            return result;
         }
+
 
         public async Task<bool> DeleteProduct(string id)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(u => u.ProductId.Equals(id));
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId.Equals(id));
 
             if (product == null)
             {
                 return false;
             }
 
-            if (product.ProductId.Equals(id))
+        public async Task<bool> DeleteProduct(string id)
+        {
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId.Equals(productId));
+
+            if (product == null)
             {
-                product.IsActive = false;
-                _context.Products.Update(product);
-                await _context.SaveChangesAsync();
+                return false;
             }
 
-            return true;
+            try
+            {
+                product.MarkupRate = newMarkupRate;
+                product.MarkupPrice = product.Jewelry.BasePrice * newMarkupRate; // Assuming Jewelry has BasePrice
+
+                _context.Products.Update(product);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
+
     }
 }

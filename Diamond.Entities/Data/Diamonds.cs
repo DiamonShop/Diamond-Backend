@@ -14,6 +14,8 @@ namespace Diamond.Entities.Data
         public string ProductID { get; set; }
         [StringLength(50)]
         [Required]
+        public string Origin { get; set; }
+        [Required]
         public decimal Carat { get; set; }
         [Required]
         [StringLength(50)]
@@ -24,7 +26,7 @@ namespace Diamond.Entities.Data
         [Required]
         [StringLength(50)]
         public string Color { get; set; }
-        public decimal BasePrice { get; set; }
+        public int BasePrice { get; set; }
 
         public virtual Certification Certification { get; set; }
         public virtual Product Product { get; set; } = null!;

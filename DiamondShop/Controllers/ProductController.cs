@@ -131,5 +131,20 @@ namespace DiamondShop.Controllers
 
             return Ok("delete sucessfully");
         }
+
+        // Cập nhật MarkupPrice của sản phẩm và cập nhật lại giá của Diamonds và Jewelry
+        [HttpPut("UpdateMarkupRate")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> UpdateMarkupRate([FromBody] UpdateMarkupRateDto dto)
+        {
+            var result = await _productRepository.UpdateMarkupRate(dto.ProductId, dto.NewMarkupRate);
+
+            if (result)
+            {
+                return Ok("MarkupRate updated successfully");
+            }
+
+            return BadRequest("Failed to update MarkupRate");
+        }
     }
 }

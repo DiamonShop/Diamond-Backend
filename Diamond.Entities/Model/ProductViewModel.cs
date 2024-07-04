@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace DiamondShop.Model
+﻿namespace DiamondShop.Model
 {
     public class ProductViewModel
     {
@@ -10,9 +7,8 @@ namespace DiamondShop.Model
 		public string? Description { get;set; }
 		public int Stock { get; set; }
 		public int MarkupPrice { get; set; }
-        public decimal MarkupRate { get; set; } //tỉ lệ áp giá
+        public int MarkupRate { get; set; } //tỉ lệ áp giá
         public string ProductType { get; set; }
         public bool IsActive { get; set; }
-	}
-
+    }
 }
