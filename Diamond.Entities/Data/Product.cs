@@ -23,12 +23,12 @@ namespace DiamondShop.Data
         [StringLength(300)]
         public string? Description { get; set; }
 
-        public decimal MarkupRate { get; set; }
+        public int MarkupRate { get; set; }
 
         [Required]
         public int Stock { get; set; }
 
-        public decimal MarkupPrice { get; set; }
+        public int MarkupPrice { get; set; }
 
         [Required]
         public bool IsActive { get; set; }
@@ -42,8 +42,8 @@ namespace DiamondShop.Data
 
         public void UpdateDiamondsAndJewelryPrice()
         {
-            decimal jewelryBasePrice = Jewelry?.BasePrice ?? 0;
-            decimal diamondBasePrice = Diamond?.BasePrice ?? 0;
+            int jewelryBasePrice = Jewelry?.BasePrice ?? 0;
+            int diamondBasePrice = Diamond?.BasePrice ?? 0;
             MarkupPrice = (jewelryBasePrice + diamondBasePrice) * MarkupRate;
 
             // Update Diamonds BasePrice based on MarkupPrice
@@ -51,7 +51,7 @@ namespace DiamondShop.Data
             {
                 Diamond.BasePrice = diamondBasePrice * MarkupPrice;
             }
-
+            
             // Update Jewelry BasePrice based on MarkupPrice
             if (Jewelry != null)
             {

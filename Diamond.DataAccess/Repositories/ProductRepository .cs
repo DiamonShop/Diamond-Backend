@@ -259,7 +259,7 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
-        public async Task<bool> UpdateMarkupRate(string productId, decimal newMarkupRate)
+        public async Task<bool> UpdateMarkupRate(string productId, int newMarkupRate)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId.Equals(productId));
 
