@@ -24,7 +24,6 @@ public class DiamondDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
         modelBuilder.Entity<User>(e =>
         {
             e.HasOne(x => x.Role)
@@ -39,7 +38,6 @@ public class DiamondDbContext : DbContext
                 .HasForeignKey<Certification>(x => x.DiamondID);
         });
 
-
         modelBuilder.Entity<Order>(e =>
         {
             e.Property(e => e.TotalPrice).HasColumnType("decimal(18,2)");
@@ -48,7 +46,6 @@ public class DiamondDbContext : DbContext
                 .WithMany(x => x.Orders)
                 .HasForeignKey(x => x.UserID);
         });
-
 
         modelBuilder.Entity<OrderDetail>(e =>
         {
@@ -73,7 +70,6 @@ public class DiamondDbContext : DbContext
                 .HasForeignKey<Diamonds>(x => x.ProductID);
         });
 
-
         modelBuilder.Entity<Product>(e =>
         {
             e.Property(e => e.MarkupRate).HasColumnType("decimal(18,2)");
@@ -81,6 +77,8 @@ public class DiamondDbContext : DbContext
             e.HasOne(x => x.Warranty)
                 .WithOne(x => x.Product)
                 .HasForeignKey<Warranty>(x => x.ProductId);
+
+           
         });
 
         modelBuilder.Entity<Feedback>(e =>
@@ -101,8 +99,8 @@ public class DiamondDbContext : DbContext
                 .HasForeignKey(x => x.JewelrySettingID);
 
             e.HasOne(x => x.Category)
-            .WithMany(x => x.Jewelry)
-            .HasForeignKey(x => x.CategoryId);
+                .WithMany(x => x.Jewelry)
+                .HasForeignKey(x => x.CategoryId);
 
             e.HasOne(x => x.Product)
                 .WithOne(x => x.Jewelry)
