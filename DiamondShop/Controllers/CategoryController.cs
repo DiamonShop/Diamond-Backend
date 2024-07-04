@@ -1,7 +1,11 @@
 ﻿using Diamond.Entities.Data;
+using Diamond.Entities.Model;
+using DiamondShop.Data;
+using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,51 +13,75 @@ namespace DiamondShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DiamondsController : ControllerBase
+    public class CategoryController : Controller
     {
-        private readonly IDiamondsRepository _diamondsRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public DiamondsController(IDiamondsRepository diamondsRepository)
+        public CategoryController(ICategoryRepository categoryRepository)
         {
-            _diamondsRepository = diamondsRepository;
+            _categoryRepository = categoryRepository;
         }
 
-        [HttpGet("GetAllDiamonds")]
-        [Authorize(Roles = "Admin,Manager,Member")]
-        public async Task<IActionResult> GetAllDiamonds()
+        // Lấy tất cả thông tin sản phẩm
+        [HttpGet("GetAllCategory")]
+        public async Task<IActionResult> GetAllCategory()
         {
-            var diamonds = await _diamondsRepository.GetAllDiamonds();
-            return Ok(diamonds);
+            var products = await _categoryRepository.GetAllCategories();
+
+            if (products == null) { return Ok(null); }
+
+            return Ok(products);
         }
 
-        [HttpPost("CreateDiamond")]
+        // Lấy thông tin sản phẩm theo ID
+        [HttpGet("GetCategoryById")]
+        /*[Authorize(Roles = "Manager,Staff,Delivery")]*/
+        public async Task<IActionResult> GetCategoryById(int id)
+        {
+            var products = await _categoryRepository.GetCategoryById(id);
+            if (products != null)
+            {
+                return Ok(products);
+            }
+
+            return BadRequest("Product is not found");
+        }
+
+        // Tìm sản phẩm theo tên sản phẩm
+        [HttpGet("GetCategoryByName")]
+        public async Task<IActionResult> GetCategoryByName(string productName)
+        {
+            var products = await _categoryRepository.GetCategoryByName(productName);
+
+            return Ok(products);
+        }
+
+        // Tạo sản phẩm mới
+        [HttpPost("CreateCategory")]
         [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> CreateDiamond([FromBody] Diamonds diamond)
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryModel categoryModel)
         {
-            if (diamond == null)
-            {
-                return BadRequest("Invalid diamond data.");
-            }
+            bool result = await _categoryRepository.CreateCategory(categoryModel);
 
-            var createdDiamond = await _diamondsRepository.CreateDiamond(diamond);
-            return Ok(createdDiamond);
+            if (result)
+            {
+                return Ok("Create Jewelry Successfully");
+            }
+            return BadRequest("Failed To Create Jewelry");
         }
 
-        [HttpPut("UpdateDiamond")]
-        [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> UpdateDiamond([FromBody] Diamonds diamond)
+        // Cập nhật sản phẩm
+        [HttpPut("UpdateCategory")]
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryModel categoryModel)
         {
-            if (diamond == null)
-            {
-                return BadRequest("Invalid diamond data.");
-            }
+            bool result = await _categoryRepository.UpdateCategory(id, categoryModel);
 
-            var updatedDiamond = await _diamondsRepository.UpdateDiamond(diamond);
-            if (updatedDiamond == null)
+            if (result)
             {
-                return NotFound("Diamond not found.");
+                return Ok("Create Jewelry Successfully");
             }
-            return Ok(updatedDiamond);
+            return BadRequest("Failed To Create Jewelry");
         }
     }
 }

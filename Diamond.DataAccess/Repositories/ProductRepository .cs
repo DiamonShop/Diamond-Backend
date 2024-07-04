@@ -21,10 +21,7 @@ namespace DiamondShop.Repositories
 
         public async Task<List<ProductViewModel>> GetAllProducts()
         {
-            var productList = await _context.Products
-                .Include(p => p.Jewelry)
-                .Include(p => p.Diamond)
-                .ToListAsync();
+            var productList = await _context.Products.ToListAsync();
 
             if (productList == null || productList.Count == 0)
             {
@@ -48,10 +45,7 @@ namespace DiamondShop.Repositories
 
         public async Task<ProductViewModel> GetProductById(string id)
         {
-            var product = await _context.Products
-                .Include(p => p.Jewelry)
-                .Include(p => p.Diamond)
-                .FirstOrDefaultAsync(p => p.ProductId.Equals(id));
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId.Equals(id));
 
             if (product == null)
             {
@@ -76,8 +70,6 @@ namespace DiamondShop.Repositories
         public async Task<List<ProductViewModel>> GetProductsByCategoryName(string productType)
         {
             var productList = await _context.Products
-                .Include(p => p.Jewelry)
-                .Include(p => p.Diamond)
                 .Where(p => p.ProductType.Contains(productType))
                 .ToListAsync();
 
@@ -88,14 +80,14 @@ namespace DiamondShop.Repositories
 
             var productModels = productList.Select(p => new ProductViewModel
             {
-                ProductId = product.ProductId,
-                Description = product.Description,
-                MarkupPrice = product.MarkupPrice,
-                MarkupRate = product.MarkupRate,
-                ProductType = product.ProductType,
-                IsActive = product.IsActive,
-                Stock = product.Stock,
-                ProductName = product.ProductName
+                ProductId = p.ProductId,
+                Description = p.Description,
+                MarkupPrice = p.MarkupPrice,
+                MarkupRate = p.MarkupRate,
+                ProductType = p.ProductType,
+                IsActive = p.IsActive,
+                Stock = p.Stock,
+                ProductName = p.ProductName
             }).ToList();
 
             return productModels;
@@ -121,14 +113,14 @@ namespace DiamondShop.Repositories
 
             var productModels = productList.Select(p => new ProductViewModel
             {
-                ProductId = product.ProductId,
-                Description = product.Description,
-                MarkupRate = product.MarkupRate,
-                ProductType = product.ProductType,
-                MarkupPrice = product.MarkupPrice,
-                IsActive = product.IsActive,
-                Stock = product.Stock,
-                ProductName = product.ProductName
+                ProductId = p.ProductId,
+                Description = p.Description,
+                MarkupRate = p.MarkupRate,
+                ProductType = p.ProductType,
+                MarkupPrice = p.MarkupPrice,
+                IsActive = p.IsActive,
+                Stock = p.Stock,
+                ProductName = p.ProductName
             }).ToList();
 
             return productModels;
@@ -137,8 +129,6 @@ namespace DiamondShop.Repositories
         public async Task<List<ProductViewModel>> GetProductsByPriceDesc()
         {
             var productList = await _context.Products
-                .Include(p => p.Jewelry)
-                .Include(p => p.Diamond)
                 .OrderByDescending(p => p.MarkupPrice)
                 .ToListAsync();
 
@@ -149,14 +139,14 @@ namespace DiamondShop.Repositories
 
             var productModels = productList.Select(p => new ProductViewModel
             {
-                ProductId = product.ProductId,
-                Description = product.Description,
-                MarkupPrice = product.MarkupPrice,
-                ProductType = product.ProductType,
-                MarkupRate = product.MarkupRate,
-                IsActive = product.IsActive,
-                Stock = product.Stock,
-                ProductName = product.ProductName
+                ProductId = p.ProductId,
+                Description = p.Description,
+                MarkupPrice = p.MarkupPrice,
+                ProductType = p.ProductType,
+                MarkupRate = p.MarkupRate,
+                IsActive = p.IsActive,
+                Stock = p.Stock,
+                ProductName = p.ProductName
             }).ToList();
 
             return productModels;
@@ -165,8 +155,6 @@ namespace DiamondShop.Repositories
         public async Task<List<ProductViewModel>> GetProductsByPriceAsc()
         {
             var productList = await _context.Products
-                .Include(p => p.Jewelry)
-                .Include(p => p.Diamond)
                 .OrderBy(p => p.MarkupPrice)
                 .ToListAsync();
 
@@ -177,14 +165,14 @@ namespace DiamondShop.Repositories
 
             var productModels = productList.Select(p => new ProductViewModel
             {
-                ProductId = product.ProductId,
-                ProductType = product.ProductType,
-                MarkupRate = product.MarkupRate,
-                Description = product.Description,
-                MarkupPrice = product.MarkupPrice,
-                IsActive = product.IsActive,
-                Stock = product.Stock,
-                ProductName = product.ProductName
+                ProductId = p.ProductId,
+                ProductType = p.ProductType,
+                MarkupRate = p.MarkupRate,
+                Description = p.Description,
+                MarkupPrice = p.MarkupPrice,
+                IsActive = p.IsActive,
+                Stock = p.Stock,
+                ProductName = p.ProductName
             }).ToList();
 
             return productModels;
@@ -223,8 +211,6 @@ namespace DiamondShop.Repositories
         public async Task<bool> UpdateProduct(string id, ProductViewModel productModel)
         {
             var product = await _context.Products
-                .Include(p => p.Jewelry)
-                .Include(p => p.Diamond)
                 .FirstOrDefaultAsync(p => p.ProductId.Equals(id));
 
             if (product == null)
@@ -241,7 +227,7 @@ namespace DiamondShop.Repositories
                 product.IsActive = productModel.IsActive;
                 product.Stock = productModel.Stock;
 
-                product.UpdateDiamondsAndJewelryPrice(); 
+                product.UpdateDiamondsAndJewelryPrice();
 
                 _context.Products.Update(product);
                 return await _context.SaveChangesAsync() > 0;
@@ -252,7 +238,6 @@ namespace DiamondShop.Repositories
             }
         }
 
-
         public async Task<bool> DeleteProduct(string id)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId.Equals(id));
@@ -262,7 +247,18 @@ namespace DiamondShop.Repositories
                 return false;
             }
 
-        public async Task<bool> DeleteProduct(string id)
+            try
+            {
+                _context.Products.Remove(product);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateMarkupRate(string productId, int newMarkupRate)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId.Equals(productId));
 
@@ -284,6 +280,5 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
-
     }
 }

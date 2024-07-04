@@ -8,7 +8,6 @@ namespace DiamondShop.Repositories.Interfaces
     {
         Task<IEnumerable<JewelrySettings>> GetAllJewelrySettings();
         Task<JewelrySettings> GetJewelrySettingById(int id);
-        Task<IEnumerable<JewelrySettings>> GetJewelrySettingsByName(string name);
         Task<bool> CreateJewelrySetting(JewelrySettings jewelrySetting);
         Task<bool> UpdateJewelrySetting(int id, JewelrySettings jewelrySetting);
         Task<bool> DeleteJewelrySetting(int id);

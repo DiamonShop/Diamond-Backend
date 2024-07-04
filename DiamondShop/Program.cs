@@ -37,9 +37,10 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IVnPayRepository, VnPayRepository>();
+builder.Services.AddScoped<IJewelryRepository, JewelryRepository>();
 builder.Services.AddScoped<IJewelrySettingRepository, JewelrySettingRepository>();
 builder.Services.AddScoped<IBillRepository, BillRepository>();
-
+builder.Services.AddScoped<IDiamondsRepository, DiamondsRepository>();
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
 {

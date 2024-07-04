@@ -12,9 +12,6 @@ namespace Diamond.Entities.Data
         [ForeignKey("Product")]
         [StringLength(50)]
         public string ProductID { get; set; }
-        [StringLength(50)]
-        [Required]
-        public string Origin { get; set; }
         [Required]
         public decimal Carat { get; set; }
         [Required]

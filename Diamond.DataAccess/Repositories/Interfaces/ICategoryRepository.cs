@@ -8,7 +8,7 @@ namespace DiamondShop.Repositories.Interfaces
 		public Task<List<CategoryModel>> GetAllCategories();
 		public Task<CategoryModel> GetCategoryById(int id);
 		public Task<bool> CreateCategory(CategoryModel categoryModel);
-		public Task<bool> UpdateCategory(int id, Category category);
+		public Task<bool> UpdateCategory(int id, CategoryModel categoryModel);
 		public Task<List<CategoryModel>> GetCategoryByName(string name);
 	}
 }

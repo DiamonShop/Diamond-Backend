@@ -35,13 +35,6 @@ namespace DiamondShop.Controllers
             return Ok(jewelrySetting);
         }
 
-        [HttpGet("search/{name}")]
-        public async Task<ActionResult<IEnumerable<JewelrySettings>>> GetJewelrySettingsByName(string name)
-        {
-            var jewelrySettings = await _jewelrySettingRepository.GetJewelrySettingsByName(name);
-            return Ok(jewelrySettings);
-        }
-
         [HttpPost]
         public async Task<ActionResult> CreateJewelrySetting([FromBody] JewelrySettings jewelrySetting)
         {

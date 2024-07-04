@@ -88,7 +88,7 @@ namespace DiamondShop.Repositories
 			return categoryList;
 		}
 
-		public async Task<bool> UpdateCategory(int id, Category category)
+		public async Task<bool> UpdateCategory(int id, CategoryModel categoryModel)
 		{
 			var cate = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId.Equals(id));
 
@@ -99,7 +99,7 @@ namespace DiamondShop.Repositories
 
 			try
 			{
-				cate.CategoryName = category.CategoryName;
+				cate.CategoryName = categoryModel.CategoryName;
 				_context.Categories.Update(cate);
 				// Save the changes to the database
 				await _context.SaveChangesAsync();

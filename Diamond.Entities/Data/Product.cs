@@ -14,22 +14,16 @@ namespace DiamondShop.Data
         [Required]
         [StringLength(100)]
         public string ProductName { get; set; }
-
         [Required]
         [StringLength(100)]
         public string ProductType { get; set; }
-
         [Required]
         [StringLength(300)]
         public string? Description { get; set; }
-
         public int MarkupRate { get; set; }
-
         [Required]
         public int Stock { get; set; }
-
         public int MarkupPrice { get; set; }
-
         [Required]
         public bool IsActive { get; set; }
 
@@ -38,7 +32,6 @@ namespace DiamondShop.Data
         public Warranty Warranty { get; set; } = null!;
         public ICollection<OrderDetail> OrderDetails { get; } = new List<OrderDetail>();
         public ICollection<Feedback> Feedbacks { get; } = new List<Feedback>();
-
 
         public void UpdateDiamondsAndJewelryPrice()
         {
@@ -51,7 +44,7 @@ namespace DiamondShop.Data
             {
                 Diamond.BasePrice = diamondBasePrice * MarkupPrice;
             }
-            
+
             // Update Jewelry BasePrice based on MarkupPrice
             if (Jewelry != null)
             {

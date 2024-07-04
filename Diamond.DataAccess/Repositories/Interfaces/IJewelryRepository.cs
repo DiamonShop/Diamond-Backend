@@ -1,0 +1,23 @@
+﻿using Diamond.Entities.Model;
+using DiamondShop.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Diamond.DataAccess.Repositories.Interfaces
+{
+    public interface IJewelryRepository
+    {
+        Task<List<JewelryModel>> GetAllJewelry();
+        Task<JewelryModel> GetJewelryById(int id);
+        Task<List<JewelryModel>> GetJewelryByCategoryName(string categoryName);
+        Task<List<JewelryModel>> GetJewelryByName(string productName);
+        Task<List<JewelryModel>> GetJewelryByPriceDesc();
+        Task<List<JewelryModel>> GetJewelryByPriceAsc();
+        Task<bool> CreateJewelry(JewelryModel productModel);
+        Task<bool> UpdateJewelry(int id, JewelryModel productModel);
+        Task<bool> DeleteJewelry(int id);
+    }
+}

@@ -15,7 +15,7 @@ namespace DiamondShop.Data
         [Required]
         public string ProductName { get; set; }
         [Required]
-		public decimal UnitPrice { get; set; }
+		public int UnitPrice { get; set; }
 		[Required]
 		public int Quantity { get; set; }
 

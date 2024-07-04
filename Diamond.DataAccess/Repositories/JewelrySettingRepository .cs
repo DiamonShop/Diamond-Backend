@@ -27,13 +27,6 @@ namespace DiamondShop.Repositories
             return await _context.JewelrySetting.FindAsync(id);
         }
 
-        public async Task<IEnumerable<JewelrySettings>> GetJewelrySettingsByName(string name)
-        {
-            return await _context.JewelrySetting
-                .Where(js => js.Name.Contains(name))
-                .ToListAsync();
-        }
-
         public async Task<bool> CreateJewelrySetting(JewelrySettings jewelrySetting)
         {
             _context.JewelrySetting.Add(jewelrySetting);
@@ -48,7 +41,6 @@ namespace DiamondShop.Repositories
                 return false;
             }
 
-            existingSetting.Name = jewelrySetting.Name;
             existingSetting.Material = jewelrySetting.Material;
 
             _context.JewelrySetting.Update(existingSetting);
