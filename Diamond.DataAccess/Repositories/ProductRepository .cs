@@ -29,7 +29,9 @@ namespace DiamondShop.Repositories
             {
                 ProductId = p.ProductId,
                 Description = p.Description,
+                ProductType = p.ProductType,
                 MarkupPrice = p.MarkupPrice,
+                MarkupRate = p.MarkupRate,
                 IsActive = p.IsActive,
                 Stock = p.Stock,
                 ProductName = p.ProductName
@@ -38,7 +40,7 @@ namespace DiamondShop.Repositories
             return productModels;
         }
 
-        public async Task<ProductViewModel> GetProductById(int id)
+        public async Task<ProductViewModel> GetProductById(string id)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId.Equals(id));
 
@@ -49,6 +51,8 @@ namespace DiamondShop.Repositories
                 ProductId = product.ProductId,
                 Description = product.Description,
                 MarkupPrice = product.MarkupPrice,
+                MarkupRate = product.MarkupRate,
+                ProductType = product.ProductType,
                 IsActive = product.IsActive,
                 Stock = product.Stock,
                 ProductName = product.ProductName
@@ -70,6 +74,8 @@ namespace DiamondShop.Repositories
                 ProductId = product.ProductId,
                 Description = product.Description,
                 MarkupPrice = product.MarkupPrice,
+                MarkupRate = product.MarkupRate,
+                ProductType = product.ProductType,
                 IsActive = product.IsActive,
                 Stock = product.Stock,
                 ProductName = product.ProductName
@@ -88,7 +94,7 @@ namespace DiamondShop.Repositories
             string productNameLowerCase = productName.ToLower();
 
             var productList = await _context.Products
-                .Where(p => p.ProductName.ToLower().Contains(productNameLowerCase)) 
+                .Where(p => p.ProductName.ToLower().Contains(productNameLowerCase))
                 .ToListAsync(); //Tìm gần đúng
 
             if (productList == null) { return null; }
@@ -97,6 +103,8 @@ namespace DiamondShop.Repositories
             {
                 ProductId = product.ProductId,
                 Description = product.Description,
+                MarkupRate = product.MarkupRate,
+                ProductType = product.ProductType,
                 MarkupPrice = product.MarkupPrice,
                 IsActive = product.IsActive,
                 Stock = product.Stock,
@@ -120,6 +128,8 @@ namespace DiamondShop.Repositories
                 ProductId = product.ProductId,
                 Description = product.Description,
                 MarkupPrice = product.MarkupPrice,
+                ProductType = product.ProductType,
+                MarkupRate = product.MarkupRate,
                 IsActive = product.IsActive,
                 Stock = product.Stock,
                 ProductName = product.ProductName
@@ -139,6 +149,8 @@ namespace DiamondShop.Repositories
             var productModel = productList.Select(product => new ProductViewModel()
             {
                 ProductId = product.ProductId,
+                ProductType = product.ProductType,
+                MarkupRate = product.MarkupRate,
                 Description = product.Description,
                 MarkupPrice = product.MarkupPrice,
                 IsActive = product.IsActive,
@@ -159,6 +171,8 @@ namespace DiamondShop.Repositories
                 var product = new Product()
                 {
                     ProductId = productModel.ProductId,
+                    MarkupRate = productModel.MarkupRate,
+                    ProductType = productModel.ProductType,
                     Description = productModel.Description,
                     MarkupPrice = productModel.MarkupPrice,
                     IsActive = productModel.IsActive,
@@ -175,7 +189,7 @@ namespace DiamondShop.Repositories
             return result;
         }
 
-        public async Task<bool> UpdateProduct(int id, ProductViewModel productModel)
+        public async Task<bool> UpdateProduct(string id, ProductViewModel productModel)
         {
             bool result = false;
 
@@ -191,6 +205,7 @@ namespace DiamondShop.Repositories
             {
                 product.ProductName = productModel.ProductName;
                 product.Description = productModel.Description;
+                product.MarkupRate = productModel.MarkupRate;
                 product.MarkupPrice = productModel.MarkupPrice;
                 product.IsActive = productModel.IsActive;
                 product.ProductName = product.ProductName;
@@ -206,7 +221,7 @@ namespace DiamondShop.Repositories
             return result;
         }
 
-        public async Task<bool> DeleteProduct(int id)
+        public async Task<bool> DeleteProduct(string id)
         {
             var product = await _context.Products.FirstOrDefaultAsync(u => u.ProductId.Equals(id));
 

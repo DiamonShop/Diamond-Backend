@@ -19,7 +19,7 @@ namespace Diamond.DataAccess.Repositories
         }
 
         //Kiểm tra xem id nào phù hợp, ví dụ có các id OD-001, OD-003 thì hàm sẽ trả về id OD-002
-        private async Task<string> GetNextAvailableOrderDetailIdAsync()
+        private async Task<string> GetNextAvailableOrderDetailId()
         {
             var usedIds = await _context.OrderDetails
                 .Select(od => od.OrderDetailId)
@@ -43,7 +43,7 @@ namespace Diamond.DataAccess.Repositories
             bool result = false;
             var order = _context.Orders.Include(order => order.OrderDetails).FirstOrDefault(order => order.OrderId == orderId);
             if (order == null) { return result; }
-            if (order.Status.Equals("Completed") || order.Status.Equals("Shipped")) { return result; }
+            if (order.Status.Equals("Hoàn Thành") || order.Status.Equals("Đang giao")) { return result; }
 
             var product = _context.Products.SingleOrDefault(product => product.ProductId.Equals(productId));
             if (product == null) { return result; }
@@ -53,7 +53,7 @@ namespace Diamond.DataAccess.Repositories
             if (productInOrderDetail == null)
             {
                 //Lấy order detail id lớn nhất
-                var maxOrderDetailId = await GetNextAvailableOrderDetailIdAsync();
+                var maxOrderDetailId = await GetNextAvailableOrderDetailId();
                 OrderDetail newOrderDetail = new OrderDetail()
                 {
                     OrderDetailId = maxOrderDetailId,

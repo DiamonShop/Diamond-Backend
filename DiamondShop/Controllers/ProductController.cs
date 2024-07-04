@@ -33,7 +33,7 @@ namespace DiamondShop.Controllers
         // Lấy thông tin sản phẩm theo ID
         [HttpGet("GetProductById")]
         [Authorize(Roles = "Manager,Staff,Delivery")]
-        public async Task<IActionResult> GetProductById(int id)
+        public async Task<IActionResult> GetProductById(string id)
         {
             var products = await _productRepository.GetProductById(id);
             if (products != null)
@@ -110,7 +110,7 @@ namespace DiamondShop.Controllers
         // Cập nhật sản phẩm
         [HttpPut("UpdateProduct")]
         [Authorize(Roles = "Manager")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductViewModel productModel)
+        public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductViewModel productModel)
         {
             bool result = await _productRepository.UpdateProduct(id, productModel);
 
@@ -124,7 +124,7 @@ namespace DiamondShop.Controllers
         // Xóa sản phẩm
         [HttpDelete("DeleteProduct")]
         [Authorize(Roles = "Manager")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> DeleteProduct(string id)
         {
             bool result = await _productRepository.DeleteProduct(id);
 
