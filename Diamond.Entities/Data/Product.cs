@@ -1,7 +1,6 @@
 ﻿using Diamond.Entities.Data;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DiamondShop.Data
 {
@@ -14,16 +13,22 @@ namespace DiamondShop.Data
         [Required]
         [StringLength(100)]
         public string ProductName { get; set; }
+
         [Required]
         [StringLength(100)]
         public string ProductType { get; set; }
+
         [Required]
         [StringLength(300)]
         public string? Description { get; set; }
+
         public int MarkupRate { get; set; }
+
         [Required]
         public int Stock { get; set; }
+
         public int MarkupPrice { get; set; }
+
         [Required]
         public bool IsActive { get; set; }
 

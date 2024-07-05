@@ -280,5 +280,33 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
+
+        public async Task<bool> UpdateAllMarkupRates(int newMarkupRate)
+        {
+            try
+            {
+                var products = await _context.Products
+                    .Include(p => p.Jewelry)
+                    .Include(p => p.Diamond)
+                    .ToListAsync();
+
+                foreach (var product in products)
+                {
+                    product.MarkupRate = newMarkupRate;
+                    product.UpdateDiamondsAndJewelryPrice();
+                }
+
+                _context.Products.UpdateRange(products);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+
+
+
     }
 }
