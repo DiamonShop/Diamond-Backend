@@ -17,6 +17,7 @@ namespace Diamond.Entities.Model
         public decimal Carat { get; set; }
         public string Clarity { get; set; }
         public string Cut { get; set; }
+        public decimal DiameterMM { get; set; }
         public string Color { get; set; }
         public string Description { get; set; }
         public int BasePrice { get; set; }

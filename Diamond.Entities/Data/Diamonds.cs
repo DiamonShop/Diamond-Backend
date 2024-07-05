@@ -23,6 +23,7 @@ namespace Diamond.Entities.Data
         [Required]
         [StringLength(50)]
         public string Color { get; set; }
+        public decimal DiameterMM { get; set; }
         public int BasePrice { get; set; }
 
         public virtual Certification Certification { get; set; }

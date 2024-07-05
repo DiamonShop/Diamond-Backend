@@ -9,6 +9,7 @@
         public string ProductName { get; set; }
         public string ProductDescription { get; set; }
         public int Stock { get; set; }
+        public int Size { get; set; }
         public int BasePrice { get; set; }
         public bool IsActive { get; set; }
     }

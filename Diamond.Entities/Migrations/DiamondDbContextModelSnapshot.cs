@@ -29,8 +29,8 @@ namespace Diamond.Entities.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DiamondID"));
 
-                    b.Property<decimal>("BasePrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("BasePrice")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Carat")
                         .HasColumnType("decimal(18,2)");
@@ -49,6 +49,9 @@ namespace Diamond.Entities.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("DiameterMM")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ProductID")
                         .IsRequired()
@@ -84,6 +87,9 @@ namespace Diamond.Entities.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
                     b.HasKey("JewelryID");
 

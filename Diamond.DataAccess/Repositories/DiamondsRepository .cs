@@ -38,6 +38,7 @@ namespace DiamondShop.Repositories
                 Clarity = d.Clarity,
                 Color = d.Color,
                 Cut = d.Cut,
+                DiameterMM = d.DiameterMM,
                 Stock = d.Product.Stock,
                 Description = d.Product.Description,
                 IsActive = d.Product.IsActive,
@@ -47,7 +48,37 @@ namespace DiamondShop.Repositories
             return diamondModels;
         }
 
-        public async Task<bool> CreateDiamond(DiamondModel diamondModel)
+        public async Task<DiamondModel> GetDiamondByProductId(string productId)
+        {
+            var diamond = await _context.Diamonds
+                .Include(j => j.Product)
+                .FirstOrDefaultAsync(j => j.Product.ProductId.Equals(productId));
+
+            if (diamond == null)
+            {
+                return null;
+            }
+
+            var productModel = new DiamondModel()
+            {
+                ProductID = diamond.ProductID,
+                DiamondID = diamond.DiamondID,
+                BasePrice = diamond.BasePrice,
+                Cut = diamond.Cut,
+                Color = diamond.Color,
+                Clarity = diamond.Clarity,
+                Carat = diamond.Carat,
+                DiameterMM = diamond.DiameterMM,
+                ProductName = diamond.Product.ProductName,
+                Description = diamond.Product.Description,
+                Stock = diamond.Product.Stock,
+                IsActive = diamond.Product.IsActive
+            };
+
+            return productModel;
+        }
+
+        public async Task<bool> CreateDiamond(string productName, int stock, DiamondModel diamondModel)
         {
             if (diamondModel == null)
             {
@@ -56,16 +87,32 @@ namespace DiamondShop.Repositories
 
             try
             {
+                var productID = await GenerateProductIDAsync(diamondModel.DiameterMM);
+
                 var diamond = new Diamonds()
                 {
                     Carat = diamondModel.Carat,
                     Clarity = diamondModel.Clarity,
                     Color = diamondModel.Color,
                     Cut = diamondModel.Cut,
+                    DiameterMM = diamondModel.DiameterMM,
                     BasePrice = diamondModel.BasePrice,
-                    ProductID = diamondModel.ProductID
+                    ProductID = productID
                 };
 
+                var newProduct = new Product()
+                {
+                    ProductId = productID,
+                    ProductName = productName,
+                    Description = "",
+                    MarkupRate = 0,
+                    Stock = stock,
+                    MarkupPrice = 0,
+                    ProductType = "Diamond",
+                    IsActive = true
+                };
+
+                await _context.Products.AddAsync(newProduct);
                 await _context.Diamonds.AddAsync(diamond);
                 return await _context.SaveChangesAsync() > 0;
             }
@@ -73,6 +120,26 @@ namespace DiamondShop.Repositories
             {
                 return false;
             }
+        }
+
+        private async Task<string> GenerateProductIDAsync(decimal diameterMM)
+        {
+            string prefix = $"KC-{diameterMM:F1}-";
+            var maxIdNumberQuery = await _context.Diamonds
+                .Where(d => d.ProductID.StartsWith(prefix))
+                .Select(d => d.ProductID.Substring(prefix.Length))
+                .ToListAsync();
+
+            int maxIdNumber = 0;
+            if (maxIdNumberQuery.Any())
+            {
+                maxIdNumber = maxIdNumberQuery
+                    .Select(id => int.TryParse(id, out int num) ? num : 0)
+                    .Max();
+            }
+
+            int newIdNumber = maxIdNumber + 1;
+            return $"{prefix}{newIdNumber:D3}";
         }
 
         public async Task<bool> UpdateDiamond(int id, DiamondModel diamond)

@@ -88,11 +88,7 @@ namespace DiamondShop.Controllers
         public async Task<IActionResult> UpdateTotalPrice(int orderId, int totalPrice)
         {
             bool result = await _orderRepository.UpdateOrder(orderId, totalPrice);
-            if (result)
-            {
-                return Ok("Update Order successfully");
-            }
-            return Ok("Failed to Update Order");
+            return Ok(result);
         }
 
         [HttpPut("UpdateOrderDetail")]

@@ -94,16 +94,16 @@ INSERT INTO [dbo].[Products] (ProductId, ProductName, ProductType, Description, 
 VALUES ('VT-001', N'Emerald Pendant', N'Jewelry', N'Beautiful emerald pendant', 1, 25, 7500000, 'True');
 
 INSERT INTO [dbo].[Products] (ProductId, ProductName, ProductType, Description, MarkupRate, Stock, MarkupPrice, IsActive) 
-VALUES ('KC-001', N'Diamond Ring 0.5 Carat', N'Diamond', N'A beautiful 0.5 carat diamond ring', 1, 10, 5000, 'True');
+VALUES ('KC-3.6-001', N'Diamond Ring 0.5 Carat', N'Diamond', N'A beautiful 0.5 carat diamond ring', 1, 10, 5000, 'True');
 
 INSERT INTO [dbo].[Products] (ProductId, ProductName, ProductType, Description, MarkupRate, Stock, MarkupPrice, IsActive) 
-VALUES ('KC-002', N'Diamond Ring 0.75 Carat', N'Diamond', N'A beautiful 0.75 carat diamond ring', 1, 10, 7500, 'True');
+VALUES ('KC-4.1-001', N'Diamond Ring 0.75 Carat', N'Diamond', N'A beautiful 0.75 carat diamond ring', 1, 10, 7500, 'True');
 
 INSERT INTO [dbo].[Products] (ProductId, ProductName, ProductType, Description, MarkupRate, Stock, MarkupPrice, IsActive) 
-VALUES ('KC-003', N'Diamond Ring 1.0 Carat', N'Diamond', N'A beautiful 1.0 carat diamond ring', 1, 10, 10000, 'True');
+VALUES ('KC-4.5-001', N'Diamond Ring 1.0 Carat', N'Diamond', N'A beautiful 1.0 carat diamond ring', 1, 10, 10000, 'True');
 
 INSERT INTO [dbo].[Products] (ProductId, ProductName, ProductType, Description, MarkupRate, Stock, MarkupPrice, IsActive) 
-VALUES ('KC-004', N'Diamond Ring 0.6 Carat', N'Diamond', N'A beautiful 0.6 carat diamond ring', 1, 10, 6000, 'True');
+VALUES ('KC-5.4-001', N'Diamond Ring 0.6 Carat', N'Diamond', N'A beautiful 0.6 carat diamond ring', 1, 10, 6000, 'True');
 
 /* Insert JewelrySetting */
 INSERT INTO [dbo].[JewelrySetting] (Material) 
@@ -128,16 +128,78 @@ INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (4, 89
 INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 199.99, N'Đang đặt hàng', '2023-05-24 06:23:44.654');
 
 /* Insert Diamond */
-INSERT INTO [dbo].[Diamonds] (ProductID, Carat, Clarity, Cut, Color, BasePrice) 
-VALUES ('KC-001', 0.5, 'VS1', 'Round', 'D', 5000);
+INSERT INTO [dbo].[Diamonds] (ProductID, Carat, Clarity, Cut, Color, BasePrice, DiameterMM) 
+VALUES ('KC-3.6-001', 0.5, 'VS1', 'Round', 'D', 5000, 3.6);
 
-INSERT INTO [dbo].[Diamonds] (ProductID, Carat, Clarity, Cut, Color, BasePrice) 
-VALUES ('KC-002', 0.75, 'VVS2', 'Princess', 'E', 7500);
+INSERT INTO [dbo].[Diamonds] (ProductID, Carat, Clarity, Cut, Color, BasePrice, DiameterMM) 
+VALUES ('KC-4.1-001', 0.75, 'VVS2', 'Round', 'E', 7500, 4.1);
 
-INSERT INTO [dbo].[Diamonds] (ProductID, Carat, Clarity, Cut, Color, BasePrice) 
-VALUES ('KC-003', 1.0, 'IF', 'Oval', 'F', 10000);
+INSERT INTO [dbo].[Diamonds] (ProductID, Carat, Clarity, Cut, Color, BasePrice, DiameterMM) 
+VALUES ('KC-4.5-001', 1.0, 'IF', 'Round', 'F', 10000, 4.5);
 
-INSERT INTO [dbo].[Diamonds] (ProductID, Carat, Clarity, Cut, Color, BasePrice) 
-VALUES ('KC-004', 0.6, 'SI1', 'Cushion', 'G', 6000);
+INSERT INTO [dbo].[Diamonds] (ProductID, Carat, Clarity, Cut, Color, BasePrice, DiameterMM) 
+VALUES ('KC-5.4-001', 0.6, 'SI1', 'Round', 'G', 6000, 5.4);
 
 /* Insert Jewelry */
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'N-001', 1, 56419000, 10);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'N-002', 1, 8359000, 10);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'N-003', 1, 124398000, 10);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'N-004', 1, 43544000, 10);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'DC-001', 2, 1995000, 11);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'DC-002', 2, 16963000, 11);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'DC-003', 2, 20534400, 11);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'DC-004', 2, 11320000, 11);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'DC-005', 2, 33386800, 12);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (2, 'DC-006', 2, 18077000, 12);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (2, 'DC-007', 2, 42494800, 12);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (1, 'DC-008', 2, 73690000, 12);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (1, 'MDC-001', 3, 6283000, 13);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (1, 'MDC-002', 3, 17590000, 13);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'MDC-003', 3, 7190000, 13);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'MDC-004', 3, 3180000, 13);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (3, 'MDC-005', 3, 4105500, 14);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (2, 'MDC-006', 3, 3170500, 14);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (2, 'MDC-007', 3, 11567000, 14);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (1, 'MDC-008', 3, 6346000, 14);
+
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice, Size) 
+VALUES (1, 'VT-001', 4, 7500000, 15);

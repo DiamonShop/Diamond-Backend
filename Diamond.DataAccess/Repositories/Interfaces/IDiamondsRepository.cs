@@ -9,10 +9,11 @@ namespace DiamondShop.Repositories.Interfaces
     {
         Task<List<DiamondModel>> GetAllDiamonds();
         Task<DiamondModel> GetDiamondById(int id);
+        Task<DiamondModel> GetDiamondByProductId(string productId);
         Task<List<DiamondModel>> GetDiamondByName(string productName);
         Task<List<DiamondModel>> GetDiamondByPriceDesc();
         Task<List<DiamondModel>> GetDiamondByPriceAsc();
-        Task<bool> CreateDiamond(DiamondModel diamond);
+        Task<bool> CreateDiamond(string productName, int stock, DiamondModel diamondModel);
         Task<bool> UpdateDiamond(int id, DiamondModel diamond);
         Task<bool> DeleteDiamond(int id);
     }

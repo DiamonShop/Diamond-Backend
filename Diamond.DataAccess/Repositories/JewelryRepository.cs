@@ -36,6 +36,7 @@ namespace Diamond.DataAccess.Repositories
                     ProductID = jewelryModel.ProductID,
                     JewelrySettingID = jewelryModel.JewelrySettingID,
                     BasePrice = jewelryModel.BasePrice,
+                    Size = jewelryModel.Size
                 };
 
                 await _context.Jewelry.AddAsync(jewelry);
@@ -65,6 +66,7 @@ namespace Diamond.DataAccess.Repositories
                 jewelry.BasePrice = jewelry.BasePrice;
                 jewelry.JewelrySettingID = jewelry.JewelrySettingID;
                 jewelry.CategoryId = jewelry.CategoryId;
+                jewelry.Size = jewelry.Size;
                 _context.Jewelry.Remove(jewelry);
                 return await _context.SaveChangesAsync() > 0;
             }
@@ -96,6 +98,7 @@ namespace Diamond.DataAccess.Repositories
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
                 Stock = j.Product.Stock,
+                Size = j.Size,
                 IsActive = j.Product.IsActive
             }).ToList();
 
@@ -125,6 +128,7 @@ namespace Diamond.DataAccess.Repositories
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
                 Stock = j.Product.Stock,
+                Size = j.Size,
                 IsActive = j.Product.IsActive
             }).ToList();
 
@@ -152,6 +156,7 @@ namespace Diamond.DataAccess.Repositories
                 CategoryId = jewelry.CategoryId,
                 ProductDescription = jewelry.Product.Description,
                 IsActive = jewelry.Product.IsActive,
+                Size = jewelry.Size,
                 ProductName = jewelry.Product.ProductName,
                 Stock = jewelry.Product.Stock
             };
@@ -189,6 +194,7 @@ namespace Diamond.DataAccess.Repositories
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
                 Stock = j.Product.Stock,
+                Size = j.Size,
                 IsActive = j.Product.IsActive
             }).ToList();
 
@@ -218,6 +224,7 @@ namespace Diamond.DataAccess.Repositories
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
                 Stock = j.Product.Stock,
+                Size = j.Size,
                 IsActive = j.Product.IsActive
             }).ToList();
 
@@ -247,10 +254,40 @@ namespace Diamond.DataAccess.Repositories
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
                 Stock = j.Product.Stock,
+                Size = j.Size,
                 IsActive = j.Product.IsActive
             }).ToList();
 
             return jewelryModels;
+        }
+
+        public async Task<JewelryModel> GetJewelryByProductId(string productId)
+        {
+            var jewelry = await _context.Jewelry
+                .Include(j => j.Category)
+                .Include(j => j.Product)
+                .FirstOrDefaultAsync(j => j.Product.ProductId.Equals(productId));
+
+            if (jewelry == null)
+            {
+                return null;
+            }
+
+            var productModel = new JewelryModel()
+            {
+                JewelryID = jewelry.JewelryID,
+                JewelrySettingID = jewelry.JewelrySettingID,
+                ProductID = jewelry.ProductID,
+                BasePrice = jewelry.BasePrice,
+                CategoryId = jewelry.CategoryId,
+                ProductDescription = jewelry.Product.Description,
+                IsActive = jewelry.Product.IsActive,
+                Size = jewelry.Size,
+                ProductName = jewelry.Product.ProductName,
+                Stock = jewelry.Product.Stock
+            };
+
+            return productModel;
         }
 
         public async Task<bool> UpdateJewelry(int id, JewelryModel productModel)
@@ -270,6 +307,7 @@ namespace Diamond.DataAccess.Repositories
                 jewelry.CategoryId = productModel.CategoryId;
                 jewelry.ProductID = jewelry.ProductID;
                 jewelry.JewelrySettingID = productModel.JewelrySettingID;
+                jewelry.Size = productModel.Size;
 
                 _context.Jewelry.Update(jewelry);
                 return await _context.SaveChangesAsync() > 0;

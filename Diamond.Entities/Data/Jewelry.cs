@@ -16,6 +16,7 @@ namespace Diamond.Entities.Data
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
         public int BasePrice { get; set; }
+        public int Size { get; set; }
 
         public Category Category { get; set; } = null!;
         public JewelrySettings JewelrySetting { get; set; } = null!;

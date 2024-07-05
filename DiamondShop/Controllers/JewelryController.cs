@@ -26,7 +26,7 @@ namespace DiamondShop.API.Controllers
         {
             var products = await _jewelryRepository.GetAllJewelry();
 
-            if (products == null) { return NotFound("Product is empty"); }
+            if (products == null) { return NotFound(null); }
 
             return Ok(products);
         }
@@ -43,6 +43,19 @@ namespace DiamondShop.API.Controllers
             }
 
             return BadRequest("Product is not found");
+        }
+
+        [HttpGet("GetJewelryByProductId")]
+        /*[Authorize(Roles = "Manager,Staff,Delivery")]*/
+        public async Task<IActionResult> GetJewelryByProductId(string productId)
+        {
+            var products = await _jewelryRepository.GetJewelryByProductId(productId);
+            if (products != null)
+            {
+                return Ok(products);
+            }
+
+            return Ok(null);
         }
 
         // Tìm sản phẩm theo tên loại

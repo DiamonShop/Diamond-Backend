@@ -63,7 +63,7 @@ public class DiamondDbContext : DbContext
         modelBuilder.Entity<Diamonds>(e =>
         {
             e.Property(e => e.Carat).HasColumnType("decimal(18,2)");
-            e.Property(e => e.BasePrice).HasColumnType("decimal(18,2)");
+            e.Property(e => e.DiameterMM).HasColumnType("decimal(18,2)");
 
             e.HasOne(x => x.Product)
                 .WithOne(x => x.Diamond)

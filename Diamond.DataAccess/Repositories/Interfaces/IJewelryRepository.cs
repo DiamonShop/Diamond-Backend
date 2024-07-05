@@ -12,6 +12,7 @@ namespace Diamond.DataAccess.Repositories.Interfaces
     {
         Task<List<JewelryModel>> GetAllJewelry();
         Task<JewelryModel> GetJewelryById(int id);
+        Task<JewelryModel> GetJewelryByProductId(string id);
         Task<List<JewelryModel>> GetJewelryByCategoryName(string categoryName);
         Task<List<JewelryModel>> GetJewelryByName(string productName);
         Task<List<JewelryModel>> GetJewelryByPriceDesc();

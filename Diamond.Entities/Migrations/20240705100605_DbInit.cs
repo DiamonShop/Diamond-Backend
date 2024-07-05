@@ -79,7 +79,8 @@ namespace Diamond.Entities.Migrations
                     Clarity = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Cut = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Color = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    BasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    DiameterMM = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BasePrice = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -101,7 +102,8 @@ namespace Diamond.Entities.Migrations
                     JewelrySettingID = table.Column<int>(type: "int", nullable: false),
                     ProductID = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    BasePrice = table.Column<int>(type: "int", nullable: false)
+                    BasePrice = table.Column<int>(type: "int", nullable: false),
+                    Size = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

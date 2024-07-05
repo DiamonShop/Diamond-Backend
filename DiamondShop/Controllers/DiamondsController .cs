@@ -40,7 +40,20 @@ namespace DiamondShop.Controllers
                 return Ok(products);
             }
 
-            return BadRequest("Product is not found");
+            return Ok(null);
+        }
+
+        [HttpGet("GetDiamondByProductId")]
+        /*[Authorize(Roles = "Manager,Staff,Delivery")]*/
+        public async Task<IActionResult> GetDiamondByProductId(string productId)
+        {
+            var products = await _diamondRepository.GetDiamondByProductId(productId);
+            if (products != null)
+            {
+                return Ok(products);
+            }
+
+            return Ok(null);
         }
 
         // Tìm sản phẩm theo tên sản phẩm
@@ -81,9 +94,9 @@ namespace DiamondShop.Controllers
         // Tạo sản phẩm mới
         [HttpPost("CreateDiamond")]
         [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> CreateDiamond([FromBody] DiamondModel diamondModel)
+        public async Task<IActionResult> CreateDiamond(string productName, int stock, DiamondModel diamondModel)
         {
-            bool result = await _diamondRepository.CreateDiamond(diamondModel);
+            bool result = await _diamondRepository.CreateDiamond(productName, stock, diamondModel);
 
             if (result)
             {
