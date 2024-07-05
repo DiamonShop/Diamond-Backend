@@ -51,6 +51,5 @@ namespace DiamondShop.Data
                 Jewelry.BasePrice = jewelryBasePrice * MarkupPrice;
             }
         }
-
     }
 }
