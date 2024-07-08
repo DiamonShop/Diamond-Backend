@@ -40,20 +40,15 @@ namespace DiamondShop.Data
 
         public void UpdateDiamondsAndJewelryPrice()
         {
-            int jewelryBasePrice = Jewelry?.BasePrice ?? 0;
-            int diamondBasePrice = Diamond?.BasePrice ?? 0;
-            MarkupPrice = (jewelryBasePrice + diamondBasePrice) * MarkupRate;
-
-            // Update Diamonds BasePrice based on MarkupPrice
-            if (Diamond != null)
+            if (ProductType == "Jewelry" && Jewelry != null)
             {
-                Diamond.BasePrice = diamondBasePrice * MarkupPrice;
+                // Tính MarkupPrice dựa trên giá gốc của Jewelry và MarkupRate
+                MarkupPrice = Jewelry.BasePrice * MarkupRate;
             }
-
-            // Update Jewelry BasePrice based on MarkupPrice
-            if (Jewelry != null)
+            else if (ProductType == "Diamond" && Diamond != null)
             {
-                Jewelry.BasePrice = jewelryBasePrice * MarkupPrice;
+                // Tính MarkupPrice dựa trên giá gốc của Diamond và MarkupRate
+                MarkupPrice = Diamond.BasePrice * MarkupRate;
             }
         }
     }

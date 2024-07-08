@@ -19,7 +19,7 @@ namespace DiamondShop.Data
 
         [Required]
         [StringLength(50)]
-        public string NumberPhone { get; set; } // Changed to string for storing phone numbers
+        public string NumberPhone { get; set; } 
 
         [Required]
         [StringLength(200)]

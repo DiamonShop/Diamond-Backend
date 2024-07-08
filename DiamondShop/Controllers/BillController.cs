@@ -1,8 +1,8 @@
-﻿using DiamondShop.Data;
-using DiamondShop.Repositories;
+﻿using Diamond.Entities.DTO;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace DiamondShop.Controllers
 {
@@ -10,23 +10,23 @@ namespace DiamondShop.Controllers
     [ApiController]
     public class BillController : ControllerBase
     {
-        private readonly BillRepository _billRepository;
+        private readonly IBillRepository _billRepository;
 
-        public BillController(BillRepository billRepository)
+        public BillController(IBillRepository billRepository)
         {
             _billRepository = billRepository;
         }
 
         [HttpPost("CreateBill")]
         [Authorize(Roles = "Member")]
-        public async Task<IActionResult> CreateBill([FromBody] Bill bill)
+        public async Task<IActionResult> CreateBill([FromBody] BillCreateDTO billCreateDTO)
         {
-            if (bill == null)
+            if (billCreateDTO == null)
             {
                 return BadRequest("Invalid bill data.");
             }
 
-            var createdBill = await _billRepository.CreateBill(bill);
+            var createdBill = await _billRepository.CreateBill(billCreateDTO);
             return Ok(createdBill);
         }
 
@@ -48,6 +48,22 @@ namespace DiamondShop.Controllers
         {
             var bills = await _billRepository.GetAllBills();
             return Ok(bills);
+        }
+
+        [HttpPut("UpdateBillIsActive/{billId}")]
+        
+        public async Task<IActionResult> UpdateBillIsActive(int billId, [FromBody] bool isActive)
+        {
+            var result = await _billRepository.UpdateBillIsActive(billId, isActive);
+
+            if (result)
+            {
+                return Ok("Bill IsActive status updated successfully.");
+            }
+            else
+            {
+                return BadRequest("Failed to update Bill IsActive status.");
+            }
         }
     }
 }
