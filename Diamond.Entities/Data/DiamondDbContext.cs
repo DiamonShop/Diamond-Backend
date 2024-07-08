@@ -77,19 +77,21 @@ public class DiamondDbContext : DbContext
             e.HasOne(x => x.Warranty)
                 .WithOne(x => x.Product)
                 .HasForeignKey<Warranty>(x => x.ProductId);
-
-           
         });
 
         modelBuilder.Entity<Feedback>(e =>
         {
             e.HasOne(x => x.Product)
                 .WithMany(x => x.Feedbacks)
-                .HasForeignKey(x => x.ProductID);
+                .HasForeignKey(x => x.ProductID)
+                .OnDelete(DeleteBehavior.Cascade);
 
             e.HasOne(x => x.User)
                 .WithMany(x => x.Feedbacks)
-                .HasForeignKey(x => x.UserId);
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.NoAction); // Thay đổi hành vi xóa
+
+           
         });
 
         modelBuilder.Entity<Jewelry>(e =>

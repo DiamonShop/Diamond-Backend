@@ -147,6 +147,20 @@ namespace DiamondShop.Controllers
 
             return BadRequest("Failed to update MarkupRates");
         }
+        [HttpPut("UpdateMarkupRate")]
+        public async Task<IActionResult> UpdateMarkupRate(string productId, [FromBody] int newMarkupRate)
+        {
+            var result = await _productRepository.UpdateMarkupRate(productId, newMarkupRate);
+
+            if (result)
+            {
+                return Ok("MarkupRate updated successfully.");
+            }
+            else
+            {
+                return BadRequest("Failed to update MarkupRate.");
+            }
+        }
     }
 }
 
