@@ -47,6 +47,7 @@ namespace DiamondShop.Repositories
                 FullName = user.FullName,
                 Email = user.Email,
                 NumberPhone = user.NumberPhone,
+                Address = user.Address,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role?.RoleName // Optional chaining for RoleName
@@ -86,6 +87,7 @@ namespace DiamondShop.Repositories
                 FullName = user.FullName!,
                 Email = user.Email!,
                 NumberPhone = user.NumberPhone,
+                Address= user.Address,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
@@ -115,6 +117,7 @@ namespace DiamondShop.Repositories
                 FullName = user.FullName,
                 Email = user.Email,
                 NumberPhone= user.NumberPhone,
+                Address = user.Address,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
             }).ToList();
@@ -143,6 +146,7 @@ namespace DiamondShop.Repositories
                 FullName = user.FullName,
                 Email = user.Email,
                NumberPhone = user.NumberPhone,
+               Address= user.Address,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
@@ -172,6 +176,7 @@ namespace DiamondShop.Repositories
                 FullName = user.FullName,
                 Email = user.Email,
                NumberPhone= user.NumberPhone,
+               Address = user.Address,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName // Lấy tên role của người dùng nếu có
@@ -199,6 +204,7 @@ namespace DiamondShop.Repositories
                     IsActive = true,
                     RoleId = userDTO.RoleId,
                    NumberPhone = userDTO.NumberPhone,
+                   Address =userDTO.Address,
             
                 };
                 await _context.Users.AddAsync(user);
@@ -269,6 +275,10 @@ namespace DiamondShop.Repositories
                 {
                     user.NumberPhone = userModel.NumberPhone;
                 }
+                if (!string.IsNullOrEmpty(userModel.Address))
+                {
+                    user.Address = userModel.Address;
+                }
 
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
@@ -308,6 +318,7 @@ namespace DiamondShop.Repositories
                     Password = userSignUpModel.Password,
                     FullName = "",
                     NumberPhone = "",
+                    Address = "",
                     LoyaltyPoints = 0,
                     IsActive = true,
                     RoleId = 3 // Member
@@ -363,6 +374,7 @@ namespace DiamondShop.Repositories
                         user.Email,
                         user.Role.RoleName,
                         user.NumberPhone,
+                        user.Address,
                         Token = token
                     }
                 };
