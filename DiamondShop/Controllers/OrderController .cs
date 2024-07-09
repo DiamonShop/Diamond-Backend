@@ -12,6 +12,7 @@ using Microsoft.Data.SqlClient;
 using DiamondShop.Repositories;
 using Diamond.DataAccess.Repositories.Interfaces;
 using Microsoft.CodeAnalysis;
+using Diamond.Entities.DTO;
 
 namespace DiamondShop.Controllers
 {
@@ -67,7 +68,7 @@ namespace DiamondShop.Controllers
         /*[Authorize(Roles = "Manager,Staff,Member")]*/
         public async Task<IActionResult> AddProductToOrderDetail(int orderId, string productId, int quantity)
         {
-            bool result = await _orderRepository.AddProductToOrderDetail(orderId, productId, quantity);   
+            bool result = await _orderRepository.AddProductToOrderDetail(orderId, productId, quantity);
             if (result)
             {
                 return Ok("Add product to order detail successfully");
@@ -138,7 +139,7 @@ namespace DiamondShop.Controllers
 
         [HttpGet("result")]
         //[Authorize(Roles = "Manager")]
-        public IActionResult PaymentCallback()
+        public async Task<IActionResult> PaymentCallback()
         {
             var response = _vnPayRepo.PaymentExecute(Request.Query);
             var successUrl = "http://localhost:3000/?message=Payment%20Successful";
@@ -147,7 +148,7 @@ namespace DiamondShop.Controllers
             string[] orderDes = response.OrderDescription.Split('/');
             int userId = int.Parse(orderDes[0]);
             string fullname = orderDes[1];
-            string phoneNumber = orderDes[2]; 
+            string phoneNumber = orderDes[2];
             string address = orderDes[3];
             string email = orderDes[5];
             string orderNote = orderDes[6];
@@ -179,14 +180,12 @@ namespace DiamondShop.Controllers
         [HttpPut("UpdateStatusByUserId")]
         public async Task<IActionResult> UpdateStatusByUserId(int userId)
         {
-			bool result = await _orderRepository.UpdateStatusByUserId(userId);
-			if (result)
-			{
-				return Ok("Update status Order successfully");
-			}
-			return Ok("Failed to Update status Order");
-		}
-        //---------------bill-------------
+            bool result = await _orderRepository.UpdateStatusByUserId(userId);
+            if (result)
+            {
+                return Ok("Update status Order successfully");
+            }
+            return Ok("Failed to Update status Order");
+        }
     }
 }
-

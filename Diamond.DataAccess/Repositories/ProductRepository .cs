@@ -187,17 +187,25 @@ namespace DiamondShop.Repositories
 
             try
             {
+                // Đảm bảo MarkupRate có giá trị mặc định là 1
+                if (productModel.MarkupRate == 0)
+                {
+                    productModel.MarkupRate = 1;
+                }
+
                 var product = new Product()
                 {
                     ProductId = productModel.ProductId,
                     MarkupRate = productModel.MarkupRate,
                     ProductType = productModel.ProductType,
                     Description = productModel.Description,
-                    MarkupPrice = productModel.MarkupPrice,
                     IsActive = productModel.IsActive,
                     Stock = productModel.Stock,
                     ProductName = productModel.ProductName
                 };
+
+                // Tính toán MarkupPrice dựa trên BasePrice và MarkupRate
+                product.UpdateDiamondsAndJewelryPrice();
 
                 await _context.Products.AddAsync(product);
                 return await _context.SaveChangesAsync() > 0;
@@ -207,8 +215,8 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
-
-        public async Task<bool> UpdateProduct(string id, ProductViewModel productModel)
+    
+    public async Task<bool> UpdateProduct(string id, ProductViewModel productModel)
         {
             var product = await _context.Products
                 .FirstOrDefaultAsync(p => p.ProductId.Equals(id));
@@ -223,10 +231,10 @@ namespace DiamondShop.Repositories
                 product.ProductName = productModel.ProductName;
                 product.Description = productModel.Description;
                 product.MarkupRate = productModel.MarkupRate;
-                product.MarkupPrice = productModel.MarkupPrice;
                 product.IsActive = productModel.IsActive;
                 product.Stock = productModel.Stock;
 
+                // Tính toán lại MarkupPrice dựa trên các thuộc tính đã cập nhật
                 product.UpdateDiamondsAndJewelryPrice();
 
                 _context.Products.Update(product);
@@ -237,6 +245,7 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
+
 
         public async Task<bool> DeleteProduct(string id)
         {
@@ -260,7 +269,10 @@ namespace DiamondShop.Repositories
 
         public async Task<bool> UpdateMarkupRate(string productId, int newMarkupRate)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId.Equals(productId));
+            var product = await _context.Products
+                                        .Include(p => p.Jewelry)
+                                        .Include(p => p.Diamond)
+                                        .FirstOrDefaultAsync(p => p.ProductId.Equals(productId));
 
             if (product == null)
             {
@@ -270,7 +282,9 @@ namespace DiamondShop.Repositories
             try
             {
                 product.MarkupRate = newMarkupRate;
-                product.MarkupPrice = product.Jewelry.BasePrice * newMarkupRate; // Assuming Jewelry has BasePrice
+
+                // Tính toán lại MarkupPrice dựa trên MarkupRate mới
+                product.UpdateDiamondsAndJewelryPrice();
 
                 _context.Products.Update(product);
                 return await _context.SaveChangesAsync() > 0;
@@ -280,6 +294,7 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
+
 
         public async Task<bool> UpdateAllMarkupRates(int newMarkupRate)
         {
@@ -304,6 +319,7 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
+
 
 
 
