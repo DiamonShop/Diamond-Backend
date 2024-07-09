@@ -21,13 +21,12 @@ namespace DiamondShop.Controllers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IVnPayRepository _vnPayRepo;
-        private readonly IBillRepository _billRepository;
 
-		public OrderController(IOrderRepository context, IVnPayRepository vnPayRepo, IBillRepository billRepository)
+		public OrderController(IOrderRepository context, IVnPayRepository vnPayRepo)
         {
             _orderRepository = context;
             _vnPayRepo = vnPayRepo;
-            _billRepository = billRepository;
+            /*_billRepository = billRepository;*/
         }
 
         [HttpGet("GetAllOrders")]
@@ -153,7 +152,7 @@ namespace DiamondShop.Controllers
             string email = orderDes[5];
             string orderNote = orderDes[6];
 
-            Bill bill = new Bill
+            /*Bill bill = new Bill
             {
                 UserId = userId,
                 FullName = fullname,
@@ -164,9 +163,7 @@ namespace DiamondShop.Controllers
                 IsActive = true,
             };
 
-             _billRepository.CreateBill(bill);
-
-            Console.WriteLine(bill);
+             _billRepository.CreateBill(bill);*/
 
             if (response.VnPayResponseCode.Equals("00"))
             {
@@ -178,10 +175,6 @@ namespace DiamondShop.Controllers
                 return Redirect(failureUrl);
             }
         }
-
-
-
-
 
         [HttpPut("UpdateStatusByUserId")]
         public async Task<IActionResult> UpdateStatusByUserId(int userId)

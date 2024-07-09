@@ -109,7 +109,7 @@ namespace DiamondShop.API.Controllers
 
         // Tạo sản phẩm mới
         [HttpPost("CreateJewelry")]
-        [Authorize(Roles = "Admin,Manager")]
+        /*[Authorize(Roles = "Admin,Manager")]*/
         public async Task<IActionResult> CreateJewelry([FromBody] JewelryModel jewelryModel)
         {
             bool result = await _jewelryRepository.CreateJewelry(jewelryModel);

@@ -93,10 +93,10 @@ namespace DiamondShop.Controllers
 
         // Tạo sản phẩm mới
         [HttpPost("CreateDiamond")]
-        [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> CreateDiamond(string productName, int stock, DiamondModel diamondModel)
+        /*[Authorize(Roles = "Admin,Manager")]*/
+        public async Task<IActionResult> CreateDiamond(DiamondModel diamondModel)
         {
-            bool result = await _diamondRepository.CreateDiamond(productName, stock, diamondModel);
+            bool result = await _diamondRepository.CreateDiamond(diamondModel);
 
             if (result)
             {

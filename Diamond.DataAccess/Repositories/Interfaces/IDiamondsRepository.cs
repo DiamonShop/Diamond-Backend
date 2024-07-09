@@ -13,7 +13,7 @@ namespace DiamondShop.Repositories.Interfaces
         Task<List<DiamondModel>> GetDiamondByName(string productName);
         Task<List<DiamondModel>> GetDiamondByPriceDesc();
         Task<List<DiamondModel>> GetDiamondByPriceAsc();
-        Task<bool> CreateDiamond(string productName, int stock, DiamondModel diamondModel);
+        Task<bool> CreateDiamond(DiamondModel diamondModel);
         Task<bool> UpdateDiamond(int id, DiamondModel diamond);
         Task<bool> DeleteDiamond(int id);
     }

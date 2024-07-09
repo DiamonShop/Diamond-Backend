@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Diamond.DataAccess.Repositories
@@ -21,6 +22,50 @@ namespace Diamond.DataAccess.Repositories
             _context = context;
         }
 
+        private async Task<string> GetNextProductIdAsync(int categoryId)
+        {
+            string prefix;
+            switch (categoryId)
+            {
+                case 1:
+                    prefix = "N-";
+                    break;
+                case 2:
+                    prefix = "DC-";
+                    break;
+                case 3:
+                    prefix = "MDC-";
+                    break;
+                case 4:
+                    prefix = "VT-";
+                    break;
+                default:
+                    throw new ArgumentException("Invalid category ID");
+            }
+
+            var existingIds = await _context.Jewelry
+                .Where(j => j.CategoryId == categoryId)
+                .Select(j => j.ProductID)
+                .ToListAsync();
+
+            int maxNumber = 0;
+
+            foreach (var id in existingIds)
+            {
+                if (id.StartsWith(prefix))
+                {
+                    var match = Regex.Match(id, @"\d+");
+                    if (match.Success && int.TryParse(match.Value, out int number))
+                    {
+                        maxNumber = Math.Max(maxNumber, number);
+                    }
+                }
+            }
+
+            int nextNumber = maxNumber + 1;
+            return $"{prefix}{nextNumber:D3}";
+        }
+
         public async Task<bool> CreateJewelry(JewelryModel jewelryModel)
         {
             if (jewelryModel == null)
@@ -30,15 +75,32 @@ namespace Diamond.DataAccess.Repositories
 
             try
             {
+                // Generate the next Product ID
+                var productID = await GetNextProductIdAsync(jewelryModel.CategoryId);
+
+                int markupRate = 1;
+
+                var newProduct = new Product()
+                {
+                    ProductId = productID,
+                    ProductName = jewelryModel.ProductName,
+                    Description = "",
+                    MarkupRate = markupRate,
+                    Stock = jewelryModel.Stock,
+                    MarkupPrice = jewelryModel.BasePrice * markupRate,
+                    ProductType = "Jewelry",
+                    IsActive = true
+                };
+
                 var jewelry = new Jewelry()
                 {
                     CategoryId = jewelryModel.CategoryId,
-                    ProductID = jewelryModel.ProductID,
+                    ProductID = productID, // Link to the ProductID
                     JewelrySettingID = jewelryModel.JewelrySettingID,
-                    BasePrice = jewelryModel.BasePrice,
-                    Size = jewelryModel.Size
+                    BasePrice = jewelryModel.BasePrice
                 };
 
+                await _context.Products.AddAsync(newProduct);
                 await _context.Jewelry.AddAsync(jewelry);
                 return await _context.SaveChangesAsync() > 0;
             }
@@ -47,6 +109,7 @@ namespace Diamond.DataAccess.Repositories
                 return false;
             }
         }
+
 
         public async Task<bool> DeleteJewelry(int id)
         {

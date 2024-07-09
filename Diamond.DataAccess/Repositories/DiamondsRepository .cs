@@ -78,7 +78,7 @@ namespace DiamondShop.Repositories
             return productModel;
         }
 
-        public async Task<bool> CreateDiamond(string productName, int stock, DiamondModel diamondModel)
+        public async Task<bool> CreateDiamond(DiamondModel diamondModel)
         {
             if (diamondModel == null)
             {
@@ -100,14 +100,16 @@ namespace DiamondShop.Repositories
                     ProductID = productID
                 };
 
+                int MarkupRate = 1;
+
                 var newProduct = new Product()
                 {
                     ProductId = productID,
-                    ProductName = productName,
-                    Description = "",
-                    MarkupRate = 0,
-                    Stock = stock,
-                    MarkupPrice = 0,
+                    ProductName = diamondModel.ProductName,
+                    Description = diamondModel.Description,
+                    MarkupRate = MarkupRate,
+                    Stock = diamondModel.Stock,
+                    MarkupPrice = diamondModel.BasePrice * MarkupRate,
                     ProductType = "Diamond",
                     IsActive = true
                 };

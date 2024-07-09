@@ -20,7 +20,6 @@ public class DiamondDbContext : DbContext
     public DbSet<Feedback> Feedbacks { get; set; }
     public DbSet<JewelrySettings> JewelrySetting { get; set; }
     public DbSet<Jewelry> Jewelry { get; set; }
-    public DbSet<Bill> Bills { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

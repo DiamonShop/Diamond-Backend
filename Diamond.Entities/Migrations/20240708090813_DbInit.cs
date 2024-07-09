@@ -160,6 +160,8 @@ namespace Diamond.Entities.Migrations
                     NumberPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Username = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
                     LoyaltyPoints = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -192,31 +194,6 @@ namespace Diamond.Entities.Migrations
                         column: x => x.DiamondID,
                         principalTable: "Diamonds",
                         principalColumn: "DiamondID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Bills",
-                columns: table => new
-                {
-                    BillId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    NumberPhone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    OrderNote = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Bills", x => x.BillId);
-                    table.ForeignKey(
-                        name: "FK_Bills_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -296,11 +273,6 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bills_UserId",
-                table: "Bills",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Certificates_DiamondID",
                 table: "Certificates",
                 column: "DiamondID",
@@ -368,9 +340,6 @@ namespace Diamond.Entities.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Bills");
-
             migrationBuilder.DropTable(
                 name: "Certificates");
 
