@@ -258,7 +258,8 @@ namespace DiamondShop.Repositories
 
             try
             {
-                _context.Products.Remove(product);
+                product.IsActive = false;
+                _context.Products.Update(product);
                 return await _context.SaveChangesAsync() > 0;
             }
             catch (Exception)
