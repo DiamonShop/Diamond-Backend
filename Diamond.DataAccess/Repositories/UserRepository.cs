@@ -199,6 +199,7 @@ namespace DiamondShop.Repositories
                     IsActive = true,
                     RoleId = userDTO.RoleId,
                    NumberPhone = userDTO.NumberPhone,
+                   Address = userDTO.Address,
             
                 };
                 await _context.Users.AddAsync(user);
@@ -269,6 +270,10 @@ namespace DiamondShop.Repositories
                 {
                     user.NumberPhone = userModel.NumberPhone;
                 }
+                if (!string.IsNullOrEmpty(userModel.Address))
+                {
+                    user.Address = userModel.Address;
+                }
 
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
@@ -308,6 +313,7 @@ namespace DiamondShop.Repositories
                     Password = userSignUpModel.Password,
                     FullName = "",
                     NumberPhone = "",
+                    Address = "",
                     LoyaltyPoints = 0,
                     IsActive = true,
                     RoleId = 3 // Member

@@ -32,7 +32,6 @@ namespace DiamondShop.Data
 
         [StringLength(50)]
         public string Address { get; set; }
-        public int PhoneNumber { get; set; }
         public int LoyaltyPoints { get; set; }
 
         [Required]

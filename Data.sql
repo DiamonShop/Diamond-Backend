@@ -14,20 +14,21 @@ INSERT INTO [dbo].[Roles] (RoleName) VALUES ('Delivery');
 INSERT INTO [dbo].[Roles] (RoleName) VALUES ('Staff');
 
 /* Insert User */
-INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive) 
-VALUES (1, 'admin@example.com', 'Admin User', '123456789', 'admin', '123', 100, 1);
+INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive, Address) 
+VALUES (1, 'admin@example.com', 'Admin User', '123456789', 'admin', '123', 100, 1, '123 Admin St');
 
-INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive) 
-VALUES (2, 'manager@example.com', 'Manager User', '987654321', 'manager', '123', 200, 1);
+INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive, Address) 
+VALUES (2, 'manager@example.com', 'Manager User', '987654321', 'manager', '123', 200, 1, '456 Manager Ave');
 
-INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive) 
-VALUES (3, 'member@example.com', 'Member User', '555666777', 'member', '123', 300, 1);
+INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive, Address) 
+VALUES (3, 'member@example.com', 'Member User', '555666777', 'member', '123', 300, 1, '789 Member Blvd');
 
-INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive) 
-VALUES (4, 'delivery@example.com', 'Delivery User', '999888777', 'delivery', '123', 400, 1);
+INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive, Address) 
+VALUES (4, 'delivery@example.com', 'Delivery User', '999888777', 'delivery', '123', 400, 1, '321 Delivery Dr');
 
-INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive) 
-VALUES (5, 'staff@example.com', 'Staff User', '111222333', 'staff', '123', 500, 1);
+INSERT INTO [dbo].[Users] (RoleId, Email, FullName, NumberPhone, Username, Password, LoyaltyPoints, IsActive, Address) 
+VALUES (5, 'staff@example.com', 'Staff User', '111222333', 'staff', '123', 500, 1, '654 Staff Ln');
+
 
 /* Insert Product */
 INSERT INTO [dbo].[Products] (ProductId, ProductName, ProductType, Description, MarkupRate, Stock, MarkupPrice, IsActive) 
