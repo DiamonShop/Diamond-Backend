@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diamond.Entities.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    [Migration("20240709050145_DiamondStore")]
-    partial class DiamondStore
+    [Migration("20240709074754_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
