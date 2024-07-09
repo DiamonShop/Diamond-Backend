@@ -204,7 +204,8 @@ namespace DiamondShop.Repositories
                     IsActive = true,
                     RoleId = userDTO.RoleId,
                    NumberPhone = userDTO.NumberPhone,
-                   Address =userDTO.Address,
+                   Address = userDTO.Address,
+
             
                 };
                 await _context.Users.AddAsync(user);
