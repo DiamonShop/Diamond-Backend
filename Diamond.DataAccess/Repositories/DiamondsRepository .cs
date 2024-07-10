@@ -326,5 +326,12 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
+        public async Task<int> GetDiamondCountByDiameter(decimal diameterMM)
+        {
+            var count = await _context.Diamonds
+                .Where(d => d.DiameterMM == diameterMM)
+                .CountAsync();
+            return count;
+        }
     }
 }

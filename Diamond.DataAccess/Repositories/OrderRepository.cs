@@ -371,10 +371,10 @@ namespace Diamond.DataAccess.Repositories
             {
                 return result;
             }
-            order.Status = "Hoàn thành";
+            order.Status = "Completed";
             _context.Orders.Update(order);
             result = await _context.SaveChangesAsync() > 0;
-            result = await _context.SaveChangesAsync() > 0;
+            //result = await _context.SaveChangesAsync() > 0;
             return result;
         }
     }

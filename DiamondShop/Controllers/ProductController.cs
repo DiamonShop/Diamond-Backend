@@ -123,7 +123,7 @@ namespace DiamondShop.Controllers
 
         // Xóa sản phẩm
         [HttpDelete("DeleteProduct")]
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> DeleteProduct(string id)
         {
             bool result = await _productRepository.DeleteProduct(id);

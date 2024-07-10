@@ -16,5 +16,6 @@ namespace DiamondShop.Repositories.Interfaces
         Task<bool> CreateDiamond(DiamondModel diamondModel);
         Task<bool> UpdateDiamond(int id, DiamondModel diamond);
         Task<bool> DeleteDiamond(int id);
+        Task<int> GetDiamondCountByDiameter(decimal diameterMM);
     }
 }

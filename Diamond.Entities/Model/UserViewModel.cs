@@ -13,6 +13,7 @@ namespace DiamondShop.Model
 
         public int LoyaltyPoints { get; set; }
         public bool IsActive { get; set; }
-        public string NumberPhone { get; set; } 
+        public string NumberPhone { get; set; }
+        public string Address { get; set; }
     }
 }

@@ -129,6 +129,12 @@ namespace DiamondShop.Controllers
 
             return Ok("Delete Jewelry sucessfully");
         }
+        [HttpGet("GetDiamondCountByDiameter")]
+        public async Task<IActionResult> GetDiamondCountByDiameter(decimal diameterMM)
+        {
+            var count = await _diamondRepository.GetDiamondCountByDiameter(diameterMM);
+            return Ok(count);
+        }
     }
 }
 
