@@ -13,7 +13,7 @@ namespace Diamond.Entities.Model
         public int DiamondID { get; set; }
         public string ProductID { get; set; }
         public string ProductName { get; set; }
-        public int Stock { get; set; }
+        public int Quantity { get; set; }
         public decimal Carat { get; set; }
         public string Clarity { get; set; }
         public string Cut { get; set; }

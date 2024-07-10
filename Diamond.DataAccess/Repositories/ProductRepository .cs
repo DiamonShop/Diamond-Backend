@@ -36,7 +36,6 @@ namespace DiamondShop.Repositories
                 MarkupPrice = p.MarkupPrice,
                 MarkupRate = p.MarkupRate,
                 IsActive = p.IsActive,
-                Stock = p.Stock,
                 ProductName = p.ProductName
             }).ToList();
 
@@ -60,7 +59,6 @@ namespace DiamondShop.Repositories
                 MarkupRate = product.MarkupRate,
                 ProductType = product.ProductType,
                 IsActive = product.IsActive,
-                Stock = product.Stock,
                 ProductName = product.ProductName
             };
 
@@ -86,7 +84,6 @@ namespace DiamondShop.Repositories
                 MarkupRate = p.MarkupRate,
                 ProductType = p.ProductType,
                 IsActive = p.IsActive,
-                Stock = p.Stock,
                 ProductName = p.ProductName
             }).ToList();
 
@@ -119,7 +116,6 @@ namespace DiamondShop.Repositories
                 ProductType = p.ProductType,
                 MarkupPrice = p.MarkupPrice,
                 IsActive = p.IsActive,
-                Stock = p.Stock,
                 ProductName = p.ProductName
             }).ToList();
 
@@ -145,7 +141,6 @@ namespace DiamondShop.Repositories
                 ProductType = p.ProductType,
                 MarkupRate = p.MarkupRate,
                 IsActive = p.IsActive,
-                Stock = p.Stock,
                 ProductName = p.ProductName
             }).ToList();
 
@@ -171,7 +166,6 @@ namespace DiamondShop.Repositories
                 Description = p.Description,
                 MarkupPrice = p.MarkupPrice,
                 IsActive = p.IsActive,
-                Stock = p.Stock,
                 ProductName = p.ProductName
             }).ToList();
 
@@ -200,7 +194,6 @@ namespace DiamondShop.Repositories
                     ProductType = productModel.ProductType,
                     Description = productModel.Description,
                     IsActive = productModel.IsActive,
-                    Stock = productModel.Stock,
                     ProductName = productModel.ProductName
                 };
 
@@ -232,7 +225,6 @@ namespace DiamondShop.Repositories
                 product.Description = productModel.Description;
                 product.MarkupRate = productModel.MarkupRate;
                 product.IsActive = productModel.IsActive;
-                product.Stock = productModel.Stock;
 
                 // Tính toán lại MarkupPrice dựa trên các thuộc tính đã cập nhật
                 product.UpdateDiamondsAndJewelryPrice();

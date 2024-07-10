@@ -22,7 +22,7 @@ namespace Diamond.DataAccess.Repositories
             _context = context;
         }
 
-        private async Task<string> GetNextProductIdAsync(int categoryId)
+        /*private async Task<string> GetNextProductIdAsync(int categoryId)
         {
             string prefix;
             switch (categoryId)
@@ -47,7 +47,7 @@ namespace Diamond.DataAccess.Repositories
                 .Where(j => j.CategoryId == categoryId)
                 .Select(j => j.ProductID)
                 .ToListAsync();
-
+        
             int maxNumber = 0;
 
             foreach (var id in existingIds)
@@ -61,7 +61,7 @@ namespace Diamond.DataAccess.Repositories
                     }
                 }
             }
-
+            
             int nextNumber = maxNumber + 1;
             return $"{prefix}{nextNumber:D3}";
         }
@@ -86,7 +86,6 @@ namespace Diamond.DataAccess.Repositories
                     ProductName = jewelryModel.ProductName,
                     Description = "",
                     MarkupRate = markupRate,
-                    Stock = jewelryModel.Stock,
                     MarkupPrice = jewelryModel.BasePrice * markupRate,
                     ProductType = "Jewelry",
                     IsActive = true
@@ -108,8 +107,48 @@ namespace Diamond.DataAccess.Repositories
             {
                 return false;
             }
-        }
+        }*/
 
+        public async Task<bool> CreateJewelry(JewelryModel jewelryModel)
+        {
+            if (jewelryModel == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                // Generate the next Product ID
+                int markupRate = 1;
+
+                var newProduct = new Product()
+                {
+                    ProductId = jewelryModel.ProductID,
+                    ProductName = jewelryModel.ProductName,
+                    Description = "",
+                    MarkupRate = markupRate,
+                    MarkupPrice = jewelryModel.BasePrice * markupRate,
+                    ProductType = "Jewelry",
+                    IsActive = true
+                };
+
+                var jewelry = new Jewelry()
+                {
+                    CategoryId = jewelryModel.CategoryId,
+                    ProductID = newProduct.ProductId, // Link to the ProductID
+                    JewelrySettingID = jewelryModel.JewelrySettingID,
+                    BasePrice = jewelryModel.BasePrice
+                };
+
+                await _context.Products.AddAsync(newProduct);
+                await _context.Jewelry.AddAsync(jewelry);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
         public async Task<bool> DeleteJewelry(int id)
         {
@@ -124,13 +163,9 @@ namespace Diamond.DataAccess.Repositories
 
             try
             {
-                jewelry.JewelryID = jewelry.JewelryID;
                 jewelry.Product.IsActive = false;
-                jewelry.BasePrice = jewelry.BasePrice;
-                jewelry.JewelrySettingID = jewelry.JewelrySettingID;
-                jewelry.CategoryId = jewelry.CategoryId;
-                jewelry.Size = jewelry.Size;
-                _context.Jewelry.Remove(jewelry);
+
+                _context.Jewelry.Update(jewelry);
                 return await _context.SaveChangesAsync() > 0;
             }
             catch (Exception)
@@ -160,8 +195,6 @@ namespace Diamond.DataAccess.Repositories
                 BasePrice = j.BasePrice,
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
-                Stock = j.Product.Stock,
-                Size = j.Size,
                 IsActive = j.Product.IsActive
             }).ToList();
 
@@ -190,8 +223,6 @@ namespace Diamond.DataAccess.Repositories
                 BasePrice = j.BasePrice,
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
-                Stock = j.Product.Stock,
-                Size = j.Size,
                 IsActive = j.Product.IsActive
             }).ToList();
 
@@ -219,9 +250,7 @@ namespace Diamond.DataAccess.Repositories
                 CategoryId = jewelry.CategoryId,
                 ProductDescription = jewelry.Product.Description,
                 IsActive = jewelry.Product.IsActive,
-                Size = jewelry.Size,
                 ProductName = jewelry.Product.ProductName,
-                Stock = jewelry.Product.Stock
             };
 
             return productModel;
@@ -256,8 +285,7 @@ namespace Diamond.DataAccess.Repositories
                 BasePrice = j.BasePrice,
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
-                Stock = j.Product.Stock,
-                Size = j.Size,
+                
                 IsActive = j.Product.IsActive
             }).ToList();
 
@@ -286,8 +314,6 @@ namespace Diamond.DataAccess.Repositories
                 BasePrice = j.BasePrice,
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
-                Stock = j.Product.Stock,
-                Size = j.Size,
                 IsActive = j.Product.IsActive
             }).ToList();
 
@@ -316,8 +342,6 @@ namespace Diamond.DataAccess.Repositories
                 BasePrice = j.BasePrice,
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
-                Stock = j.Product.Stock,
-                Size = j.Size,
                 IsActive = j.Product.IsActive
             }).ToList();
 
@@ -345,9 +369,7 @@ namespace Diamond.DataAccess.Repositories
                 CategoryId = jewelry.CategoryId,
                 ProductDescription = jewelry.Product.Description,
                 IsActive = jewelry.Product.IsActive,
-                Size = jewelry.Size,
                 ProductName = jewelry.Product.ProductName,
-                Stock = jewelry.Product.Stock
             };
 
             return productModel;
@@ -370,7 +392,6 @@ namespace Diamond.DataAccess.Repositories
                 jewelry.CategoryId = productModel.CategoryId;
                 jewelry.ProductID = jewelry.ProductID;
                 jewelry.JewelrySettingID = productModel.JewelrySettingID;
-                jewelry.Size = productModel.Size;
 
                 _context.Jewelry.Update(jewelry);
                 return await _context.SaveChangesAsync() > 0;

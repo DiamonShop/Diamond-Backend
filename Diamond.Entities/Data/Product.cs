@@ -24,9 +24,6 @@ namespace DiamondShop.Data
 
         public int MarkupRate { get; set; }
 
-        [Required]
-        public int Stock { get; set; }
-
         public int MarkupPrice { get; set; }
 
         [Required]

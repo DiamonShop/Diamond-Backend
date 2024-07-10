@@ -8,18 +8,23 @@ namespace Diamond.Entities.Data
     {
         [Key]
         public int JewelryID { get; set; }
+
         [ForeignKey("JewelrySetting")]
         public int JewelrySettingID { get; set; }
+
         [ForeignKey("Product")]
         [StringLength(50)]
         public string ProductID { get; set; }
+
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
+
         public int BasePrice { get; set; }
-        public int Size { get; set; }
 
         public Category Category { get; set; } = null!;
         public JewelrySettings JewelrySetting { get; set; } = null!;
         public Product Product { get; set; } = null!;
+
+        public virtual ICollection<JewelrySize> JewelrySizes { get; set; } = new List<JewelrySize>();
     }
 }

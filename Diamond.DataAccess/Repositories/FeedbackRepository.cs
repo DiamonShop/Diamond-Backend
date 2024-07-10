@@ -25,7 +25,6 @@ namespace DiamondShop.Repositories
             var feedbacks = feedbackList.Select(f => new FeedbackModel
             {
                 UserId = f.UserId,
-                BillId = f.BillId,
                 ProductId = f.ProductID,
                 Description = f.Description,
                 DateTime = f.DateTime
@@ -46,7 +45,6 @@ namespace DiamondShop.Repositories
             FeedbackModel feedbackModel = new FeedbackModel()
             {
                 UserId = feedback.UserId,
-                BillId = feedback.BillId,
                 ProductId = feedback.ProductID,
                 Description = feedback.Description,
                 DateTime = feedback.DateTime
@@ -63,19 +61,11 @@ namespace DiamondShop.Repositories
                 return result;
             }
 
-            var bill = await _context.Bills.FirstOrDefaultAsync(b => b.BillId == feedbackModel.BillId && b.IsActive == false);
-
-            if (bill == null)
-            {
-                return result; // Bill không tồn tại hoặc chưa hoàn thành (IsActive != 0)
-            }
-
             try
             {
                 var feedback = new Feedback()
                 {
                     UserId = feedbackModel.UserId,
-                    BillId = feedbackModel.BillId,
                     ProductID = feedbackModel.ProductId,
                     Description = feedbackModel.Description,
                     DateTime = DateTime.Now
@@ -124,7 +114,6 @@ namespace DiamondShop.Repositories
                 feedback.ProductID = feedbackModel.ProductId;
                 feedback.Description = feedbackModel.Description;
                 feedback.UserId = feedbackModel.UserId;
-                feedback.BillId = feedbackModel.BillId;
                 feedback.DateTime = DateTime.Now;
                 _context.Feedbacks.Update(feedback);
                 result = await _context.SaveChangesAsync() > 0;

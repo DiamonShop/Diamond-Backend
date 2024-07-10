@@ -39,7 +39,7 @@ namespace DiamondShop.Repositories
                 Color = d.Color,
                 Cut = d.Cut,
                 DiameterMM = d.DiameterMM,
-                Stock = d.Product.Stock,
+                Quantity = d.Quantity,
                 Description = d.Product.Description,
                 IsActive = d.Product.IsActive,
                 ProductName = d.Product.ProductName
@@ -71,7 +71,7 @@ namespace DiamondShop.Repositories
                 DiameterMM = diamond.DiameterMM,
                 ProductName = diamond.Product.ProductName,
                 Description = diamond.Product.Description,
-                Stock = diamond.Product.Stock,
+                Quantity = diamond.Quantity,
                 IsActive = diamond.Product.IsActive
             };
 
@@ -87,7 +87,18 @@ namespace DiamondShop.Repositories
 
             try
             {
-                var productID = await GenerateProductIDAsync(diamondModel.DiameterMM);
+                int MarkupRate = 1;
+
+                var newProduct = new Product()
+                {
+                    ProductId = diamondModel.ProductID,
+                    ProductName = diamondModel.ProductName,
+                    Description = diamondModel.Description,
+                    MarkupRate = MarkupRate,
+                    MarkupPrice = diamondModel.BasePrice * MarkupRate,
+                    ProductType = "Diamond",
+                    IsActive = true
+                };
 
                 var diamond = new Diamonds()
                 {
@@ -97,21 +108,7 @@ namespace DiamondShop.Repositories
                     Cut = diamondModel.Cut,
                     DiameterMM = diamondModel.DiameterMM,
                     BasePrice = diamondModel.BasePrice,
-                    ProductID = productID
-                };
-
-                int MarkupRate = 1;
-
-                var newProduct = new Product()
-                {
-                    ProductId = productID,
-                    ProductName = diamondModel.ProductName,
-                    Description = diamondModel.Description,
-                    MarkupRate = MarkupRate,
-                    Stock = diamondModel.Stock,
-                    MarkupPrice = diamondModel.BasePrice * MarkupRate,
-                    ProductType = "Diamond",
-                    IsActive = true
+                    ProductID = newProduct.ProductId
                 };
 
                 await _context.Products.AddAsync(newProduct);
@@ -124,7 +121,7 @@ namespace DiamondShop.Repositories
             }
         }
 
-        private async Task<string> GenerateProductIDAsync(decimal diameterMM)
+        /*private async Task<string> GenerateProductIDAsync(decimal diameterMM)
         {
             string prefix = $"KC-{diameterMM:F1}-";
             var maxIdNumberQuery = await _context.Diamonds
@@ -142,7 +139,7 @@ namespace DiamondShop.Repositories
 
             int newIdNumber = maxIdNumber + 1;
             return $"{prefix}{newIdNumber:D3}";
-        }
+        }*/
 
         public async Task<bool> UpdateDiamond(int id, DiamondModel diamond)
         {
@@ -194,7 +191,7 @@ namespace DiamondShop.Repositories
                 Carat = diamond.Carat,
                 ProductName = diamond.Product.ProductName,
                 Description = diamond.Product.Description,
-                Stock = diamond.Product.Stock,
+                Quantity = diamond.Quantity,
                 IsActive = diamond.Product.IsActive
             };
 
@@ -230,7 +227,7 @@ namespace DiamondShop.Repositories
                 Clarity = d.Clarity,
                 Color = d.Color,
                 Cut = d.Cut,
-                Stock = d.Product.Stock,
+                Quantity = d.Quantity,
                 Description = d.Product.Description,
                 IsActive = d.Product.IsActive,
                 ProductName = d.Product.ProductName
@@ -260,7 +257,7 @@ namespace DiamondShop.Repositories
                 Clarity = d.Clarity,
                 Color = d.Color,
                 Cut = d.Cut,
-                Stock = d.Product.Stock,
+                Quantity = d.Quantity,
                 Description = d.Product.Description,
                 IsActive = d.Product.IsActive,
                 ProductName = d.Product.ProductName
@@ -290,7 +287,7 @@ namespace DiamondShop.Repositories
                 Clarity = d.Clarity,
                 Color = d.Color,
                 Cut = d.Cut,
-                Stock = d.Product.Stock,
+                Quantity = d.Quantity,
                 Description = d.Product.Description,
                 IsActive = d.Product.IsActive,
                 ProductName = d.Product.ProductName
