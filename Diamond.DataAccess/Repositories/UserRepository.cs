@@ -19,7 +19,7 @@ namespace DiamondShop.Repositories
     {
         private readonly DiamondDbContext _context;
         private readonly Jwt _jwtSettings;
-        
+
 
         public UserRepository(DiamondDbContext context, IOptions<Jwt> jwtSettings)
         {
@@ -31,7 +31,7 @@ namespace DiamondShop.Repositories
         {
             var user = await _context.Users
                 .Include(u => u.Role)
-               
+
                 .FirstOrDefaultAsync(u => u.UserId == userId);
 
             if (user == null)
@@ -72,7 +72,7 @@ namespace DiamondShop.Repositories
         {
             var user = await _context.Users
                         .Include(user => user.Role)
-                       
+
                         .FirstOrDefaultAsync(user => user.UserId.Equals(userId));
 
             if (user == null)
@@ -87,7 +87,7 @@ namespace DiamondShop.Repositories
                 FullName = user.FullName!,
                 Email = user.Email!,
                 NumberPhone = user.NumberPhone,
-                Address= user.Address,
+                Address = user.Address,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
@@ -101,7 +101,7 @@ namespace DiamondShop.Repositories
         {
             var users = await _context.Users
                 .Include(user => user.Role)
-                
+
                 .Where(user => user.Email.Contains(email)) //Tìm gần đúng
                 .ToListAsync();
 
@@ -116,7 +116,7 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName,
                 Email = user.Email,
-                NumberPhone= user.NumberPhone,
+                NumberPhone = user.NumberPhone,
                 Address = user.Address,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
@@ -130,7 +130,7 @@ namespace DiamondShop.Repositories
         {
             var users = await _context.Users
                 .Include(user => user.Role)
-                
+
                 .Where(user => user.Username.Contains(userName)) //Tìm gần đúng
                 .ToListAsync();
 
@@ -145,8 +145,8 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName,
                 Email = user.Email,
-               NumberPhone = user.NumberPhone,
-               Address= user.Address,
+                NumberPhone = user.NumberPhone,
+                Address = user.Address,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName
@@ -155,12 +155,11 @@ namespace DiamondShop.Repositories
             return userList;
         }
 
-
         public async Task<List<UserViewModel>> GetAllUsersAsync()
         {
             var users = await _context.Users
                 .Include(user => user.Role)
-                
+
                 .ToListAsync();
 
             if (users == null)
@@ -175,8 +174,8 @@ namespace DiamondShop.Repositories
                 Username = user.Username,
                 FullName = user.FullName,
                 Email = user.Email,
-               NumberPhone= user.NumberPhone,
-               Address = user.Address,
+                NumberPhone = user.NumberPhone,
+                Address = user.Address,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
                 RoleName = user.Role.RoleName // Lấy tên role của người dùng nếu có
@@ -203,10 +202,10 @@ namespace DiamondShop.Repositories
                     Email = userDTO.Email,
                     IsActive = true,
                     RoleId = userDTO.RoleId,
-                   NumberPhone = userDTO.NumberPhone,
-                   Address = userDTO.Address,
+                    NumberPhone = userDTO.NumberPhone,
+                    Address = userDTO.Address,
 
-            
+
                 };
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
@@ -294,8 +293,6 @@ namespace DiamondShop.Repositories
             }
         }
 
-
-
         public async Task<bool> SignUpUser(UserSignUpModel userSignUpModel)
         {
             if (userSignUpModel == null)
@@ -327,18 +324,12 @@ namespace DiamondShop.Repositories
 
                 await _context.AddAsync(user);
                 await _context.SaveChangesAsync();
-                return true; 
+                return true;
             }
             catch (Exception)
             {
-                return false; 
+                return false;
             }
-        }
-
-
-        public Task<bool> Logout(UserSignUpModel userSignUpModel)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<ApiResponse> Login(LoginModel loginModel)
@@ -352,7 +343,7 @@ namespace DiamondShop.Repositories
             {
                 var user = await _context.Users
                     .Include(u => u.Role)
-                     
+
                     .FirstOrDefaultAsync(u => u.Username == loginModel.UserName && u.Password == loginModel.Password);
 
                 if (user == null)
@@ -382,14 +373,10 @@ namespace DiamondShop.Repositories
             }
             catch (Exception ex)
             {
-                
+
                 return new ApiResponse { Success = false, Message = "An error occurred while processing your request" };
             }
         }
-       
-
-        
-        
 
         public async Task<string> GenerateJwtToken(User user)
         {
@@ -417,7 +404,7 @@ namespace DiamondShop.Repositories
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-       
+
 
 
 

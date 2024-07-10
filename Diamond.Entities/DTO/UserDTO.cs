@@ -10,6 +10,5 @@
         public int RoleId { get; set; }
         public string Address { get; set; }
         public string NumberPhone { get; set; }
-        public string Address { get; set; }
     }
 }

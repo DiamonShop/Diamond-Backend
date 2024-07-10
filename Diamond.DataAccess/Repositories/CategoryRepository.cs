@@ -59,13 +59,13 @@ namespace DiamondShop.Repositories
 				return null;
 			}
 
-			CategoryModel userModel = new CategoryModel()
+			CategoryModel categoryModel = new CategoryModel()
 			{
 				CategoryId = categories.CategoryId,
 				CategoryName = categories.CategoryName,
 			};
 
-			return userModel;
+			return categoryModel;
 		}
 
 		public async Task<List<CategoryModel>> GetCategoryByName(string name)

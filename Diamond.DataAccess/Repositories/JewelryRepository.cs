@@ -285,7 +285,7 @@ namespace Diamond.DataAccess.Repositories
                 BasePrice = j.BasePrice,
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
-                
+
                 IsActive = j.Product.IsActive
             }).ToList();
 
@@ -375,10 +375,10 @@ namespace Diamond.DataAccess.Repositories
             return productModel;
         }
 
-        public async Task<bool> UpdateJewelry(int id, JewelryModel productModel)
+        public async Task<bool> UpdateJewelry(JewelryModel jewelryModel)
         {
             var jewelry = await _context.Jewelry
-                .FirstOrDefaultAsync(p => p.JewelryID == id);
+                .FirstOrDefaultAsync(p => p.ProductID.Equals(jewelryModel.ProductID));
 
             if (jewelry == null)
             {
@@ -388,10 +388,11 @@ namespace Diamond.DataAccess.Repositories
             try
             {
                 jewelry.JewelryID = jewelry.JewelryID;
-                jewelry.BasePrice = productModel.BasePrice;
-                jewelry.CategoryId = productModel.CategoryId;
                 jewelry.ProductID = jewelry.ProductID;
-                jewelry.JewelrySettingID = productModel.JewelrySettingID;
+                jewelry.BasePrice = jewelryModel.BasePrice;
+                jewelry.CategoryId = jewelryModel.CategoryId;
+                jewelry.JewelrySettingID = jewelryModel.JewelrySettingID;
+                
 
                 _context.Jewelry.Update(jewelry);
                 return await _context.SaveChangesAsync() > 0;

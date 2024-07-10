@@ -26,7 +26,7 @@ namespace DiamondShop.API.Controllers
         {
             var products = await _jewelryRepository.GetAllJewelry();
 
-            if (products == null) { return NotFound(null); }
+            if (products == null) { return Ok(null); }
 
             return Ok(products);
         }

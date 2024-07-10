@@ -18,7 +18,6 @@ namespace DiamondShop.Repositories.Interfaces
         Task<bool> UpdateUserProfile(int userId, UpdateUserModel userModel);
         Task<ApiResponse> Login(LoginModel loginModel);
         Task<bool> SignUpUser(UserSignUpModel userSignUpModel);
-        Task<bool> Logout(UserSignUpModel userSignUpModel);
         Task<string> GenerateJwtToken(User user);
         Task<User> FindByEmailAsync(string email);
         Task AddAsync(User user);

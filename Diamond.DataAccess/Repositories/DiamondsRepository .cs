@@ -141,9 +141,11 @@ namespace DiamondShop.Repositories
             return $"{prefix}{newIdNumber:D3}";
         }*/
 
-        public async Task<bool> UpdateDiamond(int id, DiamondModel diamond)
+        public async Task<bool> UpdateDiamond(DiamondModel diamond)
         {
-            var existingDiamond = await _context.Diamonds.FindAsync(diamond.DiamondID);
+            var existingDiamond = await _context.Diamonds
+                .Include(d => d.Product)
+                .SingleOrDefaultAsync(d => d.ProductID.Equals(diamond.ProductID));
 
             if (existingDiamond == null)
             {
@@ -152,11 +154,14 @@ namespace DiamondShop.Repositories
 
             try
             {
-                existingDiamond.ProductID = diamond.ProductID;
+                existingDiamond.DiamondID = existingDiamond.DiamondID;
+                existingDiamond.ProductID = existingDiamond.ProductID;
                 existingDiamond.Carat = diamond.Carat;
                 existingDiamond.Clarity = diamond.Clarity;
                 existingDiamond.Cut = diamond.Cut;
                 existingDiamond.Color = diamond.Color;
+                existingDiamond.Quantity = diamond.Quantity;
+                existingDiamond.DiameterMM = diamond.DiameterMM;
                 existingDiamond.BasePrice = diamond.BasePrice;
 
                 _context.Diamonds.Update(existingDiamond);
@@ -189,6 +194,7 @@ namespace DiamondShop.Repositories
                 Color = diamond.Color,
                 Clarity = diamond.Clarity,
                 Carat = diamond.Carat,
+                DiameterMM = diamond.DiameterMM,
                 ProductName = diamond.Product.ProductName,
                 Description = diamond.Product.Description,
                 Quantity = diamond.Quantity,
@@ -228,6 +234,7 @@ namespace DiamondShop.Repositories
                 Color = d.Color,
                 Cut = d.Cut,
                 Quantity = d.Quantity,
+                DiameterMM = d.DiameterMM,
                 Description = d.Product.Description,
                 IsActive = d.Product.IsActive,
                 ProductName = d.Product.ProductName
@@ -258,6 +265,7 @@ namespace DiamondShop.Repositories
                 Color = d.Color,
                 Cut = d.Cut,
                 Quantity = d.Quantity,
+                DiameterMM = d.DiameterMM,
                 Description = d.Product.Description,
                 IsActive = d.Product.IsActive,
                 ProductName = d.Product.ProductName
@@ -288,6 +296,7 @@ namespace DiamondShop.Repositories
                 Color = d.Color,
                 Cut = d.Cut,
                 Quantity = d.Quantity,
+                DiameterMM = d.DiameterMM,
                 Description = d.Product.Description,
                 IsActive = d.Product.IsActive,
                 ProductName = d.Product.ProductName

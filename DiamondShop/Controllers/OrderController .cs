@@ -22,13 +22,11 @@ namespace DiamondShop.Controllers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IVnPayRepository _vnPayRepo;
-        private readonly IBillRepository _billRepository;
 
-		public OrderController(IOrderRepository context, IVnPayRepository vnPayRepo, IBillRepository billRepository)
+		public OrderController(IOrderRepository context, IVnPayRepository vnPayRepo)
         {
             _orderRepository = context;
             _vnPayRepo = vnPayRepo;
-            _billRepository = billRepository;
         }
 
         [HttpGet("GetAllOrders")]
@@ -164,8 +162,6 @@ namespace DiamondShop.Controllers
                 OrderNote = orderNote,
                 IsActive = true,
             };
-
-            await _billRepository.CreateBill(bill);
 
             if (response.VnPayResponseCode.Equals("00"))
             {
