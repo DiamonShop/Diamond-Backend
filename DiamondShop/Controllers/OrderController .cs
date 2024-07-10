@@ -144,25 +144,6 @@ namespace DiamondShop.Controllers
             var successUrl = "http://localhost:3000/?message=Payment%20Successful";
             var failureUrl = "http://localhost:3000/?message=Payment%20Failed";
 
-            string[] orderDes = response.OrderDescription.Split('/');
-            int userId = int.Parse(orderDes[0]);
-            string fullname = orderDes[1];
-            string phoneNumber = orderDes[2];
-            string address = orderDes[3];
-            string email = orderDes[5];
-            string orderNote = orderDes[6];
-
-            BillCreateDTO bill = new BillCreateDTO
-            {
-                UserId = userId,
-                FullName = fullname,
-                NumberPhone = phoneNumber,
-                Address = address,
-                Email = email,
-                OrderNote = orderNote,
-                IsActive = true,
-            };
-
             if (response.VnPayResponseCode.Equals("00"))
             {
                 return Redirect(successUrl);
