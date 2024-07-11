@@ -3,7 +3,7 @@ using DiamondShop.Model;
 
 namespace Diamond.DataAccess.Repositories.Interfaces
 {
-    public interface IJewelrySize
+    public interface IJewelrySizeRepository
     {
         public Task<List<JewelrySizeModel>> GetAllJewelrySize();
         public Task<JewelrySizeModel> GetJewelrySizeById(int id);

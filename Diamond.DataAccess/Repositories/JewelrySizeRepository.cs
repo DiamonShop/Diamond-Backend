@@ -1,5 +1,7 @@
 ﻿using Diamond.DataAccess.Repositories.Interfaces;
+using Diamond.Entities.Data;
 using Diamond.Entities.Model;
+using DiamondShop.Data;
 using DiamondShop.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Diamond.DataAccess.Repositories
 {
-    public class JewelrySizeRepository : IJewelrySize
+    public class JewelrySizeRepository : IJewelrySizeRepository
     {
 
         private readonly DiamondDbContext _context;
@@ -20,9 +22,23 @@ namespace Diamond.DataAccess.Repositories
             _context = context;
         }
 
-        public Task<bool> CreateJewelrySize(JewelrySizeModel jewelrySizeModel)
+        public async Task<bool> CreateJewelrySize(JewelrySizeModel jewelrySizeModel)
         {
-            throw new NotImplementedException();
+            if (jewelrySizeModel != null)
+            {
+                var jewelrySize = new JewelrySize()
+                {
+                    JewelryID = jewelrySizeModel.JewelryID,
+                    Quantity = jewelrySizeModel.Quantity,
+                    Size = jewelrySizeModel.Size,
+                    JewelrySizeID = jewelrySizeModel.JewelrySizeID,
+                };
+
+                _context.JewelrySizes.Add(jewelrySize);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<List<JewelrySizeModel>> GetAllJewelrySize()
@@ -75,14 +91,14 @@ namespace Diamond.DataAccess.Repositories
             {
                 return result;
             }
-            
+
             try
             {
                 jewelry.Size = jewelrySizeModel.Size;
                 jewelry.JewelrySizeID = jewelry.JewelrySizeID;
                 jewelry.Quantity = jewelrySizeModel.Quantity;
                 jewelry.JewelryID = jewelry.JewelryID;
-                
+
                 _context.JewelrySizes.Update(jewelry);
                 // Save the changes to the database
                 result = await _context.SaveChangesAsync() > 0;

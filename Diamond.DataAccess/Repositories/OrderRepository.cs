@@ -43,7 +43,7 @@ namespace Diamond.DataAccess.Repositories
             bool result = false;
             var order = _context.Orders.Include(order => order.OrderDetails).FirstOrDefault(order => order.OrderId == orderId);
             if (order == null) { return result; }
-            if (order.Status.Equals("Hoàn Thành") || order.Status.Equals("Đang giao")) { return result; }
+            if (order.Status.Equals("Completed") || order.Status.Equals("Shipping")) { return result; }
 
             var product = _context.Products.SingleOrDefault(product => product.ProductId.Equals(productId));
             if (product == null) { return result; }

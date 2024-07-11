@@ -40,6 +40,7 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IVnPayRepository, VnPayRepository>();
 builder.Services.AddScoped<IJewelryRepository, JewelryRepository>();
 builder.Services.AddScoped<IJewelrySettingRepository, JewelrySettingRepository>();
+builder.Services.AddScoped<IJewelrySizeRepository, JewelrySizeRepository>();
 builder.Services.AddScoped<IDiamondsRepository, DiamondsRepository>();
 builder.Services.AddSingleton<BillService>();
 

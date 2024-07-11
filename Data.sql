@@ -209,61 +209,16 @@ INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity)
 VALUES (1, 10, 50);
 
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (2, 10, 30);
+VALUES (2, 11, 35);
 
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (3, 10, 20);
+VALUES (3, 12, 20);
 
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (4, 10, 40);
+VALUES (4, 13, 25);
 
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (5, 11, 25);
+VALUES (5, 14, 50);
 
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (6, 11, 15);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (7, 11, 35);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (8, 11, 45);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (9, 12, 20);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (10, 12, 10);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (11, 12, 30);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (12, 12, 40);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (13, 13, 25);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (14, 13, 35);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (15, 13, 15);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (16, 13, 20);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (17, 14, 50);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (18, 14, 30);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (19, 14, 20);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (20, 14, 40);
-
-INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (21, 15, 50);
+VALUES (6, 15, 50);

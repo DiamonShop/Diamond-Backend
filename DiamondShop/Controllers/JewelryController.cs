@@ -126,7 +126,7 @@ namespace DiamondShop.API.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> UpdateJewelry(int id, [FromBody] JewelryModel jewelryModel)
         {
-            bool result = await _jewelryRepository.UpdateJewelry(id, jewelryModel);
+            bool result = await _jewelryRepository.UpdateJewelry(jewelryModel);
 
             if (result)
             {

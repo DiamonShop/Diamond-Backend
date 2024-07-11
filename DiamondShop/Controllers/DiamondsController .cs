@@ -110,7 +110,7 @@ namespace DiamondShop.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> UpdateDiamond(int id, [FromBody] DiamondModel diamondModel)
         {
-            bool result = await _diamondRepository.UpdateDiamond(id, diamondModel);
+            bool result = await _diamondRepository.UpdateDiamond(diamondModel);
 
             if (result)
             {
