@@ -402,5 +402,10 @@ namespace Diamond.DataAccess.Repositories
                 return false;
             }
         }
-    }
+
+		public Task<bool> UpdateJewelry(int id, JewelryModel productModel)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

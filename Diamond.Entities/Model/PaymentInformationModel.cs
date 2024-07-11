@@ -11,7 +11,6 @@ namespace Diamond.Entities.Model
 		public int userId { get; set; }
 		public string fullName { get; set; }
 		public int phoneNumber { get; set; }
-		public string birthday { get; set; }
 		public string email { get; set; }
 		public string streetAddress { get; set; }
 		public string orderNote { get; set; }

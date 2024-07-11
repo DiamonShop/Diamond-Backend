@@ -34,7 +34,7 @@ namespace DiamondShop.Controllers
 			pay.AddRequestData("vnp_IpAddr", pay.GetIpAddress(context));
 			pay.AddRequestData("vnp_Locale", _configuration["Vnpay:Locale"]);
 			pay.AddRequestData("vnp_OrderInfo", $"{model.userId}/{model.fullName}/{model.phoneNumber}/" +
-				$" {model.streetAddress}/{model.birthday}/{model.email}/{model.orderNote}");
+				$" {model.streetAddress}/{model.email}/{model.orderNote}");
 			pay.AddRequestData("vnp_OrderType", "{model.userId}");
 			pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
 			pay.AddRequestData("vnp_TxnRef", tick);

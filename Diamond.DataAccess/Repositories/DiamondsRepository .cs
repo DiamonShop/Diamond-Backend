@@ -342,5 +342,10 @@ namespace DiamondShop.Repositories
                 .CountAsync();
             return count;
         }
-    }
+
+		public Task<bool> UpdateDiamond(int id, DiamondModel diamond)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

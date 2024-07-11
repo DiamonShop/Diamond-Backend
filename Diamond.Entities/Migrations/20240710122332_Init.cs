@@ -46,7 +46,6 @@ namespace Diamond.Entities.Migrations
                     ProductType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     MarkupRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Stock = table.Column<int>(type: "int", nullable: false),
                     MarkupPrice = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -80,7 +79,8 @@ namespace Diamond.Entities.Migrations
                     Cut = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Color = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DiameterMM = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    BasePrice = table.Column<int>(type: "int", nullable: false)
+                    BasePrice = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -102,8 +102,7 @@ namespace Diamond.Entities.Migrations
                     JewelrySettingID = table.Column<int>(type: "int", nullable: false),
                     ProductID = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    BasePrice = table.Column<int>(type: "int", nullable: false),
-                    Size = table.Column<int>(type: "int", nullable: false)
+                    BasePrice = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -197,27 +196,23 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Bills",
+                name: "JewelrySizes",
                 columns: table => new
                 {
-                    BillId = table.Column<int>(type: "int", nullable: false)
+                    JewelrySizeID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    NumberPhone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    OrderNote = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    JewelryID = table.Column<int>(type: "int", nullable: false),
+                    Size = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Bills", x => x.BillId);
+                    table.PrimaryKey("PK_JewelrySizes", x => x.JewelrySizeID);
                     table.ForeignKey(
-                        name: "FK_Bills_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
+                        name: "FK_JewelrySizes_Jewelry_JewelryID",
+                        column: x => x.JewelryID,
+                        principalTable: "Jewelry",
+                        principalColumn: "JewelryID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -298,11 +293,6 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bills_UserId",
-                table: "Bills",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Certificates_DiamondID",
                 table: "Certificates",
                 column: "DiamondID",
@@ -341,6 +331,11 @@ namespace Diamond.Entities.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_JewelrySizes_JewelryID",
+                table: "JewelrySizes",
+                column: "JewelryID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderDetails_OrderId",
                 table: "OrderDetails",
                 column: "OrderId");
@@ -371,16 +366,13 @@ namespace Diamond.Entities.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Bills");
-
-            migrationBuilder.DropTable(
                 name: "Certificates");
 
             migrationBuilder.DropTable(
                 name: "Feedbacks");
 
             migrationBuilder.DropTable(
-                name: "Jewelry");
+                name: "JewelrySizes");
 
             migrationBuilder.DropTable(
                 name: "OrderDetails");
@@ -392,13 +384,16 @@ namespace Diamond.Entities.Migrations
                 name: "Diamonds");
 
             migrationBuilder.DropTable(
+                name: "Jewelry");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
+
+            migrationBuilder.DropTable(
                 name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "JewelrySetting");
-
-            migrationBuilder.DropTable(
-                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Products");

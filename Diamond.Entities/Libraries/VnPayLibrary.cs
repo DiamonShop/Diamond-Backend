@@ -178,7 +178,8 @@ namespace DiamondShop.API.Libraries
 
 	            return data.ToString();
 	        }
-	    }
+	    
+	}
 
 	    public class VnPayCompare : IComparer<string>
 	    {

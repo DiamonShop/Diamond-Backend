@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Diamond.Entities.Model;
 using Diamond.DataAccess.Repositories.Interfaces;
 using Diamond.DataAccess.Repositories;
+using DiamondShop.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,7 @@ builder.Services.AddScoped<IVnPayRepository, VnPayRepository>();
 builder.Services.AddScoped<IJewelryRepository, JewelryRepository>();
 builder.Services.AddScoped<IJewelrySettingRepository, JewelrySettingRepository>();
 builder.Services.AddScoped<IDiamondsRepository, DiamondsRepository>();
+builder.Services.AddSingleton<BillService>();
 
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>

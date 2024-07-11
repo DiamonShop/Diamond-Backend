@@ -13,6 +13,7 @@ using DiamondShop.Repositories;
 using Diamond.DataAccess.Repositories.Interfaces;
 using Microsoft.CodeAnalysis;
 using Diamond.Entities.DTO;
+using DiamondShop.API.Services;
 
 namespace DiamondShop.Controllers
 {
@@ -22,11 +23,13 @@ namespace DiamondShop.Controllers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IVnPayRepository _vnPayRepo;
+        private readonly BillService _billService;
 
-		public OrderController(IOrderRepository context, IVnPayRepository vnPayRepo)
+		public OrderController(IOrderRepository context, IVnPayRepository vnPayRepo, BillService billService)
         {
             _orderRepository = context;
             _vnPayRepo = vnPayRepo;
+			_billService = billService;
         }
 
         [HttpGet("GetAllOrders")]
@@ -125,56 +128,71 @@ namespace DiamondShop.Controllers
             }
             return Ok("Failed to Update status Order");
         }
+		/*
+		[HttpPost("Checkout")]
+		public IActionResult CreatePaymentUrl(PaymentInformationModel model)
+		{
+			var billCreateDTO = new BillCreateDTO
+			{
+				UserId = model.userId,
+				FullName = model.fullName,
+				NumberPhone = model.phoneNumber.ToString(),
+				Email = model.email,
+				Address = model.streetAddress,
+				OrderNote = model.orderNote,
+				IsActive = true,
+				Price = model.price
+			};
 
-        [HttpPost("Checkout")]
-        //[Authorize(Roles = "Manager")]
-        /*[Authorize(Roles = "Manager,Staff,Member")]*/
-        public IActionResult CreatePaymentUrl(PaymentInformationModel model)
-        {
-            var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
+			_billService.SaveBill(billCreateDTO);
 
-            return Ok(url);
-        }
+			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
+			return Ok(url);
+		}*/
+		[HttpPost("Checkout")]
+		public IActionResult CreatePaymentUrl(PaymentInformationModel model)
+		{
+			Random random = new Random();
+			var billCreateDTO = new BillCreateDTO
+			{
+			    Id = random.Next(0000, 99999),
+			    UserId = model.userId,
+				FullName = model.fullName,
+				NumberPhone = model.phoneNumber.ToString(),
+				Email = model.email,
+				Address = model.streetAddress,
+				OrderNote = model.orderNote,
+				IsActive = true,
+				Price = model.price,
+				CreatedDate = DateTime.UtcNow
+		};
 
-        [HttpGet("result")]
-        //[Authorize(Roles = "Manager")]
-        public async Task<IActionResult> PaymentCallback()
-        {
-            var response = _vnPayRepo.PaymentExecute(Request.Query);
-            var successUrl = "http://localhost:3000/?message=Payment%20Successful";
-            var failureUrl = "http://localhost:3000/?message=Payment%20Failed";
+			_billService.SaveBill(billCreateDTO);
 
-            string[] orderDes = response.OrderDescription.Split('/');
-            int userId = int.Parse(orderDes[0]);
-            string fullname = orderDes[1];
-            string phoneNumber = orderDes[2];
-            string address = orderDes[3];
-            string email = orderDes[5];
-            string orderNote = orderDes[6];
+			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
+			return Ok(new { url, billId = billCreateDTO.Id });
+		}
 
-            BillCreateDTO bill = new BillCreateDTO
-            {
-                UserId = userId,
-                FullName = fullname,
-                NumberPhone = phoneNumber,
-                Address = address,
-                Email = email,
-                OrderNote = orderNote,
-                IsActive = true,
-            };
 
-            if (response.VnPayResponseCode.Equals("00"))
-            {
-                return Redirect(successUrl);
-                //return Ok(response);
-            }
-            else
-            {
-                return Redirect(failureUrl);
-            }
-        }
+		[HttpGet("result")]
+		public async Task<IActionResult> PaymentCallback()
+		{
+			var response = _vnPayRepo.PaymentExecute(Request.Query);
+			var successUrl = "http://localhost:3000/Thanhtoanthanhcong";
+			var failureUrl = "http://localhost:3000/payment-failed";
 
-        [HttpPut("UpdateStatusByUserId")]
+			if (response.VnPayResponseCode.Equals("00"))
+			{
+				var bill = _billService.GetLatestBill();
+				return Redirect($"{successUrl}?billId={bill.Id}");
+			}
+			else
+			{
+				return Redirect(failureUrl);
+			}
+		}
+
+		[HttpPut("UpdateStatusByUserId")]
         public async Task<IActionResult> UpdateStatusByUserId(int userId)
         {
             bool result = await _orderRepository.UpdateStatusByUserId(userId);
