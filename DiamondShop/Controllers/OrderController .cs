@@ -152,25 +152,8 @@ namespace DiamondShop.Controllers
 		[HttpPost("Checkout")]
 		public IActionResult CreatePaymentUrl(PaymentInformationModel model)
 		{
-			Random random = new Random();
-			var billCreateDTO = new BillCreateDTO
-			{
-			    Id = random.Next(0000, 99999),
-			    UserId = model.userId,
-				FullName = model.fullName,
-				NumberPhone = model.phoneNumber.ToString(),
-				Email = model.email,
-				Address = model.streetAddress,
-				OrderNote = model.orderNote,
-				IsActive = true,
-				Price = model.price,
-				CreatedDate = DateTime.UtcNow
-		};
-
-			_billService.SaveBill(billCreateDTO);
-
 			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
-			return Ok(new { url, billId = billCreateDTO.Id });
+			return Ok(url);
 		}
 
 
@@ -179,12 +162,11 @@ namespace DiamondShop.Controllers
 		{
 			var response = _vnPayRepo.PaymentExecute(Request.Query);
 			var successUrl = "http://localhost:3000/Thanhtoanthanhcong";
-			var failureUrl = "http://localhost:3000/payment-failed";
+			var failureUrl = "http://localhost:3000/?message=Payment%20Failed";
 
 			if (response.VnPayResponseCode.Equals("00"))
 			{
-				var bill = _billService.GetLatestBill();
-				return Redirect($"{successUrl}?billId={bill.Id}");
+				return Redirect(successUrl);
 			}
 			else
 			{
