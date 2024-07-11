@@ -1,16 +1,11 @@
-﻿using DiamondShop.Data;
-using DiamondShop.Model;
+﻿using DiamondShop.Model;
 
-
-namespace DiamondShop.Repositories.Interfaces
+public interface IFeedbackRepository
 {
-	public interface IFeedbackRepository
-	{
-		public Task<List<FeedbackModel>> GetAllFeedbacks();
-		public Task<FeedbackModel> GetFeedbackById(int id);
-		public Task<bool> CreateFeedback(FeedbackModel feedbackModel);
-		public Task<bool> UpdateFeedback(int id, FeedbackModel feedbackModel);
-		public Task<bool> DeleteFeedback(int id);
-
-	}
+    Task<List<FeedbackModel>> GetAllFeedbacks();
+    Task<FeedbackModel> GetFeedbackById(int id);
+    Task<bool> CreateFeedback(FeedbackModel feedbackModel);
+    Task<bool> DeleteFeedback(int id);
+    Task<bool> UpdateFeedback(int id, FeedbackModel feedbackModel);
+    Task<List<FeedbackModel>> GetFeedbackByProductId(string productId); 
 }
