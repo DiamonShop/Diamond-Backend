@@ -14,7 +14,7 @@ namespace DiamondShop.Repositories.Interfaces
         Task<List<DiamondModel>> GetDiamondByPriceDesc();
         Task<List<DiamondModel>> GetDiamondByPriceAsc();
         Task<bool> CreateDiamond(DiamondModel diamondModel);
-        Task<bool> UpdateDiamond(int id, DiamondModel diamond);
+        Task<bool> UpdateDiamond(DiamondModel diamond);
         Task<bool> DeleteDiamond(int id);
         Task<int> GetDiamondCountByDiameter(decimal diameterMM);
     }
