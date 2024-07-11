@@ -86,10 +86,21 @@ namespace Diamond.Entities.Migrations
                     b.Property<int>("JewelrySettingID")
                         .HasColumnType("int");
 
+                    b.Property<int>("MainDiamondID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MainDiamondQuantity")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProductID")
                         .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SideDiamondID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SideDiamondQuantity")
+                        .HasColumnType("int");
 
                     b.HasKey("JewelryID");
 
@@ -97,8 +108,12 @@ namespace Diamond.Entities.Migrations
 
                     b.HasIndex("JewelrySettingID");
 
+                    b.HasIndex("MainDiamondID");
+
                     b.HasIndex("ProductID")
                         .IsUnique();
+
+                    b.HasIndex("SideDiamondID");
 
                     b.ToTable("Jewelry");
                 });
@@ -156,18 +171,15 @@ namespace Diamond.Entities.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MainDiamondID"));
 
-                    b.Property<int>("JewelryID")
-                        .HasColumnType("int");
+                    b.Property<string>("MainDiamondName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
                     b.HasKey("MainDiamondID");
-
-                    b.HasIndex("JewelryID");
 
                     b.ToTable("MainDiamonds");
                 });
@@ -180,18 +192,15 @@ namespace Diamond.Entities.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SideDiamondID"));
 
-                    b.Property<int>("JewelryID")
-                        .HasColumnType("int");
-
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                    b.Property<string>("SideDiamondName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("SideDiamondID");
-
-                    b.HasIndex("JewelryID");
 
                     b.ToTable("SideDiamonds");
                 });
@@ -281,7 +290,6 @@ namespace Diamond.Entities.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
                     b.Property<string>("CancelReason")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -500,9 +508,21 @@ namespace Diamond.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Diamond.Entities.Data.MainDiamond", "MainDiamond")
+                        .WithMany("JewelrySizes")
+                        .HasForeignKey("MainDiamondID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DiamondShop.Data.Product", "Product")
                         .WithOne("Jewelry")
                         .HasForeignKey("Diamond.Entities.Data.Jewelry", "ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Diamond.Entities.Data.SideDiamond", "SideDiamond")
+                        .WithMany("Jewelry")
+                        .HasForeignKey("SideDiamondID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -510,35 +530,17 @@ namespace Diamond.Entities.Migrations
 
                     b.Navigation("JewelrySetting");
 
+                    b.Navigation("MainDiamond");
+
                     b.Navigation("Product");
+
+                    b.Navigation("SideDiamond");
                 });
 
             modelBuilder.Entity("Diamond.Entities.Data.JewelrySize", b =>
                 {
                     b.HasOne("Diamond.Entities.Data.Jewelry", "Jewelry")
                         .WithMany("JewelrySizes")
-                        .HasForeignKey("JewelryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Jewelry");
-                });
-
-            modelBuilder.Entity("Diamond.Entities.Data.MainDiamond", b =>
-                {
-                    b.HasOne("Diamond.Entities.Data.Jewelry", "Jewelry")
-                        .WithMany()
-                        .HasForeignKey("JewelryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Jewelry");
-                });
-
-            modelBuilder.Entity("Diamond.Entities.Data.SideDiamond", b =>
-                {
-                    b.HasOne("Diamond.Entities.Data.Jewelry", "Jewelry")
-                        .WithMany()
                         .HasForeignKey("JewelryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -640,6 +642,16 @@ namespace Diamond.Entities.Migrations
                 });
 
             modelBuilder.Entity("Diamond.Entities.Data.JewelrySettings", b =>
+                {
+                    b.Navigation("Jewelry");
+                });
+
+            modelBuilder.Entity("Diamond.Entities.Data.MainDiamond", b =>
+                {
+                    b.Navigation("JewelrySizes");
+                });
+
+            modelBuilder.Entity("Diamond.Entities.Data.SideDiamond", b =>
                 {
                     b.Navigation("Jewelry");
                 });

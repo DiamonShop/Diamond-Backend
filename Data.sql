@@ -116,16 +116,16 @@ INSERT INTO [dbo].[JewelrySetting] (Material, BasePrice)
 VALUES ('White Gold', 300000);  
 
 /* Insert Orders */
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (1, 99.99, N'Completed', '2023-05-15 12:34:56.123', N'Giao hàng nhanh chóng');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (2, 49.49, N'Ordering', '2023-05-16 14:21:22.456', N'Yêu cầu gói quà');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (3, 75.00, N'Shipping', '2023-05-17 16:45:33.789', N'Liên hệ trước khi giao');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (4, 120.50, N'Completed', '2023-05-18 11:12:12.012', N'Khách hàng VIP');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (1, 200.99, N'Shipping', '2023-05-19 10:01:44.321', N'Địa chỉ giao hàng mới');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (1, 15.75, N'Completed', '2023-05-20 17:23:55.654', N'Ưu đãi đặc biệt');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (2, 250.00, N'Completed', '2023-05-21 09:30:11.987', N'Sản phẩm cao cấp');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (3, 60.60, N'Shipping', '2023-05-22 08:45:22.876', N'Yêu cầu giao vào buổi tối');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (4, 89.89, N'Completed', '2023-05-23 07:12:33.765', N'Khuyến mãi sinh nhật');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (1, 199.99, N'Ordering', '2023-05-24 06:23:44.654', N'Tặng kèm phiếu giảm giá');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote, CancelReason) VALUES (1, 99.99, N'Completed', '2023-05-15 12:34:56.123', N'Giao hàng nhanh chóng', NULL);
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote, CancelReason) VALUES (2, 49.49, N'Ordering', '2023-05-16 14:21:22.456', N'Yêu cầu gói quà', NULL);
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote, CancelReason) VALUES (3, 75.00, N'Shipping', '2023-05-17 16:45:33.789', N'Liên hệ trước khi giao', NULL);
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote, CancelReason) VALUES (4, 120.50, N'Completed', '2023-05-18 11:12:12.012', N'Khách hàng VIP', NULL);
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote, CancelReason) VALUES (1, 200.99, N'Shipping', '2023-05-19 10:01:44.321', N'Địa chỉ giao hàng mới', NULL);
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote, CancelReason) VALUES (1, 15.75, N'Completed', '2023-05-20 17:23:55.654', N'Ưu đãi đặc biệt', NULL);
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote, CancelReason) VALUES (2, 250.00, N'Completed', '2023-05-21 09:30:11.987', N'Sản phẩm cao cấp', NULL);
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote, CancelReason) VALUES (3, 60.60, N'Shipping', '2023-05-22 08:45:22.876', N'Yêu cầu giao vào buổi tối', NULL);
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote, CancelReason) VALUES (4, 89.89, N'Completed', '2023-05-23 07:12:33.765', N'Khuyến mãi sinh nhật', NULL);
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote, CancelReason) VALUES (1, 199.99, N'Ordering', '2023-05-24 06:23:44.654', N'Tặng kèm phiếu giảm giá', NULL);
 
 /* Insert Diamond */
 INSERT INTO [dbo].[Diamonds] (ProductID, Carat, Clarity, Cut, Color, BasePrice, DiameterMM, Quantity) 
@@ -140,69 +140,101 @@ VALUES ('KC-4.5-001', 1.0, 'IF', 'Round', 'F', 10000, 4.5, 5);
 INSERT INTO [dbo].[Diamonds] (ProductID, Carat, Clarity, Cut, Color, BasePrice, DiameterMM, Quantity) 
 VALUES ('KC-5.4-001', 0.6, 'SI1', 'Round', 'G', 6000, 5.4, 7);
 
+/* Insert MainDiamond */
+INSERT INTO [dbo].[MainDiamonds] (MainDiamondName, Price) 
+VALUES ('Diamond A', 5000000);
+
+INSERT INTO [dbo].[MainDiamonds] (MainDiamondName, Price) 
+VALUES ('Diamond B', 7500000);
+
+INSERT INTO [dbo].[MainDiamonds] (MainDiamondName, Price) 
+VALUES ('Diamond C', 10000000);
+
+INSERT INTO [dbo].[MainDiamonds] (MainDiamondName, Price) 
+VALUES ('Diamond D', 12000000);
+
+INSERT INTO [dbo].[MainDiamonds] (MainDiamondName, Price) 
+VALUES ('Diamond E', 15000000);
+
+/* Insert SideDiamond */
+INSERT INTO [dbo].[SideDiamonds] (SideDiamondName, Price) 
+VALUES ('Side Diamond A', 2000000);
+
+INSERT INTO [dbo].[SideDiamonds] (SideDiamondName, Price) 
+VALUES ('Side Diamond B', 3500000);
+
+INSERT INTO [dbo].[SideDiamonds] (SideDiamondName, Price) 
+VALUES ('Side Diamond C', 5000000);
+
+INSERT INTO [dbo].[SideDiamonds] (SideDiamondName, Price) 
+VALUES ('Side Diamond D', 7000000);
+
+INSERT INTO [dbo].[SideDiamonds] (SideDiamondName, Price) 
+VALUES ('Side Diamond E', 9000000);
+
 /* Insert Jewelry */
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'N-001', 1, 56419000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'N-001', 1, 2, 1, 4, 1, 56419000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'N-002', 1, 8359000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'N-002', 2, 2, 2, 4, 1, 8359000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'N-003', 1, 124398000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'N-003', 3, 2, 3, 4, 1, 124398000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'N-004', 1, 43544000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'N-004', 4, 2, 4, 4, 1, 43544000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'DC-001', 2, 1995000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'DC-001', 1, 2, 1, 4, 2, 1995000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'DC-002', 2, 16963000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'DC-002', 2, 2, 2, 4, 2, 16963000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'DC-003', 2, 20534400);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'DC-003', 3, 2, 3, 4, 2, 20534400);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'DC-004', 2, 11320000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'DC-004', 4, 2, 4, 4, 2, 11320000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'DC-005', 2, 33386800);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'DC-005', 1, 2, 1, 4, 2, 33386800);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (2, 'DC-006', 2, 18077000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (2, 'DC-006', 2, 2, 2, 4, 2, 18077000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (2, 'DC-007', 2, 42494800);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (2, 'DC-007', 3, 2, 3, 4, 2, 42494800);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (1, 'DC-008', 2, 73690000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (1, 'DC-008', 4, 2, 4, 4, 2, 73690000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (1, 'MDC-001', 3, 6283000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (1, 'MDC-001', 1, 2, 1, 4, 3, 6283000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (1, 'MDC-002', 3, 17590000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (1, 'MDC-002', 2, 2, 2, 4, 3, 17590000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'MDC-003', 3, 7190000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'MDC-003', 3, 2, 3, 4, 3, 7190000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'MDC-004', 3, 3180000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'MDC-004', 4, 2, 4, 4, 3, 3180000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (3, 'MDC-005', 3, 4105500);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (3, 'MDC-005', 1, 2, 1, 4, 3, 4105500);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (2, 'MDC-006', 3, 3170500);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (2, 'MDC-006', 2, 2, 2, 4, 3, 3170500);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (2, 'MDC-007', 3, 11567000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (2, 'MDC-007', 3, 2, 3, 4, 3, 11567000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (1, 'MDC-008', 3, 6346000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (1, 'MDC-008', 4, 2, 4, 4, 3, 6346000);
 
-INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, CategoryId, BasePrice) 
-VALUES (1, 'VT-001', 4, 7500000);
+INSERT INTO [dbo].[Jewelry] (JewelrySettingID, ProductID, MainDiamondID, MainDiamondQuantity, SideDiamondID, SideDiamondQuantity, CategoryId, BasePrice) 
+VALUES (1, 'VT-001', 1, 2, 1, 4, 4, 7500000);
 
 /* Insert JewelrySizes */
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 

@@ -14,15 +14,11 @@ namespace Diamond.Entities.Data
         [Required]
         public int SideDiamondID { get; set; }
 
-        [ForeignKey("Jewelry")]
-        public int JewelryID { get; set; }
-
+        [StringLength(50)]
+        public string SideDiamondName { get; set; }
         [Required]
         public int Price { get; set; }
 
-        [Required]
-        public int Quantity { get; set; }
-
-        public virtual Jewelry Jewelry { get; set; }
+        public virtual ICollection<Jewelry> Jewelry { get; set; } = new List<Jewelry>();
     }
 }

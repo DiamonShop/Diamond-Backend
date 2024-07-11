@@ -26,7 +26,7 @@ namespace DiamondShop.Data
         public string OrderNote { get; set; }
 
         [StringLength(200)]
-        public string CancelReason { get; set; }
+        public string? CancelReason { get; set; }
 
         public virtual User User { get; set; } = null!;
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
