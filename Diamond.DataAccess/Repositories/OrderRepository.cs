@@ -114,6 +114,8 @@ namespace Diamond.DataAccess.Repositories
             {
                 UserID = userId,
                 OrderDate = DateTime.Now,
+                OrderNote = "",
+                CancelReason = "",
                 OrderDetails = null!,
                 Status = "Ordering",
                 TotalPrice = 0
@@ -158,6 +160,8 @@ namespace Diamond.DataAccess.Repositories
                 TotalPrice = o.TotalPrice,
                 Status = o.Status,
                 OrderDate = o.OrderDate,
+                CancelReason = o.CancelReason,
+                OrderNote = o.OrderNote,
                 OrderDetails = o.OrderDetails.Select(od => new CartItemModel
                 {
                     OrderDetailId = od.OrderDetailId,
@@ -198,6 +202,8 @@ namespace Diamond.DataAccess.Repositories
                 TotalPrice = order.TotalPrice,
                 Status = order.Status,
                 OrderDate = order.OrderDate,
+                CancelReason = order.CancelReason,
+                OrderNote = order.OrderNote,
                 OrderDetails = order.OrderDetails.Select(od => new CartItemModel
                 {
                     OrderDetailId = od.OrderDetailId,
@@ -371,12 +377,10 @@ namespace Diamond.DataAccess.Repositories
             {
                 return result;
             }
-            order.Status = "Completed";
+            order.Status = "Shipping";
             _context.Orders.Update(order);
             result = await _context.SaveChangesAsync() > 0;
-            //result = await _context.SaveChangesAsync() > 0;
             return result;
         }
     }
-
 }

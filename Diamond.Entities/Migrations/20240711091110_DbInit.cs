@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Diamond.Entities.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class DbInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,7 +30,8 @@ namespace Diamond.Entities.Migrations
                 {
                     JewelrySettingID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Material = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Material = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    BasePrice = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -217,13 +218,54 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MainDiamonds",
+                columns: table => new
+                {
+                    MainDiamondID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    JewelryID = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MainDiamonds", x => x.MainDiamondID);
+                    table.ForeignKey(
+                        name: "FK_MainDiamonds_Jewelry_JewelryID",
+                        column: x => x.JewelryID,
+                        principalTable: "Jewelry",
+                        principalColumn: "JewelryID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SideDiamonds",
+                columns: table => new
+                {
+                    SideDiamondID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    JewelryID = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SideDiamonds", x => x.SideDiamondID);
+                    table.ForeignKey(
+                        name: "FK_SideDiamonds_Jewelry_JewelryID",
+                        column: x => x.JewelryID,
+                        principalTable: "Jewelry",
+                        principalColumn: "JewelryID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Feedbacks",
                 columns: table => new
                 {
                     FeedbackId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    BillId = table.Column<int>(type: "int", nullable: false),
                     ProductID = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     DateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -253,7 +295,9 @@ namespace Diamond.Entities.Migrations
                     UserID = table.Column<int>(type: "int", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OrderNote = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CancelReason = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -336,6 +380,11 @@ namespace Diamond.Entities.Migrations
                 column: "JewelryID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MainDiamonds_JewelryID",
+                table: "MainDiamonds",
+                column: "JewelryID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderDetails_OrderId",
                 table: "OrderDetails",
                 column: "OrderId");
@@ -349,6 +398,11 @@ namespace Diamond.Entities.Migrations
                 name: "IX_Orders_UserID",
                 table: "Orders",
                 column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SideDiamonds_JewelryID",
+                table: "SideDiamonds",
+                column: "JewelryID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
@@ -375,7 +429,13 @@ namespace Diamond.Entities.Migrations
                 name: "JewelrySizes");
 
             migrationBuilder.DropTable(
+                name: "MainDiamonds");
+
+            migrationBuilder.DropTable(
                 name: "OrderDetails");
+
+            migrationBuilder.DropTable(
+                name: "SideDiamonds");
 
             migrationBuilder.DropTable(
                 name: "Warranties");
@@ -384,10 +444,13 @@ namespace Diamond.Entities.Migrations
                 name: "Diamonds");
 
             migrationBuilder.DropTable(
+                name: "Orders");
+
+            migrationBuilder.DropTable(
                 name: "Jewelry");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Categories");
@@ -397,9 +460,6 @@ namespace Diamond.Entities.Migrations
 
             migrationBuilder.DropTable(
                 name: "Products");
-
-            migrationBuilder.DropTable(
-                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Roles");
