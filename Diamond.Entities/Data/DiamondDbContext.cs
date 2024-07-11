@@ -21,6 +21,8 @@ public class DiamondDbContext : DbContext
     public DbSet<JewelrySettings> JewelrySetting { get; set; }
     public DbSet<Jewelry> Jewelry { get; set; }
     public DbSet<JewelrySize> JewelrySizes { get; set; }
+    public DbSet<MainDiamond> MainDiamonds { get; set; }
+    public DbSet<SideDiamond> SideDiamonds { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

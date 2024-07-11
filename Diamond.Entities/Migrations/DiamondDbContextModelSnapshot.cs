@@ -111,6 +111,9 @@ namespace Diamond.Entities.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JewelrySettingID"));
 
+                    b.Property<int>("BasePrice")
+                        .HasColumnType("int");
+
                     b.Property<string>("Material")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -143,6 +146,54 @@ namespace Diamond.Entities.Migrations
                     b.HasIndex("JewelryID");
 
                     b.ToTable("JewelrySizes");
+                });
+
+            modelBuilder.Entity("Diamond.Entities.Data.MainDiamond", b =>
+                {
+                    b.Property<int>("MainDiamondID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MainDiamondID"));
+
+                    b.Property<int>("JewelryID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("MainDiamondID");
+
+                    b.HasIndex("JewelryID");
+
+                    b.ToTable("MainDiamonds");
+                });
+
+            modelBuilder.Entity("Diamond.Entities.Data.SideDiamond", b =>
+                {
+                    b.Property<int>("SideDiamondID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SideDiamondID"));
+
+                    b.Property<int>("JewelryID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("SideDiamondID");
+
+                    b.HasIndex("JewelryID");
+
+                    b.ToTable("SideDiamonds");
                 });
 
             modelBuilder.Entity("DiamondShop.Data.Category", b =>
@@ -198,9 +249,6 @@ namespace Diamond.Entities.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeedbackId"));
 
-                    b.Property<int>("BillId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("DateTime")
                         .HasColumnType("datetime2");
 
@@ -232,8 +280,18 @@ namespace Diamond.Entities.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
+                    b.Property<string>("CancelReason")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderNote")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -459,6 +517,28 @@ namespace Diamond.Entities.Migrations
                 {
                     b.HasOne("Diamond.Entities.Data.Jewelry", "Jewelry")
                         .WithMany("JewelrySizes")
+                        .HasForeignKey("JewelryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Jewelry");
+                });
+
+            modelBuilder.Entity("Diamond.Entities.Data.MainDiamond", b =>
+                {
+                    b.HasOne("Diamond.Entities.Data.Jewelry", "Jewelry")
+                        .WithMany()
+                        .HasForeignKey("JewelryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Jewelry");
+                });
+
+            modelBuilder.Entity("Diamond.Entities.Data.SideDiamond", b =>
+                {
+                    b.HasOne("Diamond.Entities.Data.Jewelry", "Jewelry")
+                        .WithMany()
                         .HasForeignKey("JewelryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

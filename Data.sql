@@ -106,26 +106,26 @@ INSERT INTO [dbo].[Products] (ProductId, ProductName, ProductType, Description, 
 VALUES ('KC-5.4-001', N'Diamond Ring 0.6 Carat', N'Diamond', N'A beautiful 0.6 carat diamond ring', 1, 6000, 'True');
 
 /* Insert JewelrySetting */
-INSERT INTO [dbo].[JewelrySetting] (Material) 
-VALUES (N'Vàng');
+INSERT INTO [dbo].[JewelrySetting] (Material, BasePrice) 
+VALUES (N'Vàng', 500000);  
 
-INSERT INTO [dbo].[JewelrySetting] (Material) 
-VALUES (N'Bạc');
+INSERT INTO [dbo].[JewelrySetting] (Material, BasePrice) 
+VALUES (N'Bạc', 200000);  
 
-INSERT INTO [dbo].[JewelrySetting] (Material) 
-VALUES ('White Gold');
+INSERT INTO [dbo].[JewelrySetting] (Material, BasePrice) 
+VALUES ('White Gold', 300000);  
 
 /* Insert Orders */
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 99.99, N'Completed', '2023-05-15 12:34:56.123');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (2, 49.49, N'Ordering', '2023-05-16 14:21:22.456');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (3, 75.00, N'Shipping', '2023-05-17 16:45:33.789');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (4, 120.50, N'Completed', '2023-05-18 11:12:12.012');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 200.99, N'Shipping', '2023-05-19 10:01:44.321');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 15.75, N'Completed', '2023-05-20 17:23:55.654');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (2, 250.00, N'Completed', '2023-05-21 09:30:11.987');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (3, 60.60, N'Shipping', '2023-05-22 08:45:22.876');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (4, 89.89, N'Completed', '2023-05-23 07:12:33.765');
-INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate) VALUES (1, 199.99, N'Ordering', '2023-05-24 06:23:44.654');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (1, 99.99, N'Completed', '2023-05-15 12:34:56.123', N'Giao hàng nhanh chóng');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (2, 49.49, N'Ordering', '2023-05-16 14:21:22.456', N'Yêu cầu gói quà');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (3, 75.00, N'Shipping', '2023-05-17 16:45:33.789', N'Liên hệ trước khi giao');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (4, 120.50, N'Completed', '2023-05-18 11:12:12.012', N'Khách hàng VIP');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (1, 200.99, N'Shipping', '2023-05-19 10:01:44.321', N'Địa chỉ giao hàng mới');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (1, 15.75, N'Completed', '2023-05-20 17:23:55.654', N'Ưu đãi đặc biệt');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (2, 250.00, N'Completed', '2023-05-21 09:30:11.987', N'Sản phẩm cao cấp');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (3, 60.60, N'Shipping', '2023-05-22 08:45:22.876', N'Yêu cầu giao vào buổi tối');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (4, 89.89, N'Completed', '2023-05-23 07:12:33.765', N'Khuyến mãi sinh nhật');
+INSERT INTO [dbo].[Orders] (UserId, TotalPrice, Status, OrderDate, OrderNote) VALUES (1, 199.99, N'Ordering', '2023-05-24 06:23:44.654', N'Tặng kèm phiếu giảm giá');
 
 /* Insert Diamond */
 INSERT INTO [dbo].[Diamonds] (ProductID, Carat, Clarity, Cut, Color, BasePrice, DiameterMM, Quantity) 
