@@ -13,9 +13,6 @@ namespace DiamondShop.Data
         [ForeignKey("User")]
         public int UserId { get; set; }
 
-        [ForeignKey("Bill")]
-        public int BillId { get; set; }
-
         [ForeignKey("Product")]
         public string ProductID { get; set; }
 
