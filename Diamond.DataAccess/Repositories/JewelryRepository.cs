@@ -119,25 +119,33 @@ namespace Diamond.DataAccess.Repositories
             try
             {
                 // Generate the next Product ID
-                int markupRate = 1;
-
                 var newProduct = new Product()
                 {
                     ProductId = jewelryModel.ProductID,
                     ProductName = jewelryModel.ProductName,
                     Description = "",
-                    MarkupRate = markupRate,
-                    MarkupPrice = jewelryModel.BasePrice * markupRate,
+                    MarkupRate = jewelryModel.MarkupRate,
+                    MarkupPrice = jewelryModel.BasePrice * jewelryModel.MarkupRate,
                     ProductType = "Jewelry",
                     IsActive = true
                 };
 
+                var priceMainDiamond = _context.MainDiamonds.SingleOrDefault(m => m.MainDiamondID == jewelryModel.MainDiamondID);
+                var priceSideDiamond = _context.SideDiamonds.SingleOrDefault(s => s.SideDiamondID == jewelryModel.SideDiamondID);
+                var priceSetting = _context.JewelrySetting.SingleOrDefault(s => s.JewelrySettingID == jewelryModel.JewelrySettingID);
+
                 var jewelry = new Jewelry()
                 {
                     CategoryId = jewelryModel.CategoryId,
-                    ProductID = newProduct.ProductId, // Link to the ProductID
                     JewelrySettingID = jewelryModel.JewelrySettingID,
-                    BasePrice = jewelryModel.BasePrice
+                    MainDiamondID = jewelryModel.MainDiamondID,
+                    MainDiamondQuantity = jewelryModel.MainDiamondQuantity,
+                    SideDiamondID = jewelryModel.SideDiamondID,
+                    SideDiamondQuantity = jewelryModel.SideDiamondQuantity,
+                    ProductID = newProduct.ProductId, // Link to the ProductID
+                    BasePrice = priceMainDiamond!.Price * jewelryModel.MainDiamondQuantity 
+                                + priceSideDiamond!.Price * jewelryModel.SideDiamondQuantity
+                                + priceSetting!.BasePrice
                 };
 
                 await _context.Products.AddAsync(newProduct);
@@ -193,6 +201,11 @@ namespace Diamond.DataAccess.Repositories
                 ProductID = j.ProductID,
                 CategoryId = j.CategoryId,
                 BasePrice = j.BasePrice,
+                MainDiamondID = j.MainDiamondID,
+                MainDiamondQuantity = j.MainDiamondQuantity,
+                MarkupRate = j.Product.MarkupRate,
+                SideDiamondID = j.SideDiamondID,
+                SideDiamondQuantity = j.SideDiamondQuantity,
                 ProductName = j.Product.ProductName,
                 ProductDescription = j.Product.Description,
                 IsActive = j.Product.IsActive
@@ -392,7 +405,7 @@ namespace Diamond.DataAccess.Repositories
                 jewelry.BasePrice = jewelryModel.BasePrice;
                 jewelry.CategoryId = jewelryModel.CategoryId;
                 jewelry.JewelrySettingID = jewelryModel.JewelrySettingID;
-                
+
 
                 _context.Jewelry.Update(jewelry);
                 return await _context.SaveChangesAsync() > 0;
@@ -403,9 +416,9 @@ namespace Diamond.DataAccess.Repositories
             }
         }
 
-		public Task<bool> UpdateJewelry(int id, JewelryModel productModel)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public Task<bool> UpdateJewelry(int id, JewelryModel productModel)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
