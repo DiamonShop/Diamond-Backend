@@ -1,4 +1,5 @@
-﻿using DiamondShop.Model;
+﻿using Diamond.Entities.Model;
+using DiamondShop.Model;
 
 public interface IFeedbackRepository
 {
@@ -7,5 +8,5 @@ public interface IFeedbackRepository
     Task<bool> CreateFeedback(FeedbackModel feedbackModel);
     Task<bool> DeleteFeedback(int id);
     Task<bool> UpdateFeedback(int id, FeedbackModel feedbackModel);
-    Task<List<FeedbackModel>> GetFeedbackByProductId(string productId); 
+    Task<List<FeedbackWithDetailsModel>> GetFeedbackByProductId(string productId);
 }
