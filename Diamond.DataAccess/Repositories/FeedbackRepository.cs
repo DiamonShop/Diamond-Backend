@@ -1,4 +1,5 @@
-﻿using DiamondShop.Data;
+﻿using Diamond.Entities.Model;
+using DiamondShop.Data;
 using DiamondShop.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -132,20 +133,26 @@ public class FeedbackRepository : IFeedbackRepository
     }
 
     // Implementation of the new method
-    public async Task<List<FeedbackModel>> GetFeedbackByProductId(string productId)
+    public async Task<List<FeedbackWithDetailsModel>> GetFeedbackByProductId(string productId)
     {
         var feedbackList = await _context.Feedbacks
             .Where(f => f.ProductID == productId)
+            .Include(f => f.User)
+            .Include(f => f.Product)
             .ToListAsync();
 
-        var feedbacks = feedbackList.Select(f => new FeedbackModel
+        var feedbacks = feedbackList.Select(f => new FeedbackWithDetailsModel
         {
             UserId = f.UserId,
             ProductId = f.ProductID,
             Description = f.Description,
-            DateTime = f.DateTime
+            DateTime = f.DateTime,
+            UserName = f.User.FullName,
+            ProductName = f.Product.ProductName
         }).ToList();
 
         return feedbacks;
     }
 }
+
+
