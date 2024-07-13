@@ -382,5 +382,59 @@ namespace Diamond.DataAccess.Repositories
             result = await _context.SaveChangesAsync() > 0;
             return result;
         }
-    }
+
+		public async Task<ApiResponse> GetOrderByUserIdOrderId(int userId, int orderId)
+		{
+			var userOrders = await _context.Orders
+								   .Include(o => o.OrderDetails)
+								   .Include(o => o.User) // Ensure User is included
+								   .Where(u => u.UserID == userId
+                                   && u.OrderId == orderId)
+								   .ToListAsync();
+
+			if (!userOrders.Any()) // Check if the list is empty
+			{
+				return new ApiResponse()
+				{
+					Message = "Get Order by user id failed",
+					Success = false,
+					Data = null
+				};
+			}
+
+			var orderModel = userOrders.Select(o => new OrderViewModel
+			{
+				OrderId = o.OrderId,
+				UserName = o.User.FullName,
+				TotalPrice = o.TotalPrice,
+				Status = o.Status,
+				OrderDate = o.OrderDate,
+				OrderDetails = o.OrderDetails.Select(od => new CartItemModel
+				{
+					OrderDetailId = od.OrderDetailId,
+					ProductId = od.ProductId,
+					ProductName = od.ProductName,// Assuming ProductName is available in OrderDetails
+					UnitPrice = od.UnitPrice,
+					Quantity = od.Quantity
+				}).ToList()
+			}).ToList();
+
+			if (orderModel == null)
+			{
+				return new ApiResponse()
+				{
+					Message = "Get Order by user id failed",
+					Success = false,
+					Data = null
+				};
+			}
+
+			return new ApiResponse()
+			{
+				Message = "Get Order by user id successfully",
+				Success = true,
+				Data = orderModel
+			};
+		}
+	}
 }
