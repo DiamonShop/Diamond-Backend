@@ -117,18 +117,30 @@ namespace DiamondShop.Controllers
             return Ok("Failed to Delete Order Detail");
         }
 
-        [HttpDelete("UpdateStatus")]
-        [Authorize(Roles = "Manager,Staff,Delivery")]
-        public async Task<IActionResult> UpdateStatus(int orderId)
+        [HttpPut("UpdateStatusCompleted")]
+        /*[Authorize(Roles = "Manager,Staff,Delivery")]*/
+        public async Task<IActionResult> UpdateStatusCompleted(int orderId)
         {
-            bool result = await _orderRepository.UpdateStatus(orderId);
+            bool result = await _orderRepository.UpdateStatusCompleted(orderId);
             if (result)
             {
                 return Ok("Update status Order successfully");
             }
             return Ok("Failed to Update status Order");
         }
-		/*
+
+        [HttpPut("UpdateStatusCancel")]
+        /*[Authorize(Roles = "Manager,Staff,Delivery")]*/
+        public async Task<IActionResult> UpdateStatusCancel(int orderId, string cancelReason)
+        {
+            bool result = await _orderRepository.UpdateStatusCancel(orderId, cancelReason);
+            if (result)
+            {
+                return Ok("Update status Order successfully");
+            }
+            return Ok("Failed to Update status Order");
+        }
+        /*
 		[HttpPost("Checkout")]
 		public IActionResult CreatePaymentUrl(PaymentInformationModel model)
 		{
@@ -149,7 +161,7 @@ namespace DiamondShop.Controllers
 			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
 			return Ok(url);
 		}*/
-		[HttpPost("Checkout")]
+        [HttpPost("Checkout")]
 		public IActionResult CreatePaymentUrl(PaymentInformationModel model)
 		{
             var bill = new BillCreateDTO
@@ -201,6 +213,7 @@ namespace DiamondShop.Controllers
             return Ok("Failed to Update status Order");
         }
 
+<<<<<<< HEAD
 		[HttpGet("GetOrderByUserIdOrderId")]
 		public async Task<IActionResult> GetOrderByUserIdOrderId(int userId, int orderId)
 		{
@@ -208,4 +221,8 @@ namespace DiamondShop.Controllers
 			return Ok(apiResponse);
 		}
 	}
+=======
+
+    }
+>>>>>>> d9cd3f9fcb9cdb964a107daf20519e67dbf8f906
 }

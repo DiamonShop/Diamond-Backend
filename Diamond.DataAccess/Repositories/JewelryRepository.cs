@@ -118,18 +118,6 @@ namespace Diamond.DataAccess.Repositories
 
             try
             {
-                // Generate the next Product ID
-                var newProduct = new Product()
-                {
-                    ProductId = jewelryModel.ProductID,
-                    ProductName = jewelryModel.ProductName,
-                    Description = "",
-                    MarkupRate = jewelryModel.MarkupRate,
-                    MarkupPrice = jewelryModel.BasePrice * jewelryModel.MarkupRate,
-                    ProductType = "Jewelry",
-                    IsActive = true
-                };
-
                 var priceMainDiamond = _context.MainDiamonds.SingleOrDefault(m => m.MainDiamondID == jewelryModel.MainDiamondID);
                 var priceSideDiamond = _context.SideDiamonds.SingleOrDefault(s => s.SideDiamondID == jewelryModel.SideDiamondID);
                 var priceSetting = _context.JewelrySetting.SingleOrDefault(s => s.JewelrySettingID == jewelryModel.JewelrySettingID);
@@ -142,13 +130,12 @@ namespace Diamond.DataAccess.Repositories
                     MainDiamondQuantity = jewelryModel.MainDiamondQuantity,
                     SideDiamondID = jewelryModel.SideDiamondID,
                     SideDiamondQuantity = jewelryModel.SideDiamondQuantity,
-                    ProductID = newProduct.ProductId, // Link to the ProductID
-                    BasePrice = priceMainDiamond!.Price * jewelryModel.MainDiamondQuantity 
+                    ProductID = jewelryModel.ProductID, // Link to the ProductID
+                    BasePrice = priceMainDiamond!.Price * jewelryModel.MainDiamondQuantity
                                 + priceSideDiamond!.Price * jewelryModel.SideDiamondQuantity
                                 + priceSetting!.BasePrice
                 };
 
-                await _context.Products.AddAsync(newProduct);
                 await _context.Jewelry.AddAsync(jewelry);
                 return await _context.SaveChangesAsync() > 0;
             }
@@ -185,9 +172,10 @@ namespace Diamond.DataAccess.Repositories
         public async Task<List<JewelryModel>> GetAllJewelry()
         {
             var jewelryList = await _context.Jewelry
-                .Include(j => j.Product)
-                .Where(d => d.Product.ProductType.Equals("Jewelry"))
-                .ToListAsync();
+        .Include(j => j.Product)
+        .Include(j => j.JewelrySizes) // Ensure to include the JewelrySizes
+        .Where(d => d.Product.ProductType.Equals("Jewelry"))
+        .ToListAsync();
 
             if (jewelryList == null || jewelryList.Count == 0)
             {
@@ -203,12 +191,17 @@ namespace Diamond.DataAccess.Repositories
                 BasePrice = j.BasePrice,
                 MainDiamondID = j.MainDiamondID,
                 MainDiamondQuantity = j.MainDiamondQuantity,
-                MarkupRate = j.Product.MarkupRate,
                 SideDiamondID = j.SideDiamondID,
                 SideDiamondQuantity = j.SideDiamondQuantity,
-                ProductName = j.Product.ProductName,
-                ProductDescription = j.Product.Description,
-                IsActive = j.Product.IsActive
+                JewelrySizes = j.JewelrySizes
+                                    .Where(js => js.JewelryID == j.JewelryID)
+                                    .Select(js => new JewelrySizeModel
+                                    {
+                                        JewelrySizeID = js.JewelrySizeID,
+                                        JewelryID = js.JewelryID,
+                                        Size = js.Size,
+                                        Quantity = js.Quantity
+                                    }).ToList()
             }).ToList();
 
             return jewelryModels;
@@ -234,9 +227,6 @@ namespace Diamond.DataAccess.Repositories
                 ProductID = j.ProductID,
                 CategoryId = j.CategoryId,
                 BasePrice = j.BasePrice,
-                ProductName = j.Product.ProductName,
-                ProductDescription = j.Product.Description,
-                IsActive = j.Product.IsActive
             }).ToList();
 
             return jewelryModels;
@@ -261,9 +251,6 @@ namespace Diamond.DataAccess.Repositories
                 ProductID = jewelry.ProductID,
                 BasePrice = jewelry.BasePrice,
                 CategoryId = jewelry.CategoryId,
-                ProductDescription = jewelry.Product.Description,
-                IsActive = jewelry.Product.IsActive,
-                ProductName = jewelry.Product.ProductName,
             };
 
             return productModel;
@@ -296,10 +283,6 @@ namespace Diamond.DataAccess.Repositories
                 ProductID = j.ProductID,
                 CategoryId = j.CategoryId,
                 BasePrice = j.BasePrice,
-                ProductName = j.Product.ProductName,
-                ProductDescription = j.Product.Description,
-
-                IsActive = j.Product.IsActive
             }).ToList();
 
             return jewelryModels;
@@ -325,9 +308,6 @@ namespace Diamond.DataAccess.Repositories
                 ProductID = j.ProductID,
                 CategoryId = j.CategoryId,
                 BasePrice = j.BasePrice,
-                ProductName = j.Product.ProductName,
-                ProductDescription = j.Product.Description,
-                IsActive = j.Product.IsActive
             }).ToList();
 
             return jewelryModels;
@@ -353,9 +333,6 @@ namespace Diamond.DataAccess.Repositories
                 ProductID = j.ProductID,
                 CategoryId = j.CategoryId,
                 BasePrice = j.BasePrice,
-                ProductName = j.Product.ProductName,
-                ProductDescription = j.Product.Description,
-                IsActive = j.Product.IsActive
             }).ToList();
 
             return jewelryModels;
@@ -380,9 +357,6 @@ namespace Diamond.DataAccess.Repositories
                 ProductID = jewelry.ProductID,
                 BasePrice = jewelry.BasePrice,
                 CategoryId = jewelry.CategoryId,
-                ProductDescription = jewelry.Product.Description,
-                IsActive = jewelry.Product.IsActive,
-                ProductName = jewelry.Product.ProductName,
             };
 
             return productModel;

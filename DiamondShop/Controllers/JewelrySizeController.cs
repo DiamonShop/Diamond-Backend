@@ -19,9 +19,20 @@ namespace DiamondShop.API.Controllers
         }
         // GET: api/<JewelrySizeController>
         // Tạo sản phẩm mới
-        [HttpPost("CreateCategory")]
+
+        [HttpGet("GetAllJewelrySize")]
+        public async Task<IActionResult> GetAllJewelrySize()
+        {
+            var products = await _jewelrySizeRepository.GetAllJewelrySize();
+
+            if (products == null) { return Ok(null); }
+
+            return Ok(products);
+        }
+
+        [HttpPost("CreateJewelrySize")]
         /*[Authorize(Roles = "Admin,Manager")]*/
-        public async Task<IActionResult> CreateCategory([FromBody] JewelrySizeModel jewelrySizeModel)
+        public async Task<IActionResult> CreateJewelrySize([FromBody] JewelrySizeModel jewelrySizeModel)
         {
             bool result = await _jewelrySizeRepository.CreateJewelrySize(jewelrySizeModel);
 

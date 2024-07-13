@@ -1,8 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Diamond.Entities.Model
 {
-    public class JewelryModel
+    public class JewelryCreateModel
     {
         public int JewelryID { get; set; }
         public int JewelrySettingID { get; set; }
@@ -13,6 +17,5 @@ namespace Diamond.Entities.Model
         public int SideDiamondID { get; set; }
         public int SideDiamondQuantity { get; set; }
         public int BasePrice { get; set; }
-        public List<JewelrySizeModel> JewelrySizes { get; set; } = new List<JewelrySizeModel>();
     }
 }

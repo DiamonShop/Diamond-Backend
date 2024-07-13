@@ -238,19 +238,19 @@ VALUES (1, 'VT-001', 1, 2, 1, 4, 4, 7500000);
 
 /* Insert JewelrySizes */
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (1, 10, 50);
+VALUES (42, 10, 50);
 
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (2, 11, 35);
+VALUES (49, 11, 35);
 
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (3, 12, 20);
+VALUES (63, 12, 20);
 
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (4, 13, 25);
+VALUES (64, 13, 25);
 
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (5, 14, 50);
+VALUES (65, 14, 50);
 
 INSERT INTO [dbo].[JewelrySizes] (JewelryID, Size, Quantity) 
-VALUES (6, 15, 50);
+VALUES (66, 15, 50);

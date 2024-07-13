@@ -156,6 +156,7 @@ namespace Diamond.DataAccess.Repositories
 
             var orderModel = orders.Select(o => new OrderViewModel
             {
+                OrderId = o.OrderId,
                 UserName = o.User.FullName,
                 TotalPrice = o.TotalPrice,
                 Status = o.Status,
@@ -312,7 +313,7 @@ namespace Diamond.DataAccess.Repositories
             return result;
         }
 
-        public async Task<bool> UpdateStatus(int orderId)
+        public async Task<bool> UpdateStatusCompleted(int orderId)
         {
             bool result = false;
             var order = await _context.Orders.FindAsync(orderId);
@@ -322,6 +323,29 @@ namespace Diamond.DataAccess.Repositories
                 return result;
             }
             order.Status = "Completed";
+            _context.Orders.Update(order);
+            result = await _context.SaveChangesAsync() > 0;
+
+            return result;
+        }
+
+        public async Task<bool> UpdateStatusCancel(int orderId, string cancelReason)
+        {
+            bool result = false;
+            var order = await _context.Orders.FindAsync(orderId);
+
+            if (order == null)
+            {
+                return result;
+            }
+
+            if (string.IsNullOrEmpty(cancelReason))
+            {
+                return result;
+            }
+
+            order.CancelReason = cancelReason;
+            order.Status = "Cancel";
             _context.Orders.Update(order);
             result = await _context.SaveChangesAsync() > 0;
 
