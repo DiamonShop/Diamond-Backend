@@ -33,6 +33,9 @@ namespace DiamondShop.Repositories
             {
                 DiamondID = d.DiamondID,
                 ProductID = d.ProductID,
+                IsActive = d.Product.IsActive,
+                MarkupPrice = d.Product.MarkupPrice,
+                MarkupRate = d.Product.MarkupRate,
                 Carat = d.Carat,
                 BasePrice = d.BasePrice,
                 Clarity = d.Clarity,
@@ -41,7 +44,6 @@ namespace DiamondShop.Repositories
                 DiameterMM = d.DiameterMM,
                 Quantity = d.Quantity,
                 Description = d.Product.Description,
-                IsActive = d.Product.IsActive,
                 ProductName = d.Product.ProductName
             }).ToList();
 
@@ -72,7 +74,6 @@ namespace DiamondShop.Repositories
                 ProductName = diamond.Product.ProductName,
                 Description = diamond.Product.Description,
                 Quantity = diamond.Quantity,
-                IsActive = diamond.Product.IsActive
             };
 
             return productModel;
@@ -87,21 +88,20 @@ namespace DiamondShop.Repositories
 
             try
             {
-                int MarkupRate = 1;
-
                 var newProduct = new Product()
                 {
                     ProductId = diamondModel.ProductID,
                     ProductName = diamondModel.ProductName,
                     Description = diamondModel.Description,
-                    MarkupRate = MarkupRate,
-                    MarkupPrice = diamondModel.BasePrice * MarkupRate,
+                    MarkupRate = diamondModel.MarkupRate,
+                    MarkupPrice = diamondModel.MarkupPrice,
                     ProductType = "Diamond",
                     IsActive = true
                 };
 
                 var diamond = new Diamonds()
                 {
+                    Quantity = diamondModel.Quantity,
                     Carat = diamondModel.Carat,
                     Clarity = diamondModel.Clarity,
                     Color = diamondModel.Color,
@@ -141,38 +141,6 @@ namespace DiamondShop.Repositories
             return $"{prefix}{newIdNumber:D3}";
         }*/
 
-        public async Task<bool> UpdateDiamond(DiamondModel diamond)
-        {
-            var existingDiamond = await _context.Diamonds
-                .Include(d => d.Product)
-                .SingleOrDefaultAsync(d => d.ProductID.Equals(diamond.ProductID));
-
-            if (existingDiamond == null)
-            {
-                return false;
-            }
-
-            try
-            {
-                existingDiamond.DiamondID = existingDiamond.DiamondID;
-                existingDiamond.ProductID = existingDiamond.ProductID;
-                existingDiamond.Carat = diamond.Carat;
-                existingDiamond.Clarity = diamond.Clarity;
-                existingDiamond.Cut = diamond.Cut;
-                existingDiamond.Color = diamond.Color;
-                existingDiamond.Quantity = diamond.Quantity;
-                existingDiamond.DiameterMM = diamond.DiameterMM;
-                existingDiamond.BasePrice = diamond.BasePrice;
-
-                _context.Diamonds.Update(existingDiamond);
-                return await _context.SaveChangesAsync() > 0;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
         public async Task<DiamondModel> GetDiamondById(int id)
         {
             var diamond = await _context.Diamonds
@@ -198,7 +166,6 @@ namespace DiamondShop.Repositories
                 ProductName = diamond.Product.ProductName,
                 Description = diamond.Product.Description,
                 Quantity = diamond.Quantity,
-                IsActive = diamond.Product.IsActive
             };
 
             return productModel;
@@ -236,7 +203,6 @@ namespace DiamondShop.Repositories
                 Quantity = d.Quantity,
                 DiameterMM = d.DiameterMM,
                 Description = d.Product.Description,
-                IsActive = d.Product.IsActive,
                 ProductName = d.Product.ProductName
             }).ToList();
 
@@ -267,7 +233,6 @@ namespace DiamondShop.Repositories
                 Quantity = d.Quantity,
                 DiameterMM = d.DiameterMM,
                 Description = d.Product.Description,
-                IsActive = d.Product.IsActive,
                 ProductName = d.Product.ProductName
             }).ToList();
 
@@ -298,7 +263,6 @@ namespace DiamondShop.Repositories
                 Quantity = d.Quantity,
                 DiameterMM = d.DiameterMM,
                 Description = d.Product.Description,
-                IsActive = d.Product.IsActive,
                 ProductName = d.Product.ProductName
             }).ToList();
 
@@ -343,9 +307,45 @@ namespace DiamondShop.Repositories
             return count;
         }
 
-		public Task<bool> UpdateDiamond(int id, DiamondModel diamond)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public async Task<bool> UpdateDiamond(DiamondModel diamond)
+        {
+            var existingDiamond = await _context.Diamonds
+                                .Include(d => d.Product)
+                                .SingleOrDefaultAsync(d => d.DiamondID.Equals(diamond.DiamondID));
+
+            if (existingDiamond == null)
+            {
+                return false;
+            }
+
+            var existingProduct = existingDiamond.Product;
+
+            try
+            {
+                //Update Product properties
+                existingProduct.ProductId = existingProduct.ProductId;
+                existingProduct.ProductName = diamond.ProductName;
+                existingProduct.Description = diamond.Description;
+                existingProduct.MarkupRate = diamond.MarkupRate;
+                existingProduct.MarkupPrice = diamond.MarkupPrice;
+                //Update Diamond properties
+                existingDiamond.ProductID = existingDiamond.ProductID;
+                existingDiamond.Carat = diamond.Carat;
+                existingDiamond.Clarity = diamond.Clarity;
+                existingDiamond.Cut = diamond.Cut;
+                existingDiamond.Color = diamond.Color;
+                existingDiamond.Quantity = diamond.Quantity;
+                existingDiamond.DiameterMM = diamond.DiameterMM;
+                existingDiamond.BasePrice = diamond.BasePrice;
+
+                _context.Products.Update(existingProduct);
+                _context.Diamonds.Update(existingDiamond);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+    }
 }
