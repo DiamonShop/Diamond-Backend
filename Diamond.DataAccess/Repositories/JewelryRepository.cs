@@ -110,45 +110,70 @@ namespace Diamond.DataAccess.Repositories
         }*/
 
         public async Task<bool> CreateJewelry(JewelryModel jewelryModel)
+{
+    if (jewelryModel == null)
+    {
+        Console.WriteLine("Jewelry model is null in repository");
+        return false;
+    }
+
+    // Kiểm tra nếu ProductId đã tồn tại
+    var existingProduct = await _context.Products.FindAsync(jewelryModel.ProductID);
+    if (existingProduct != null)
+    {
+        Console.WriteLine("ProductId already exists: " + jewelryModel.ProductID);
+        return false;
+    }
+
+    using (var transaction = await _context.Database.BeginTransactionAsync())
+    {
+        try
         {
-            if (jewelryModel == null)
+            int markupRate = 1;
+
+            var newProduct = new Product()
             {
-                return false;
-            }
+                ProductId = jewelryModel.ProductID,
+                ProductName = jewelryModel.ProductName,
+                Description = jewelryModel.ProductDescription,
+                MarkupRate = markupRate,
+                MarkupPrice = jewelryModel.BasePrice * markupRate,
+                ProductType = "Jewelry",
+                IsActive = true
+            };
 
-            try
+            var jewelry = new Jewelry()
             {
-                // Generate the next Product ID
-                int markupRate = 1;
+                CategoryId = jewelryModel.CategoryId,
+                ProductID = newProduct.ProductId, // Link to the ProductID
+                JewelrySettingID = jewelryModel.JewelrySettingID,
+                BasePrice = jewelryModel.BasePrice,
+                
+            };
 
-                var newProduct = new Product()
-                {
-                    ProductId = jewelryModel.ProductID,
-                    ProductName = jewelryModel.ProductName,
-                    Description = "",
-                    MarkupRate = markupRate,
-                    MarkupPrice = jewelryModel.BasePrice * markupRate,
-                    ProductType = "Jewelry",
-                    IsActive = true
-                };
+            await _context.Products.AddAsync(newProduct);
+            await _context.Jewelry.AddAsync(jewelry);
 
-                var jewelry = new Jewelry()
-                {
-                    CategoryId = jewelryModel.CategoryId,
-                    ProductID = newProduct.ProductId, // Link to the ProductID
-                    JewelrySettingID = jewelryModel.JewelrySettingID,
-                    BasePrice = jewelryModel.BasePrice
-                };
+            // Lưu các thay đổi
+            await _context.SaveChangesAsync();
 
-                await _context.Products.AddAsync(newProduct);
-                await _context.Jewelry.AddAsync(jewelry);
-                return await _context.SaveChangesAsync() > 0;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            // Cam kết giao dịch
+            await transaction.CommitAsync();
+
+            return true;
         }
+        catch (Exception ex)
+        {
+            // Nếu có lỗi, rollback giao dịch
+            await transaction.RollbackAsync();
+            Console.WriteLine($"Exception occurred: {ex.Message}");
+            return false;
+        }
+    }
+}
+
+
+
 
         public async Task<bool> DeleteJewelry(int id)
         {

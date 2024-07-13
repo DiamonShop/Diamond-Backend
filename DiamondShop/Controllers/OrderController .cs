@@ -184,5 +184,11 @@ namespace DiamondShop.Controllers
             }
             return Ok("Failed to Update status Order");
         }
+        [HttpGet("GetOrderByUserIdOrderId")]
+        public async Task<IActionResult> GetOrderByUserIdOrderId(int userId, int orderId)
+        {
+            var apiResponse = await _orderRepository.GetOrderByUserIdOrderId(userId, orderId);
+            return Ok(apiResponse);
+        }
     }
 }

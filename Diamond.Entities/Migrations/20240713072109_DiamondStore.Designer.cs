@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diamond.Entities.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    [Migration("20240712042808_DiamondStore")]
+    [Migration("20240713072109_DiamondStore")]
     partial class DiamondStore
     {
         /// <inheritdoc />
@@ -268,14 +268,22 @@ namespace Diamond.Entities.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProductID")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("FeedbackId");
+
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("ProductID");
 
@@ -564,6 +572,12 @@ namespace Diamond.Entities.Migrations
 
             modelBuilder.Entity("DiamondShop.Data.Feedback", b =>
                 {
+                    b.HasOne("DiamondShop.Data.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DiamondShop.Data.Product", "Product")
                         .WithMany("Feedbacks")
                         .HasForeignKey("ProductID")
@@ -575,6 +589,8 @@ namespace Diamond.Entities.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Order");
 
                     b.Navigation("Product");
 
