@@ -172,10 +172,12 @@ namespace Diamond.DataAccess.Repositories
         public async Task<List<JewelryModel>> GetAllJewelry()
         {
             var jewelryList = await _context.Jewelry
-        .Include(j => j.Product)
-        .Include(j => j.JewelrySizes) // Ensure to include the JewelrySizes
-        .Where(d => d.Product.ProductType.Equals("Jewelry"))
-        .ToListAsync();
+                                .Include(j => j.Product)
+                                .Include(j => j.JewelrySizes)
+                                .Include(j => j.MainDiamond)
+                                .Include(j => j.SideDiamond)
+                                .Where(d => d.Product.ProductType.Equals("Jewelry"))
+                                .ToListAsync();
 
             if (jewelryList == null || jewelryList.Count == 0)
             {
@@ -194,6 +196,7 @@ namespace Diamond.DataAccess.Repositories
                 IsActive = j.Product.IsActive,
                 CategoryId = j.CategoryId,
                 BasePrice = j.BasePrice,
+                MainDiamondName = j.MainDiamond.MainDiamondName,
                 MainDiamondID = j.MainDiamondID,
                 MainDiamondQuantity = j.MainDiamondQuantity,
                 SideDiamondID = j.SideDiamondID,
@@ -348,6 +351,8 @@ namespace Diamond.DataAccess.Repositories
             var jewelry = await _context.Jewelry
                 .Include(j => j.Category)
                 .Include(j => j.Product)
+                .Include(j => j.MainDiamond)
+                .Include(j => j.SideDiamond)
                 .FirstOrDefaultAsync(j => j.Product.ProductId.Equals(productId));
 
             if (jewelry == null)
@@ -360,8 +365,26 @@ namespace Diamond.DataAccess.Repositories
                 JewelryID = jewelry.JewelryID,
                 JewelrySettingID = jewelry.JewelrySettingID,
                 ProductID = jewelry.ProductID,
+                IsActive = jewelry.Product.IsActive,
+                MainDiamondQuantity = jewelry.MainDiamondQuantity,
+                MainDiamondID = jewelry.MainDiamondID,
+                MarkupPrice = jewelry.Product.MarkupPrice,
+                ProductName = jewelry.Product.ProductName,
+                Description = jewelry.Product.Description,
+                MainDiamondName = jewelry.MainDiamond.MainDiamondName,
+                SideDiamondID = jewelry.SideDiamondID,
+                SideDiamondQuantity = jewelry.SideDiamondQuantity,
                 BasePrice = jewelry.BasePrice,
                 CategoryId = jewelry.CategoryId,
+                JewelrySizes = jewelry.JewelrySizes
+                                    .Where(js => js.JewelryID == j.JewelryID)
+                                    .Select(js => new JewelrySizeModel
+                                    {
+                                        JewelrySizeID = js.JewelrySizeID,
+                                        JewelryID = js.JewelryID,
+                                        Size = js.Size,
+                                        Quantity = js.Quantity
+                                    }).ToList()
             };
 
             return productModel;
