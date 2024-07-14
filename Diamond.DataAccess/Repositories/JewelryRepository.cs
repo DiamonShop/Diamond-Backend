@@ -377,7 +377,7 @@ namespace Diamond.DataAccess.Repositories
                 BasePrice = jewelry.BasePrice,
                 CategoryId = jewelry.CategoryId,
                 JewelrySizes = jewelry.JewelrySizes
-                                    .Where(js => js.JewelryID == j.JewelryID)
+                                    .Where(js => js.JewelryID == js.JewelryID)
                                     .Select(js => new JewelrySizeModel
                                     {
                                         JewelrySizeID = js.JewelrySizeID,
