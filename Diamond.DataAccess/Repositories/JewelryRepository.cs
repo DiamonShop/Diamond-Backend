@@ -174,6 +174,7 @@ namespace Diamond.DataAccess.Repositories
             var jewelryList = await _context.Jewelry
                                 .Include(j => j.Product)
                                 .Include(j => j.JewelrySizes)
+                                .Include(j => j.JewelrySetting)
                                 .Include(j => j.MainDiamond)
                                 .Include(j => j.SideDiamond)
                                 .Where(d => d.Product.ProductType.Equals("Jewelry"))
@@ -188,6 +189,8 @@ namespace Diamond.DataAccess.Repositories
             {
                 JewelryID = j.JewelryID,
                 JewelrySettingID = j.JewelrySettingID,
+                Material = j.JewelrySetting.Material,
+                SideDiamondName = j.SideDiamond.SideDiamondName,
                 ProductID = j.ProductID,
                 ProductName = j.Product.ProductName,
                 Description = j.Product.Description,
@@ -365,6 +368,8 @@ namespace Diamond.DataAccess.Repositories
                 JewelryID = jewelry.JewelryID,
                 JewelrySettingID = jewelry.JewelrySettingID,
                 ProductID = jewelry.ProductID,
+                SideDiamondName = jewelry.SideDiamond.SideDiamondName,
+                Material = jewelry.JewelrySetting.Material,
                 IsActive = jewelry.Product.IsActive,
                 MainDiamondQuantity = jewelry.MainDiamondQuantity,
                 MainDiamondID = jewelry.MainDiamondID,
