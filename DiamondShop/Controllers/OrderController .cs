@@ -220,6 +220,13 @@ namespace DiamondShop.Controllers
 			var apiResponse = await _orderRepository.GetOrderByUserIdOrderId(userId, orderId);
 			return Ok(apiResponse);
 		}
+
+		[HttpGet("GetLatestOrderByUserId")]
+		public async Task<IActionResult> GetLatestOrderByUserId(int userId)
+		{
+			var apiResponse = await _orderRepository.GetLatestOrderByUserId(userId);
+			return Ok(apiResponse);
+		}
 	}
 
 }

@@ -468,5 +468,49 @@ namespace Diamond.DataAccess.Repositories
 				Data = orderModel
 			};
 		}
+
+		public async Task<ApiResponse> GetLatestOrderByUserId(int userId)
+		{
+			var latestOrder = await _context.Orders
+								   .Include(o => o.OrderDetails)
+								   .Include(o => o.User) // Ensure User is included
+								   .Where(o => o.UserID == userId)
+								   .OrderByDescending(o => o.OrderDate)
+								   .FirstOrDefaultAsync(); // Get the latest order
+
+			if (latestOrder == null)
+			{
+				return new ApiResponse()
+				{
+					Message = "Get Order by user id failed",
+					Success = false,
+					Data = null
+				};
+			}
+
+			var orderModel = new OrderViewModel
+			{
+				OrderId = latestOrder.OrderId,
+				UserName = latestOrder.User.FullName,
+				TotalPrice = latestOrder.TotalPrice,
+				Status = latestOrder.Status,
+				OrderDate = latestOrder.OrderDate,
+				OrderDetails = latestOrder.OrderDetails.Select(od => new CartItemModel
+				{
+					OrderDetailId = od.OrderDetailId,
+					ProductId = od.ProductId,
+					ProductName = od.ProductName, // Assuming ProductName is available in OrderDetails
+					UnitPrice = od.UnitPrice,
+					Quantity = od.Quantity
+				}).ToList()
+			};
+
+			return new ApiResponse()
+			{
+				Message = "Get Order by user id successfully",
+				Success = true,
+				Data = orderModel
+			};
+		}
 	}
 }
