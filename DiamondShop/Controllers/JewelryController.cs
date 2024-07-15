@@ -145,5 +145,18 @@ namespace DiamondShop.API.Controllers
 
             return Ok("Delete Jewelry sucessfully");
         }
+        [HttpGet("GetCountJewelryByCategoryName")]
+        public async Task<IActionResult> GetCountJewelryByCategoryName(string categoryName)
+        {
+            try
+            {
+                var count = await _jewelryRepository.GetCountJewelryByCategoryNameID(categoryName);
+                return Ok(count);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

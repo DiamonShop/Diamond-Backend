@@ -427,8 +427,26 @@ namespace Diamond.DataAccess.Repositories
                 return false;
             }
         }
+        public async Task<int> GetCountJewelryByCategoryNameID(string categoryName)
+        {
+            var categoryId = await _context.Categories
+                .Where(c => c.CategoryName == categoryName)
+                .Select(c => c.CategoryId)
+                .FirstOrDefaultAsync();
 
-		public Task<bool> UpdateJewelry(int id, JewelryModel productModel)
+            if (categoryId == 0)
+            {
+                return 0;
+            }
+
+            var count = await _context.Jewelry
+                .CountAsync(j => j.CategoryId == categoryId);
+
+            return count;
+        }
+
+
+        public Task<bool> UpdateJewelry(int id, JewelryModel productModel)
 		{
 			throw new NotImplementedException();
 		}

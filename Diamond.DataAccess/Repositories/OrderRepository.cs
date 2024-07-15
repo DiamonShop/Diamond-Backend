@@ -97,14 +97,14 @@ namespace Diamond.DataAccess.Repositories
                 };
             }
 
-            //Nếu có order với status là Ordering thì không tạo Order khác nữa
-            var availableOrder = user.Orders.FirstOrDefault(od => od.Status.Equals("Ordering"));
+            // Nếu có order với status là Ordering thì không tạo Order khác nữa
+            var existingOrder = user.Orders.FirstOrDefault(od => od.Status.Equals("Ordering"));
 
-            if (availableOrder != null)
+            if (existingOrder != null)
             {
                 return new ApiResponse()
                 {
-                    Message = "There is existed an order have not completed yet",
+                    Message = "There is an existing order that has not been completed yet",
                     Success = false,
                     Data = null
                 };
@@ -117,7 +117,7 @@ namespace Diamond.DataAccess.Repositories
                 OrderNote = "",
                 CancelReason = "",
                 OrderDetails = null!,
-                Status = "Ordering",
+                Status = "Ordering", // Đảm bảo đặt status là "Ordering"
                 TotalPrice = 0
             };
 
@@ -142,6 +142,7 @@ namespace Diamond.DataAccess.Repositories
                 Data = order.OrderId
             };
         }
+
 
         public async Task<List<OrderViewModel>> GetAllOrders()
         {
@@ -392,7 +393,7 @@ namespace Diamond.DataAccess.Repositories
                                    .ToListAsync();
 
             if (!userOrders.Any()) // Check if the list is empty
-            {
+            { 
                 return new ApiResponse()
                 {
                     Message = "Get Order by user id failed",

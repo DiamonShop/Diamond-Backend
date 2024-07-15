@@ -181,11 +181,7 @@ namespace DiamondShop.Repositories
 
             try
             {
-                // Đảm bảo MarkupRate có giá trị mặc định là 1
-                if (productModel.MarkupRate == 0)
-                {
-                    productModel.MarkupRate = 1;
-                }
+
 
                 var product = new Product()
                 {
@@ -197,8 +193,6 @@ namespace DiamondShop.Repositories
                     ProductName = productModel.ProductName
                 };
 
-                // Tính toán MarkupPrice dựa trên BasePrice và MarkupRate
-                product.UpdateDiamondsAndJewelryPrice();
 
                 await _context.Products.AddAsync(product);
                 return await _context.SaveChangesAsync() > 0;
@@ -226,8 +220,7 @@ namespace DiamondShop.Repositories
                 product.MarkupRate = productModel.MarkupRate;
                 product.IsActive = productModel.IsActive;
 
-                // Tính toán lại MarkupPrice dựa trên các thuộc tính đã cập nhật
-                product.UpdateDiamondsAndJewelryPrice();
+                
 
                 _context.Products.Update(product);
                 return await _context.SaveChangesAsync() > 0;
@@ -271,20 +264,12 @@ namespace DiamondShop.Repositories
             {
                 return false;
             }
-
-            try
             {
-                product.MarkupRate = newMarkupRate;
 
-                // Tính toán lại MarkupPrice dựa trên MarkupRate mới
-                product.UpdateDiamondsAndJewelryPrice();
 
                 _context.Products.Update(product);
                 return await _context.SaveChangesAsync() > 0;
-            }
-            catch (Exception)
-            {
-                return false;
+
             }
         }
 
@@ -298,11 +283,7 @@ namespace DiamondShop.Repositories
                     .Include(p => p.Diamond)
                     .ToListAsync();
 
-                foreach (var product in products)
-                {
-                    product.MarkupRate = newMarkupRate;
-                    product.UpdateDiamondsAndJewelryPrice();
-                }
+
 
                 _context.Products.UpdateRange(products);
                 return await _context.SaveChangesAsync() > 0;
