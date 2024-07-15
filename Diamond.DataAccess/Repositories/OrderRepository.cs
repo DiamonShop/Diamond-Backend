@@ -146,7 +146,8 @@ namespace Diamond.DataAccess.Repositories
 
         public async Task<List<OrderViewModel>> GetAllOrders()
         {
-            var orders = await _context.Orders.Include(o => o.User)
+            var orders = await _context.Orders
+                .Include(o => o.User)
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Product).ToListAsync();
 
@@ -157,12 +158,15 @@ namespace Diamond.DataAccess.Repositories
 
             var orderModel = orders.Select(o => new OrderViewModel
             {
+                OrderId = o.OrderId,
                 UserName = o.User.FullName,
                 TotalPrice = o.TotalPrice,
                 Status = o.Status,
                 OrderDate = o.OrderDate,
                 CancelReason = o.CancelReason,
                 OrderNote = o.OrderNote,
+                NumberPhone = o.User.NumberPhone,
+                Address = o.User.Address,
                 OrderDetails = o.OrderDetails.Select(od => new CartItemModel
                 {
                     OrderDetailId = od.OrderDetailId,
@@ -248,6 +252,9 @@ namespace Diamond.DataAccess.Repositories
                 TotalPrice = o.TotalPrice,
                 Status = o.Status,
                 OrderDate = o.OrderDate,
+                Address = o.User.Address,
+                NumberPhone = o.User.NumberPhone,
+                CancelReason = o.CancelReason,
                 OrderDetails = o.OrderDetails.Select(od => new CartItemModel
                 {
                     OrderDetailId = od.OrderDetailId,
@@ -313,7 +320,7 @@ namespace Diamond.DataAccess.Repositories
             return result;
         }
 
-        public async Task<bool> UpdateStatus(int orderId)
+        public async Task<bool> UpdateStatusCompleted(int orderId)
         {
             bool result = false;
             var order = await _context.Orders.FindAsync(orderId);
@@ -323,6 +330,29 @@ namespace Diamond.DataAccess.Repositories
                 return result;
             }
             order.Status = "Completed";
+            _context.Orders.Update(order);
+            result = await _context.SaveChangesAsync() > 0;
+
+            return result;
+        }
+
+        public async Task<bool> UpdateStatusCancel(int orderId, string cancelReason)
+        {
+            bool result = false;
+            var order = await _context.Orders.FindAsync(orderId);
+
+            if (order == null)
+            {
+                return result;
+            }
+
+            if (string.IsNullOrEmpty(cancelReason))
+            {
+                return result;
+            }
+
+            order.CancelReason = cancelReason;
+            order.Status = "Cancel";
             _context.Orders.Update(order);
             result = await _context.SaveChangesAsync() > 0;
 
@@ -383,58 +413,60 @@ namespace Diamond.DataAccess.Repositories
             result = await _context.SaveChangesAsync() > 0;
             return result;
         }
-        public async Task<ApiResponse> GetOrderByUserIdOrderId(int userId, int orderId)
-        {
-            var userOrders = await _context.Orders
-                                   .Include(o => o.OrderDetails)
-                                   .Include(o => o.User) // Ensure User is included
-                                   .Where(u => u.UserID == userId
+
+
+		public async Task<ApiResponse> GetOrderByUserIdOrderId(int userId, int orderId)
+		{
+			var userOrders = await _context.Orders
+								   .Include(o => o.OrderDetails)
+								   .Include(o => o.User) // Ensure User is included
+								   .Where(u => u.UserID == userId
                                    && u.OrderId == orderId)
-                                   .ToListAsync();
+								   .ToListAsync();
 
-            if (!userOrders.Any()) // Check if the list is empty
-            { 
-                return new ApiResponse()
-                {
-                    Message = "Get Order by user id failed",
-                    Success = false,
-                    Data = null
-                };
-            }
+			if (!userOrders.Any()) // Check if the list is empty
+			{
+				return new ApiResponse()
+				{
+					Message = "Get Order by user id failed",
+					Success = false,
+					Data = null
+				};
+			}
 
-            var orderModel = userOrders.Select(o => new OrderViewModel
-            {
-                OrderId = o.OrderId,
-                UserName = o.User.FullName,
-                TotalPrice = o.TotalPrice,
-                Status = o.Status,
-                OrderDate = o.OrderDate,
-                OrderDetails = o.OrderDetails.Select(od => new CartItemModel
-                {
-                    OrderDetailId = od.OrderDetailId,
-                    ProductId = od.ProductId,
-                    ProductName = od.ProductName,// Assuming ProductName is available in OrderDetails
-                    UnitPrice = od.UnitPrice,
-                    Quantity = od.Quantity
-                }).ToList()
-            }).ToList();
+			var orderModel = userOrders.Select(o => new OrderViewModel
+			{
+				OrderId = o.OrderId,
+				UserName = o.User.FullName,
+				TotalPrice = o.TotalPrice,
+				Status = o.Status,
+				OrderDate = o.OrderDate,
+				OrderDetails = o.OrderDetails.Select(od => new CartItemModel
+				{
+					OrderDetailId = od.OrderDetailId,
+					ProductId = od.ProductId,
+					ProductName = od.ProductName,// Assuming ProductName is available in OrderDetails
+					UnitPrice = od.UnitPrice,
+					Quantity = od.Quantity
+				}).ToList()
+			}).ToList();
 
-            if (orderModel == null)
-            {
-                return new ApiResponse()
-                {
-                    Message = "Get Order by user id failed",
-                    Success = false,
-                    Data = null
-                };
-            }
+			if (orderModel == null)
+			{
+				return new ApiResponse()
+				{
+					Message = "Get Order by user id failed",
+					Success = false,
+					Data = null
+				};
+			}
 
-            return new ApiResponse()
-            {
-                Message = "Get Order by user id successfully",
-                Success = true,
-                Data = orderModel
-            };
-        }
-    }
+			return new ApiResponse()
+			{
+				Message = "Get Order by user id successfully",
+				Success = true,
+				Data = orderModel
+			};
+		}
+	}
 }

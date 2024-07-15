@@ -1,4 +1,6 @@
-﻿namespace DiamondShop.Model
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DiamondShop.Model
 {
     public class ProductViewModel
     {
@@ -14,5 +16,6 @@
         public decimal MarkupRate { get; set; } //tỉ lệ áp giá
         public string ProductType { get; set; }
         public bool IsActive { get; set; }
+
     }
 }

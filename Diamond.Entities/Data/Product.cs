@@ -19,7 +19,7 @@ namespace DiamondShop.Data
         public string ProductType { get; set; }
 
         [Required]
-        [StringLength(300)]
+        [StringLength(700)]
         public string? Description { get; set; }
 
         public decimal MarkupRate { get; set; }

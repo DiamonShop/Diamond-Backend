@@ -15,7 +15,7 @@ namespace DiamondShop.Repositories.Interfaces
         Task<bool> CreateAnNewUser(UserDTO userDTO);
         Task<List<UserViewModel>> GetAllUsersAsync();
         Task<bool> DeleteUserAsync(int userId);
-        Task<bool> UpdateUserProfile(int userId, UpdateUserModel userModel);
+        Task<bool> UpdateUserProfile(UpdateUserModel userModel);
         Task<ApiResponse> Login(LoginModel loginModel);
         Task<bool> SignUpUser(UserSignUpModel userSignUpModel);
         Task<string> GenerateJwtToken(User user);

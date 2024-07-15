@@ -110,6 +110,7 @@ namespace DiamondShop.Repositories
 
             var productModels = productList.Select(p => new ProductViewModel
             {
+
                 ProductId = p.ProductId,
                 Description = p.Description,
                 MarkupRate = p.MarkupRate,

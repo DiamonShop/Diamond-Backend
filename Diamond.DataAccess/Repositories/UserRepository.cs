@@ -5,13 +5,11 @@ using DiamondShop.Data;
 using DiamondShop.Model;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 
 namespace DiamondShop.Repositories
 {
@@ -72,7 +70,6 @@ namespace DiamondShop.Repositories
         {
             var user = await _context.Users
                         .Include(user => user.Role)
-
                         .FirstOrDefaultAsync(user => user.UserId.Equals(userId));
 
             if (user == null)
@@ -95,7 +92,6 @@ namespace DiamondShop.Repositories
 
             return userModel;
         }
-
 
         public async Task<List<UserViewModel>> GetByUserEmail(string email)
         {
@@ -184,7 +180,6 @@ namespace DiamondShop.Repositories
             return userList;
         }
 
-
         public async Task<bool> CreateAnNewUser(UserDTO userDTO)
         {
             if (userDTO == null)
@@ -217,7 +212,6 @@ namespace DiamondShop.Repositories
             return true;
         }
 
-
         public async Task<bool> DeleteUserAsync(int userId)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
@@ -237,60 +231,40 @@ namespace DiamondShop.Repositories
             return true;
         }
 
-        public async Task<bool> UpdateUserProfile(int userId, UpdateUserModel userModel)
+        public async Task<bool> UpdateUserProfile(UpdateUserModel userModel)
         {
+            bool result = false;
             try
             {
                 var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.UserId == userId);
+                    .Include(r => r.Role)
+                    .SingleOrDefaultAsync(u => u.UserId == userModel.UserId);
 
                 if (user == null)
                 {
-                    return false; // Không tìm thấy người dùng để cập nhật
+                    return result; // Không tìm thấy người dùng để cập nhật
                 }
 
                 // Cập nhật thông tin người dùng từ userModel
-                if (!string.IsNullOrEmpty(userModel.Username))
-                {
-                    user.Username = userModel.Username;
-                }
-
-                // Mã hóa mật khẩu nếu có thay đổi
-                if (!string.IsNullOrEmpty(userModel.Password))
-                {
-                    // Mã hóa mật khẩu ở đây (ví dụ: hash mật khẩu trước khi lưu)
-                    user.Password = userModel.Password;
-                }
-
-                if (!string.IsNullOrEmpty(userModel.FullName))
-                {
-                    user.FullName = userModel.FullName;
-                }
-
-                if (!string.IsNullOrEmpty(userModel.Email))
-                {
-                    user.Email = userModel.Email;
-                }
-                if (!string.IsNullOrEmpty(userModel.NumberPhone))
-                {
-                    user.NumberPhone = userModel.NumberPhone;
-                }
-                if (!string.IsNullOrEmpty(userModel.Address))
-                {
-                    user.Address = userModel.Address;
-                }
+                user.Username = userModel.Username;
+                user.Password = userModel.Password;
+                user.FullName = userModel.FullName;
+                user.Email = userModel.Email;
+                user.NumberPhone = userModel.NumberPhone;
+                user.Address = userModel.Address;
+                user.RoleId = userModel.RoleId;
+                user.LoyaltyPoints = userModel.LoyaltyPoints;
+                user.IsActive = userModel.IsActive;
 
                 _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-
-                return true; // Cập nhật thành công
+                result = await _context.SaveChangesAsync() > 0;
             }
             catch (DbUpdateException ex)
             {
-                // Log lỗi ex.Message để xem lỗi chi tiết
                 Console.WriteLine($"An error occurred while updating the user profile: {ex.Message}");
-                return false;
+                return result;
             }
+            return result;
         }
 
         public async Task<bool> SignUpUser(UserSignUpModel userSignUpModel)
@@ -398,7 +372,7 @@ namespace DiamondShop.Repositories
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(_jwtSettings.ExpirationMinutes),
+                expires: DateTime.UtcNow.AddHours(_jwtSettings.ExpirationMinutes),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

@@ -19,6 +19,8 @@ namespace Diamond.Entities.Model
         public string Cut { get; set; }
         public decimal DiameterMM { get; set; }
         public string Color { get; set; }
+        public int MarkupRate { get; set; }
+        public int MarkupPrice { get; set; }
         public string Description { get; set; }
         public int BasePrice { get; set; }
         public bool IsActive { get; set; }
