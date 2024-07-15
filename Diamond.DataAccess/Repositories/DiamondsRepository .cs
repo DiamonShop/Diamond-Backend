@@ -347,5 +347,16 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
+        public IEnumerable<MainDiamond> GetAllMainDiamonds()
+        {
+            return _context.MainDiamonds.Include(md => md.JewelrySizes).ToList();
+        }
+
+        public IEnumerable<SideDiamond> GetAllSideDiamonds()
+        {
+            return _context.SideDiamonds.Include(sd => sd.Jewelry).ToList();
+
+        }
+
     }
 }
