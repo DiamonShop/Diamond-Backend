@@ -109,25 +109,25 @@ namespace Diamond.DataAccess.Repositories
             }
         }*/
 
-
         public async Task<bool> CreateJewelry(JewelryCreateModel jewelryModel)
-
         {
-            int markupRate = 1;
-
-            var newProduct = new Product()
+            if (jewelryModel == null)
             {
-                ProductId = jewelryModel.ProductID,
-                ProductName = jewelryModel.ProductName,
-                Description = jewelryModel.ProductDescription,
-                MarkupRate = markupRate,
-                MarkupPrice = jewelryModel.BasePrice * markupRate,
-                ProductType = "Jewelry",
-                IsActive = true
-            };
+                return false;
+            }
 
-            var jewelry = new Jewelry()
+            try
             {
+                var newProduct = new Product()
+                {
+                    ProductId = jewelryModel.ProductID,
+                    ProductName = jewelryModel.ProductName,
+                    Description = jewelryModel.Description,
+                    MarkupRate = jewelryModel.MarkupRate,
+                    MarkupPrice = jewelryModel.MarkupPrice,
+                    ProductType = "Diamond",
+                    IsActive = true
+                };
 
                 var priceMainDiamond = _context.MainDiamonds.SingleOrDefault(m => m.MainDiamondID == jewelryModel.MainDiamondID);
                 var priceSideDiamond = _context.SideDiamonds.SingleOrDefault(s => s.SideDiamondID == jewelryModel.SideDiamondID);
@@ -152,20 +152,7 @@ namespace Diamond.DataAccess.Repositories
             {
                 return false;
             }
-
         }
-        catch (Exception ex)
-        {
-            // Nếu có lỗi, rollback giao dịch
-            await transaction.RollbackAsync();
-            Console.WriteLine($"Exception occurred: {ex.Message}");
-            return false;
-        }
-    }
-}
-
-
-
 
         public async Task<bool> DeleteJewelry(int id)
         {
@@ -378,7 +365,7 @@ namespace Diamond.DataAccess.Repositories
             var jewelry = await _context.Jewelry
                 .Include(j => j.Category)
                 .Include(j => j.Product)
-                .Include(j => j. JewelrySetting)
+                .Include(j => j.JewelrySetting)
                 .Include(j => j.MainDiamond)
                 .Include(j => j.SideDiamond)
                 .FirstOrDefaultAsync(j => j.Product.ProductId.Equals(productId));
@@ -449,30 +436,10 @@ namespace Diamond.DataAccess.Repositories
                 return false;
             }
         }
-        public async Task<int> GetCountJewelryByCategoryNameID(string categoryName)
-        {
-            var categoryId = await _context.Categories
-                .Where(c => c.CategoryName == categoryName)
-                .Select(c => c.CategoryId)
-                .FirstOrDefaultAsync();
-
-            if (categoryId == 0)
-            {
-                return 0;
-            }
-
-            var count = await _context.Jewelry
-                .CountAsync(j => j.CategoryId == categoryId);
-
-            return count;
-        }
-
 
         public Task<bool> UpdateJewelry(int id, JewelryModel productModel)
-
         {
             throw new NotImplementedException();
         }
     }
-
 }

@@ -18,7 +18,7 @@ namespace Diamond.Entities.Model
         public string SideDiamondName { get; set; }
         public int SideDiamondQuantity { get; set; }
         public int BasePrice { get; set; }
-        public int MarkupRate { get; set; }
+        public decimal MarkupRate { get; set; }
         public int MarkupPrice { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
