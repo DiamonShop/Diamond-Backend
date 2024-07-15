@@ -11,6 +11,7 @@ using Diamond.Entities.Model;
 using Diamond.DataAccess.Repositories.Interfaces;
 using Diamond.DataAccess.Repositories;
 using DiamondShop.API.Services;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -106,9 +107,12 @@ builder.Services.AddAuthentication(options =>
     googleOptions.SaveTokens = true;
 });
 
-
 // Register other services and configure the application
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
