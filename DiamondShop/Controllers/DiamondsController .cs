@@ -5,6 +5,7 @@ using DiamondShop.Repositories.Interfaces;
 using DiamondShop.Model;
 using Microsoft.AspNetCore.Authorization;
 using Diamond.Entities.Model;
+using Diamond.Entities.Data;
 namespace DiamondShop.Controllers
 {
     [Route("api/[controller]")]
@@ -134,6 +135,20 @@ namespace DiamondShop.Controllers
         {
             var count = await _diamondRepository.GetDiamondCountByDiameter(diameterMM);
             return Ok(count);
+        }
+        [HttpGet("getallMaindiamond")]
+        public ActionResult<IEnumerable<MainDiamond>> GetAllMainDiamonds()
+        {
+            var mainDiamonds = _diamondRepository.GetAllMainDiamonds();
+            return Ok(mainDiamonds);
+        }
+
+        [HttpGet("getallsidediamonds")]
+        public ActionResult<IEnumerable<SideDiamond>> GetAllSideDiamonds()
+        {
+            var sideDiamonds = _diamondRepository.GetAllSideDiamonds();
+            return Ok(sideDiamonds);
+
         }
     }
 }
