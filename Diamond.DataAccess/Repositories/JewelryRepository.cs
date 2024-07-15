@@ -109,15 +109,26 @@ namespace Diamond.DataAccess.Repositories
             }
         }*/
 
-        public async Task<bool> CreateJewelry(JewelryCreateModel jewelryModel)
-        {
-            if (jewelryModel == null)
-            {
-                return false;
-            }
 
-            try
+        public async Task<bool> CreateJewelry(JewelryCreateModel jewelryModel)
+
+        {
+            int markupRate = 1;
+
+            var newProduct = new Product()
             {
+                ProductId = jewelryModel.ProductID,
+                ProductName = jewelryModel.ProductName,
+                Description = jewelryModel.ProductDescription,
+                MarkupRate = markupRate,
+                MarkupPrice = jewelryModel.BasePrice * markupRate,
+                ProductType = "Jewelry",
+                IsActive = true
+            };
+
+            var jewelry = new Jewelry()
+            {
+
                 var priceMainDiamond = _context.MainDiamonds.SingleOrDefault(m => m.MainDiamondID == jewelryModel.MainDiamondID);
                 var priceSideDiamond = _context.SideDiamonds.SingleOrDefault(s => s.SideDiamondID == jewelryModel.SideDiamondID);
                 var priceSetting = _context.JewelrySetting.SingleOrDefault(s => s.JewelrySettingID == jewelryModel.JewelrySettingID);
@@ -141,7 +152,20 @@ namespace Diamond.DataAccess.Repositories
             {
                 return false;
             }
+
         }
+        catch (Exception ex)
+        {
+            // Nếu có lỗi, rollback giao dịch
+            await transaction.RollbackAsync();
+            Console.WriteLine($"Exception occurred: {ex.Message}");
+            return false;
+        }
+    }
+}
+
+
+
 
         public async Task<bool> DeleteJewelry(int id)
         {
@@ -425,10 +449,30 @@ namespace Diamond.DataAccess.Repositories
                 return false;
             }
         }
+        public async Task<int> GetCountJewelryByCategoryNameID(string categoryName)
+        {
+            var categoryId = await _context.Categories
+                .Where(c => c.CategoryName == categoryName)
+                .Select(c => c.CategoryId)
+                .FirstOrDefaultAsync();
+
+            if (categoryId == 0)
+            {
+                return 0;
+            }
+
+            var count = await _context.Jewelry
+                .CountAsync(j => j.CategoryId == categoryId);
+
+            return count;
+        }
+
 
         public Task<bool> UpdateJewelry(int id, JewelryModel productModel)
+
         {
             throw new NotImplementedException();
         }
     }
+
 }

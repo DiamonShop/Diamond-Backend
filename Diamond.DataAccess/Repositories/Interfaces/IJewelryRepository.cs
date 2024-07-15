@@ -20,5 +20,6 @@ namespace Diamond.DataAccess.Repositories.Interfaces
         Task<bool> CreateJewelry(JewelryCreateModel productModel);
         Task<bool> UpdateJewelry(JewelryModel productModel);
         Task<bool> DeleteJewelry(int id);
+        Task<int> GetCountJewelryByCategoryNameID(string categoryName);
     }
 }

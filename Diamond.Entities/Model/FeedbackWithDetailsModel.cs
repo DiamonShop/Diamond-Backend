@@ -14,5 +14,6 @@ namespace Diamond.Entities.Model
         public DateTime? DateTime { get; set; }
         public string UserName { get; set; }
         public string ProductName { get; set; }
+        public int? Rating { get; set; }
     }
 }

@@ -22,7 +22,7 @@ namespace DiamondShop.Data
         [StringLength(700)]
         public string? Description { get; set; }
 
-        public int MarkupRate { get; set; }
+        public decimal MarkupRate { get; set; }
 
         public int MarkupPrice { get; set; }
 
@@ -35,18 +35,7 @@ namespace DiamondShop.Data
         public ICollection<OrderDetail> OrderDetails { get; } = new List<OrderDetail>();
         public ICollection<Feedback> Feedbacks { get; } = new List<Feedback>();
 
-        public void UpdateDiamondsAndJewelryPrice()
-        {
-            if (ProductType == "Jewelry" && Jewelry != null)
-            {
-                // Tính MarkupPrice dựa trên giá gốc của Jewelry và MarkupRate
-                MarkupPrice = Jewelry.BasePrice * MarkupRate;
-            }
-            else if (ProductType == "Diamond" && Diamond != null)
-            {
-                // Tính MarkupPrice dựa trên giá gốc của Diamond và MarkupRate
-                MarkupPrice = Diamond.BasePrice * MarkupRate;
-            }
-        }
+        
+        
     }
 }

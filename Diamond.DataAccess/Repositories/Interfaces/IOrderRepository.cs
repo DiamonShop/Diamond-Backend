@@ -22,5 +22,6 @@ namespace Diamond.DataAccess.Repositories.Interfaces
         public Task<bool> UpdateStatusByUserId(int userId);
         public Task<ApiResponse> GetOrderByUserIdOrderId(int userId, int orderId);
 
+
 	}
 }
