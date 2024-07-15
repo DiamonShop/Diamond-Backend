@@ -145,7 +145,8 @@ namespace Diamond.DataAccess.Repositories
 
         public async Task<List<OrderViewModel>> GetAllOrders()
         {
-            var orders = await _context.Orders.Include(o => o.User)
+            var orders = await _context.Orders
+                .Include(o => o.User)
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Product).ToListAsync();
 
@@ -163,6 +164,8 @@ namespace Diamond.DataAccess.Repositories
                 OrderDate = o.OrderDate,
                 CancelReason = o.CancelReason,
                 OrderNote = o.OrderNote,
+                NumberPhone = o.User.NumberPhone,
+                Address = o.User.Address,
                 OrderDetails = o.OrderDetails.Select(od => new CartItemModel
                 {
                     OrderDetailId = od.OrderDetailId,
@@ -248,6 +251,9 @@ namespace Diamond.DataAccess.Repositories
                 TotalPrice = o.TotalPrice,
                 Status = o.Status,
                 OrderDate = o.OrderDate,
+                Address = o.User.Address,
+                NumberPhone = o.User.NumberPhone,
+                CancelReason = o.CancelReason,
                 OrderDetails = o.OrderDetails.Select(od => new CartItemModel
                 {
                     OrderDetailId = od.OrderDetailId,

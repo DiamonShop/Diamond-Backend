@@ -10,6 +10,7 @@ namespace Diamond.Entities.Model
         public string ProductID { get; set; }
         public string ProductName { get; set; }
         public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
         public int MainDiamondID { get; set; }
         public string MainDiamondName { get; set; }
         public int MainDiamondQuantity { get; set; }

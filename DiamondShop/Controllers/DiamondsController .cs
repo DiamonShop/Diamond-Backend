@@ -108,7 +108,7 @@ namespace DiamondShop.Controllers
         // Cập nhật sản phẩm
         [HttpPut("UpdateDiamond")]
         [Authorize(Roles = "Manager")]
-        public async Task<IActionResult> UpdateDiamond(int id, [FromBody] DiamondModel diamondModel)
+        public async Task<IActionResult> UpdateDiamond([FromBody] DiamondModel diamondModel)
         {
             bool result = await _diamondRepository.UpdateDiamond(diamondModel);
 

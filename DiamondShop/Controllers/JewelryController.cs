@@ -110,7 +110,7 @@ namespace DiamondShop.API.Controllers
         // Tạo sản phẩm mới
         [HttpPost("CreateJewelry")]
         /*[Authorize(Roles = "Admin,Manager")]*/
-        public async Task<IActionResult> CreateJewelry([FromBody] JewelryModel jewelryModel)
+        public async Task<IActionResult> CreateJewelry([FromBody] JewelryCreateModel jewelryModel)
         {
             bool result = await _jewelryRepository.CreateJewelry(jewelryModel);
 
@@ -118,7 +118,7 @@ namespace DiamondShop.API.Controllers
             {
                 return Ok("Create Jewelry Successfully");
             }
-            return BadRequest("Failed To Create Jewelry");
+            return Ok("Failed To Create Jewelry");
         }
 
         // Cập nhật sản phẩm

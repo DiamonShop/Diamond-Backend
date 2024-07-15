@@ -109,7 +109,7 @@ namespace Diamond.DataAccess.Repositories
             }
         }*/
 
-        public async Task<bool> CreateJewelry(JewelryModel jewelryModel)
+        public async Task<bool> CreateJewelry(JewelryCreateModel jewelryModel)
         {
             if (jewelryModel == null)
             {
@@ -130,10 +130,8 @@ namespace Diamond.DataAccess.Repositories
                     MainDiamondQuantity = jewelryModel.MainDiamondQuantity,
                     SideDiamondID = jewelryModel.SideDiamondID,
                     SideDiamondQuantity = jewelryModel.SideDiamondQuantity,
-                    ProductID = jewelryModel.ProductID, // Link to the ProductID
-                    BasePrice = priceMainDiamond!.Price * jewelryModel.MainDiamondQuantity
-                                + priceSideDiamond!.Price * jewelryModel.SideDiamondQuantity
-                                + priceSetting!.BasePrice
+                    ProductID = jewelryModel.ProductID,
+                    BasePrice = jewelryModel.BasePrice
                 };
 
                 await _context.Jewelry.AddAsync(jewelry);
@@ -173,6 +171,7 @@ namespace Diamond.DataAccess.Repositories
         {
             var jewelryList = await _context.Jewelry
                                 .Include(j => j.Product)
+                                .Include(j => j.Category)
                                 .Include(j => j.JewelrySizes)
                                 .Include(j => j.JewelrySetting)
                                 .Include(j => j.MainDiamond)
@@ -192,6 +191,7 @@ namespace Diamond.DataAccess.Repositories
                 Material = j.JewelrySetting.Material,
                 SideDiamondName = j.SideDiamond.SideDiamondName,
                 ProductID = j.ProductID,
+                CategoryName = j.Category.CategoryName,
                 ProductName = j.Product.ProductName,
                 Description = j.Product.Description,
                 MarkupRate = j.Product.MarkupRate,
@@ -354,6 +354,7 @@ namespace Diamond.DataAccess.Repositories
             var jewelry = await _context.Jewelry
                 .Include(j => j.Category)
                 .Include(j => j.Product)
+                .Include(j => j. JewelrySetting)
                 .Include(j => j.MainDiamond)
                 .Include(j => j.SideDiamond)
                 .FirstOrDefaultAsync(j => j.Product.ProductId.Equals(productId));
@@ -366,6 +367,7 @@ namespace Diamond.DataAccess.Repositories
             var productModel = new JewelryModel()
             {
                 JewelryID = jewelry.JewelryID,
+                CategoryName = jewelry.Category.CategoryName,
                 JewelrySettingID = jewelry.JewelrySettingID,
                 ProductID = jewelry.ProductID,
                 SideDiamondName = jewelry.SideDiamond.SideDiamondName,
@@ -375,7 +377,8 @@ namespace Diamond.DataAccess.Repositories
                 MainDiamondID = jewelry.MainDiamondID,
                 MarkupPrice = jewelry.Product.MarkupPrice,
                 ProductName = jewelry.Product.ProductName,
-                Description = jewelry.Product.Description,
+                MarkupRate = jewelry.Product.MarkupRate,
+                Description = jewelry.Product.Description!,
                 MainDiamondName = jewelry.MainDiamond.MainDiamondName,
                 SideDiamondID = jewelry.SideDiamondID,
                 SideDiamondQuantity = jewelry.SideDiamondQuantity,
@@ -407,12 +410,12 @@ namespace Diamond.DataAccess.Repositories
 
             try
             {
+
                 jewelry.JewelryID = jewelry.JewelryID;
                 jewelry.ProductID = jewelry.ProductID;
                 jewelry.BasePrice = jewelryModel.BasePrice;
                 jewelry.CategoryId = jewelryModel.CategoryId;
                 jewelry.JewelrySettingID = jewelryModel.JewelrySettingID;
-
 
                 _context.Jewelry.Update(jewelry);
                 return await _context.SaveChangesAsync() > 0;

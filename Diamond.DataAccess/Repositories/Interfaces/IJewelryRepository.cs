@@ -17,7 +17,7 @@ namespace Diamond.DataAccess.Repositories.Interfaces
         Task<List<JewelryModel>> GetJewelryByName(string productName);
         Task<List<JewelryModel>> GetJewelryByPriceDesc();
         Task<List<JewelryModel>> GetJewelryByPriceAsc();
-        Task<bool> CreateJewelry(JewelryModel productModel);
+        Task<bool> CreateJewelry(JewelryCreateModel productModel);
         Task<bool> UpdateJewelry(JewelryModel productModel);
         Task<bool> DeleteJewelry(int id);
     }
