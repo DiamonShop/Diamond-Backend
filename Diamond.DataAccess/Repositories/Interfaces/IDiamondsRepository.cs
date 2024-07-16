@@ -1,4 +1,5 @@
 ﻿using Diamond.Entities.Data;
+using Diamond.Entities.DTO;
 using Diamond.Entities.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,5 +18,8 @@ namespace DiamondShop.Repositories.Interfaces
         Task<bool> UpdateDiamond(DiamondModel diamond);
         Task<bool> DeleteDiamond(int id);
         Task<int> GetDiamondCountByDiameter(decimal diameterMM);
+        IEnumerable<MainDiamondDto> GetAllMainDiamonds();
+        IEnumerable<SideDiamondDto> GetAllSideDiamonds();
+        
     }
 }

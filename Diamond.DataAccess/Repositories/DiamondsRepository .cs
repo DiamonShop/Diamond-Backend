@@ -1,4 +1,5 @@
 ﻿using Diamond.Entities.Data;
+using Diamond.Entities.DTO;
 using Diamond.Entities.Model;
 using DiamondShop.Data;
 using DiamondShop.Repositories.Interfaces;
@@ -347,5 +348,29 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
+       
+            public IEnumerable<MainDiamondDto> GetAllMainDiamonds()
+            {
+                return _context.MainDiamonds
+                    .Select(md => new MainDiamondDto
+                    {
+                        MainDiamondID = md.MainDiamondID,
+                        MainDiamondName = md.MainDiamondName,
+                        Price = md.Price
+                    }).ToList();
+            }
+
+
+        public IEnumerable<SideDiamondDto> GetAllSideDiamonds()
+        {
+            return _context.SideDiamonds
+                .Select(sd => new SideDiamondDto
+                {
+                    SideDiamondID = sd.SideDiamondID,
+                    SideDiamondName = sd.SideDiamondName,
+                    Price = sd.Price
+                }).ToList();
+        }
+
     }
 }

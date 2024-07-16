@@ -365,7 +365,7 @@ namespace Diamond.DataAccess.Repositories
             var jewelry = await _context.Jewelry
                 .Include(j => j.Category)
                 .Include(j => j.Product)
-                .Include(j => j. JewelrySetting)
+                .Include(j => j.JewelrySetting)
                 .Include(j => j.MainDiamond)
                 .Include(j => j.SideDiamond)
                 .FirstOrDefaultAsync(j => j.Product.ProductId.Equals(productId));

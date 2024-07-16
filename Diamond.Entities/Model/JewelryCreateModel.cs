@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 namespace Diamond.Entities.Model
 {
     public class JewelryCreateModel
+
     {
         public int JewelryID { get; set; }
         public int JewelrySettingID { get; set; }
-        public int MarkupRate { get; set; }
+        public decimal MarkupRate { get; set; }
         public int MarkupPrice { get; set; }
         public string ProductID { get; set; }
         public string ProductName { get; set; }

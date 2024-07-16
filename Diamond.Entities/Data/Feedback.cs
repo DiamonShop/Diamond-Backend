@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DiamondShop.Data
 {
@@ -16,13 +15,19 @@ namespace DiamondShop.Data
         [ForeignKey("Product")]
         public string ProductID { get; set; }
 
+        [ForeignKey("Order")]
+        public int OrderId { get; set; }  // Add OrderId to the entity
+
         [StringLength(200)]
         public string? Description { get; set; }
 
         public DateTime? DateTime { get; set; }
 
+        [Range(1, 5)]
+        public int? Rating { get; set; }
+
         public virtual User User { get; set; }
         public virtual Product Product { get; set; }
-        
+        public virtual Order Order { get; set; }  // Add navigation property to Order
     }
 }

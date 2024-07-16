@@ -2,6 +2,10 @@
 using DiamondShop.Data;
 using DiamondShop.Model;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 public class FeedbackRepository : IFeedbackRepository
 {
@@ -21,7 +25,8 @@ public class FeedbackRepository : IFeedbackRepository
             UserId = f.UserId,
             ProductId = f.ProductID,
             Description = f.Description,
-            DateTime = f.DateTime
+            DateTime = f.DateTime,
+            Rating = f.Rating
         }).ToList();
 
         return feedbacks;
@@ -41,7 +46,8 @@ public class FeedbackRepository : IFeedbackRepository
             UserId = feedback.UserId,
             ProductId = feedback.ProductID,
             Description = feedback.Description,
-            DateTime = feedback.DateTime
+            DateTime = feedback.DateTime,
+            Rating = feedback.Rating
         };
 
         return feedbackModel;
@@ -49,10 +55,9 @@ public class FeedbackRepository : IFeedbackRepository
 
     public async Task<bool> CreateFeedback(FeedbackModel feedbackModel)
     {
-        bool result = false;
         if (feedbackModel == null)
         {
-            return result;
+            return false;
         }
 
         // Check if the user has a completed order for the specified product
@@ -65,27 +70,35 @@ public class FeedbackRepository : IFeedbackRepository
 
         if (!completedOrders.Any())
         {
-            return result;
-        }
-
-        try
-        {
-            var feedback = new Feedback()
-            {
-                UserId = feedbackModel.UserId,
-                ProductID = feedbackModel.ProductId,
-                Description = feedbackModel.Description,
-                DateTime = DateTime.Now
-            };
-            await _context.Feedbacks.AddAsync(feedback);
-            result = await _context.SaveChangesAsync() > 0;
-        }
-        catch (Exception)
-        {
             return false;
         }
-        return result;
+
+        // Check if the user has already commented on the product in any completed order
+        var existingFeedback = await _context.Feedbacks
+            .Where(f => f.UserId == feedbackModel.UserId && f.ProductID == feedbackModel.ProductId && f.OrderId == feedbackModel.OrderId)
+            .FirstOrDefaultAsync();
+
+        if (existingFeedback != null)
+        {
+            // If feedback already exists, do not allow another feedback for the same order
+            return false;
+        }
+
+        // Create a new feedback
+        var feedback = new Feedback()
+        {
+            UserId = feedbackModel.UserId,
+            ProductID = feedbackModel.ProductId,
+            OrderId = feedbackModel.OrderId,
+            Description = feedbackModel.Description,
+            DateTime = DateTime.Now,
+            Rating = feedbackModel.Rating
+        };
+
+        await _context.Feedbacks.AddAsync(feedback);
+        return await _context.SaveChangesAsync() > 0;
     }
+
 
     public async Task<bool> DeleteFeedback(int id)
     {
@@ -122,6 +135,7 @@ public class FeedbackRepository : IFeedbackRepository
             feedback.Description = feedbackModel.Description;
             feedback.UserId = feedbackModel.UserId;
             feedback.DateTime = DateTime.Now;
+            feedback.Rating = feedbackModel.Rating;
             _context.Feedbacks.Update(feedback);
             result = await _context.SaveChangesAsync() > 0;
         }
@@ -132,7 +146,6 @@ public class FeedbackRepository : IFeedbackRepository
         return result;
     }
 
-    // Implementation of the new method
     public async Task<List<FeedbackWithDetailsModel>> GetFeedbackByProductId(string productId)
     {
         var feedbackList = await _context.Feedbacks
@@ -147,6 +160,7 @@ public class FeedbackRepository : IFeedbackRepository
             ProductId = f.ProductID,
             Description = f.Description,
             DateTime = f.DateTime,
+            Rating = f.Rating,
             UserName = f.User.FullName,
             ProductName = f.Product.ProductName
         }).ToList();
@@ -154,5 +168,3 @@ public class FeedbackRepository : IFeedbackRepository
         return feedbacks;
     }
 }
-
-

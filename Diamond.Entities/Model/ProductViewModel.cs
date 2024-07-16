@@ -13,7 +13,7 @@ namespace DiamondShop.Model
         public string ProductName { get; set; }
 		public string? Description { get;set; }
 		public int MarkupPrice { get; set; }
-        public int MarkupRate { get; set; } //tỉ lệ áp giá
+        public decimal MarkupRate { get; set; } //tỉ lệ áp giá
         public string ProductType { get; set; }
         public bool IsActive { get; set; }
 

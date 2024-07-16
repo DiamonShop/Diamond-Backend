@@ -145,5 +145,7 @@ namespace DiamondShop.API.Controllers
 
             return Ok("Delete Jewelry sucessfully");
         }
+        
+       
     }
 }

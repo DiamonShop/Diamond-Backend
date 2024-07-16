@@ -22,11 +22,15 @@ namespace DiamondShop.Controllers
         {
             return Ok(await _feedbackRepository.GetAllFeedbacks());
         }
-
         [HttpPost("CreateFeedback")]
         [Authorize(Roles = "Member")]
-        public async Task<IActionResult> CreateFeedback(FeedbackModel feedbackModel)
+        public async Task<IActionResult> CreateFeedback([FromBody] FeedbackModel feedbackModel)
         {
+            if (feedbackModel == null || feedbackModel.OrderId <= 0)
+            {
+                return BadRequest("Invalid feedback data.");
+            }
+
             bool result = await _feedbackRepository.CreateFeedback(feedbackModel);
             if (result)
             {
@@ -34,6 +38,8 @@ namespace DiamondShop.Controllers
             }
             return BadRequest("Failed To Create Feedback");
         }
+
+
 
         [HttpPut("UpdateFeedback")]
         [Authorize(Roles = "Member")]

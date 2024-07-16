@@ -97,14 +97,14 @@ namespace Diamond.DataAccess.Repositories
                 };
             }
 
-            //Nếu có order với status là Ordering thì không tạo Order khác nữa
-            var availableOrder = user.Orders.FirstOrDefault(od => od.Status.Equals("Ordering"));
+            // Nếu có order với status là Ordering thì không tạo Order khác nữa
+            var existingOrder = user.Orders.FirstOrDefault(od => od.Status.Equals("Ordering"));
 
-            if (availableOrder != null)
+            if (existingOrder != null)
             {
                 return new ApiResponse()
                 {
-                    Message = "There is existed an order have not completed yet",
+                    Message = "There is an existing order that has not been completed yet",
                     Success = false,
                     Data = null
                 };
@@ -117,7 +117,7 @@ namespace Diamond.DataAccess.Repositories
                 OrderNote = "",
                 CancelReason = "",
                 OrderDetails = null!,
-                Status = "Ordering",
+                Status = "Ordering", // Đảm bảo đặt status là "Ordering"
                 TotalPrice = 0
             };
 
@@ -142,6 +142,7 @@ namespace Diamond.DataAccess.Repositories
                 Data = order.OrderId
             };
         }
+
 
         public async Task<List<OrderViewModel>> GetAllOrders()
         {
@@ -469,6 +470,7 @@ namespace Diamond.DataAccess.Repositories
             return result;
         }
 
+
 		public async Task<ApiResponse> GetOrderByUserIdOrderId(int userId, int orderId)
 		{
 			var userOrders = await _context.Orders
@@ -514,6 +516,50 @@ namespace Diamond.DataAccess.Repositories
 					Data = null
 				};
 			}
+
+			return new ApiResponse()
+			{
+				Message = "Get Order by user id successfully",
+				Success = true,
+				Data = orderModel
+			};
+		}
+
+		public async Task<ApiResponse> GetLatestOrderByUserId(int userId)
+		{
+			var latestOrder = await _context.Orders
+								   .Include(o => o.OrderDetails)
+								   .Include(o => o.User) // Ensure User is included
+								   .Where(o => o.UserID == userId)
+								   .OrderByDescending(o => o.OrderDate)
+								   .FirstOrDefaultAsync(); // Get the latest order
+
+			if (latestOrder == null)
+			{
+				return new ApiResponse()
+				{
+					Message = "Get Order by user id failed",
+					Success = false,
+					Data = null
+				};
+			}
+
+			var orderModel = new OrderViewModel
+			{
+				OrderId = latestOrder.OrderId,
+				UserName = latestOrder.User.FullName,
+				TotalPrice = latestOrder.TotalPrice,
+				Status = latestOrder.Status,
+				OrderDate = latestOrder.OrderDate,
+				OrderDetails = latestOrder.OrderDetails.Select(od => new CartItemModel
+				{
+					OrderDetailId = od.OrderDetailId,
+					ProductId = od.ProductId,
+					ProductName = od.ProductName, // Assuming ProductName is available in OrderDetails
+					UnitPrice = od.UnitPrice,
+					Quantity = od.Quantity
+				}).ToList()
+			};
 
 			return new ApiResponse()
 			{
