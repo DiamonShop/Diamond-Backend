@@ -118,6 +118,17 @@ namespace Diamond.DataAccess.Repositories
 
             try
             {
+                var newProduct = new Product()
+                {
+                    ProductId = jewelryModel.ProductID,
+                    ProductName = jewelryModel.ProductName,
+                    Description = jewelryModel.Description,
+                    MarkupRate = jewelryModel.MarkupRate,
+                    MarkupPrice = jewelryModel.MarkupPrice,
+                    ProductType = "Diamond",
+                    IsActive = true
+                };
+
                 var priceMainDiamond = _context.MainDiamonds.SingleOrDefault(m => m.MainDiamondID == jewelryModel.MainDiamondID);
                 var priceSideDiamond = _context.SideDiamonds.SingleOrDefault(s => s.SideDiamondID == jewelryModel.SideDiamondID);
                 var priceSetting = _context.JewelrySetting.SingleOrDefault(s => s.JewelrySettingID == jewelryModel.JewelrySettingID);

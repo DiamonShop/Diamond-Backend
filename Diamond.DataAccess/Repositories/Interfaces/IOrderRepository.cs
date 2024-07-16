@@ -11,6 +11,7 @@ namespace Diamond.DataAccess.Repositories.Interfaces
         public Task<List<OrderViewModel>> GetAllOrders();
         public Task<OrderViewModel> GetOrderById(int id);
         public Task<ApiResponse> GetOrderByUserId(int userId);
+        public Task<ApiResponse> GetHistoryOrderByUserId(int userId);
         public Task<ApiResponse> CreateOrder(int userId);
         public Task<bool> AddProductToOrderDetail(int orderId, string productId, int quantity);
         public Task<bool> UpdateOrder(int orderId, int totalPrice);

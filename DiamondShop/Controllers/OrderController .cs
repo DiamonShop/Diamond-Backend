@@ -25,11 +25,11 @@ namespace DiamondShop.Controllers
         private readonly IVnPayRepository _vnPayRepo;
         private readonly BillService _billService;
 
-		public OrderController(IOrderRepository context, IVnPayRepository vnPayRepo, BillService billService)
+        public OrderController(IOrderRepository context, IVnPayRepository vnPayRepo, BillService billService)
         {
             _orderRepository = context;
             _vnPayRepo = vnPayRepo;
-			_billService = billService;
+            _billService = billService;
         }
 
         [HttpGet("GetAllOrders")]
@@ -55,6 +55,13 @@ namespace DiamondShop.Controllers
         public async Task<IActionResult> GetOrderByUserId(int userId)
         {
             var apiResponse = await _orderRepository.GetOrderByUserId(userId);
+            return Ok(apiResponse);
+        }
+
+        [HttpGet("GetHistoryOrderByUserId")]
+        public async Task<IActionResult> GetHistoryOrderByUserId(int userId)
+        {
+            var apiResponse = await _orderRepository.GetHistoryOrderByUserId(userId);
             return Ok(apiResponse);
         }
 
@@ -162,8 +169,8 @@ namespace DiamondShop.Controllers
 			return Ok(url);
 		}*/
         [HttpPost("Checkout")]
-		public IActionResult CreatePaymentUrl(PaymentInformationModel model)
-		{
+        public IActionResult CreatePaymentUrl(PaymentInformationModel model)
+        {
             var bill = new BillCreateDTO
             {
                 BillId = model.billId,
@@ -180,29 +187,29 @@ namespace DiamondShop.Controllers
 
             _billService.SaveBill(bill);
 
-			var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
-			return Ok(url);
-		}
+            var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
+            return Ok(url);
+        }
 
 
-		[HttpGet("result")]
-		public async Task<IActionResult> PaymentCallback()
-		{
-			var response = _vnPayRepo.PaymentExecute(Request.Query);
-			var successUrl = "http://localhost:3000/Thanhtoanthanhcong";
-			var failureUrl = "http://localhost:3000/?message=Payment%20Failed";
+        [HttpGet("result")]
+        public async Task<IActionResult> PaymentCallback()
+        {
+            var response = _vnPayRepo.PaymentExecute(Request.Query);
+            var successUrl = "http://localhost:3000/Thanhtoanthanhcong";
+            var failureUrl = "http://localhost:3000/?message=Payment%20Failed";
 
-			if (response.VnPayResponseCode.Equals("00"))
-			{
-				return Redirect(successUrl);
-			}
-			else
-			{
-				return Redirect(failureUrl);
-			}
-		}
+            if (response.VnPayResponseCode.Equals("00"))
+            {
+                return Redirect(successUrl);
+            }
+            else
+            {
+                return Redirect(failureUrl);
+            }
+        }
 
-		[HttpPut("UpdateStatusByUserId")]
+        [HttpPut("UpdateStatusByUserId")]
         public async Task<IActionResult> UpdateStatusByUserId(int userId)
         {
             bool result = await _orderRepository.UpdateStatusByUserId(userId);
@@ -213,11 +220,11 @@ namespace DiamondShop.Controllers
             return Ok("Failed to Update status Order");
         }
 
-		[HttpGet("GetOrderByUserIdOrderId")]
-		public async Task<IActionResult> GetOrderByUserIdOrderId(int userId, int orderId)
-		{
-			var apiResponse = await _orderRepository.GetOrderByUserIdOrderId(userId, orderId);
-			return Ok(apiResponse);
-		}
-	}
+        [HttpGet("GetOrderByUserIdOrderId")]
+        public async Task<IActionResult> GetOrderByUserIdOrderId(int userId, int orderId)
+        {
+            var apiResponse = await _orderRepository.GetOrderByUserIdOrderId(userId, orderId);
+            return Ok(apiResponse);
+        }
+    }
 }
