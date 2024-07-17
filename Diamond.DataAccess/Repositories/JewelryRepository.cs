@@ -125,7 +125,7 @@ namespace Diamond.DataAccess.Repositories
                     Description = jewelryModel.Description,
                     MarkupRate = jewelryModel.MarkupRate,
                     MarkupPrice = jewelryModel.MarkupPrice,
-                    ProductType = "Diamond",
+                    ProductType = "Jewelry",
                     IsActive = true
                 };
 
@@ -147,11 +147,11 @@ namespace Diamond.DataAccess.Repositories
 
                 await _context.Products.AddAsync(newProduct);
                 await _context.Jewelry.AddAsync(jewelry);
-                await _context.SaveChangesAsync(); // Save changes to get the JewelryID
+                await _context.SaveChangesAsync();
 
                 var jewelrySize = new JewelrySize()
                 {
-                    JewelryID = jewelry.JewelryID, // Now JewelryID is available
+                    JewelryID = jewelry.JewelryID,
                     Size = jewelryModel.Size,
                     Quantity = jewelryModel.Quantity,
                 };
@@ -450,6 +450,14 @@ namespace Diamond.DataAccess.Repositories
         }
 
         public async Task<int> GetJewelryCountByCategoryId(int categoryId)
+        {
+            var count = await _context.Jewelry
+                .Where(d => d.CategoryId == categoryId)
+                .CountAsync();
+            return count;
+        }
+
+        public async Task<int> GetJewelryCountByJewelryId(int categoryId)
         {
             var count = await _context.Jewelry
                 .Where(d => d.CategoryId == categoryId)
