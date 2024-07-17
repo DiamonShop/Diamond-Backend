@@ -252,9 +252,9 @@ namespace DiamondShop.Repositories
                 user.Email = userModel.Email;
                 user.NumberPhone = userModel.NumberPhone;
                 user.Address = userModel.Address;
-                user.RoleId = userModel.RoleId;
-                user.LoyaltyPoints = userModel.LoyaltyPoints;
-                user.IsActive = userModel.IsActive;
+                user.RoleId = user.RoleId;
+                user.LoyaltyPoints = user.LoyaltyPoints;
+                user.IsActive = user.IsActive;
 
                 _context.Users.Update(user);
                 result = await _context.SaveChangesAsync() > 0;

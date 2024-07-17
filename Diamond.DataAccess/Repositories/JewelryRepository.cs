@@ -145,7 +145,18 @@ namespace Diamond.DataAccess.Repositories
                     BasePrice = jewelryModel.BasePrice
                 };
 
+                await _context.Products.AddAsync(newProduct);
                 await _context.Jewelry.AddAsync(jewelry);
+                await _context.SaveChangesAsync(); // Save changes to get the JewelryID
+
+                var jewelrySize = new JewelrySize()
+                {
+                    JewelryID = jewelry.JewelryID, // Now JewelryID is available
+                    Size = jewelryModel.Size,
+                    Quantity = jewelryModel.Quantity,
+                };
+
+                await _context.JewelrySizes.AddAsync(jewelrySize);
                 return await _context.SaveChangesAsync() > 0;
             }
             catch (Exception)
@@ -153,6 +164,7 @@ namespace Diamond.DataAccess.Repositories
                 return false;
             }
         }
+
 
         public async Task<bool> DeleteJewelry(int id)
         {
