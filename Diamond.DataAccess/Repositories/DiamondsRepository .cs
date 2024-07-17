@@ -300,6 +300,7 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
+
         public async Task<int> GetDiamondCountByDiameter(decimal diameterMM)
         {
             var count = await _context.Diamonds
@@ -307,6 +308,7 @@ namespace DiamondShop.Repositories
                 .CountAsync();
             return count;
         }
+
 
         public async Task<bool> UpdateDiamond(DiamondModel diamond)
         {

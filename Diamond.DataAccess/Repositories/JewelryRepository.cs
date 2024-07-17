@@ -437,9 +437,12 @@ namespace Diamond.DataAccess.Repositories
             }
         }
 
-        public Task<bool> UpdateJewelry(int id, JewelryModel productModel)
+        public async Task<int> GetJewelryCountByCategoryId(int categoryId)
         {
-            throw new NotImplementedException();
+            var count = await _context.Jewelry
+                .Where(d => d.CategoryId == categoryId)
+                .CountAsync();
+            return count;
         }
     }
 }

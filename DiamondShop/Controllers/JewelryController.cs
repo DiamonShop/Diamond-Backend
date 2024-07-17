@@ -1,6 +1,7 @@
 ﻿using Diamond.DataAccess.Repositories.Interfaces;
 using Diamond.Entities.Model;
 using DiamondShop.Model;
+using DiamondShop.Repositories;
 using DiamondShop.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -145,7 +146,12 @@ namespace DiamondShop.API.Controllers
 
             return Ok("Delete Jewelry sucessfully");
         }
-        
-       
+
+        [HttpGet("GetJewelryCountByCategoryId")]
+        public async Task<IActionResult> GetJewelryCountByCategoryId(int categoryId)
+        {
+            var count = await _jewelryRepository.GetJewelryCountByCategoryId(categoryId);
+            return Ok(count);
+        }
     }
 }
