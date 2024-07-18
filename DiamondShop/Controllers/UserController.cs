@@ -96,7 +96,7 @@ namespace DiamondShop.Controllers
             {
                 return Ok("Update User Successfully");
             }
-            return BadRequest("Failed To Create User");
+            return BadRequest("Failed To update profile");
         }
 
         [HttpDelete("DeleteUser")]
