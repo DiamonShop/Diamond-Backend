@@ -20,7 +20,8 @@ namespace Diamond.DataAccess.Repositories.Interfaces
         public Task<bool> UpdateOrderDetail(string orderDetailId, int quantity);
         public Task<bool> DeleteOrderDetail(string orderDetailId);
         public Task<List<OrderDetailModel>> GetAllOrderDetail();
-        public Task<bool> UpdateStatusByUserId(int userId);
+        public Task<bool> UpdateStatusToPending(int userId);
+        public Task<bool> UpdateStatusToShipping(int userId);
         public Task<ApiResponse> GetOrderByUserIdOrderId(int userId, int orderId);
 		public Task<ApiResponse> GetLatestOrderByUserId(int userId);
 

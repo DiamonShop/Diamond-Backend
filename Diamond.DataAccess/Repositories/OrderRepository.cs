@@ -43,13 +43,40 @@ namespace Diamond.DataAccess.Repositories
             bool result = false;
             var order = _context.Orders.Include(order => order.OrderDetails).FirstOrDefault(order => order.OrderId == orderId);
             if (order == null) { return result; }
+            //Kiểm tra nếu order đó đã Completed hoặc Shipping thì không thêm sản phẩm được
             if (order.Status.Equals("Completed") || order.Status.Equals("Shipping")) { return result; }
 
-            var product = _context.Products.SingleOrDefault(product => product.ProductId.Equals(productId));
+            var product = _context.Products
+                            .Include(product => product.Diamond)      
+                            .Include(product => product.Jewelry)      
+                            .SingleOrDefault(product => product.ProductId.Equals(productId));
             if (product == null) { return result; }
-            //Kiểm tra xem orderDetail có productId chưa
+            //Kiểm tra xem orderDetail có product đó chưa
             var productInOrderDetail = order.OrderDetails.FirstOrDefault(od => od.ProductId.Equals(productId));
 
+            //Kiểm tra xem số lượng thêm sản phẩm vào giỏ có bị vượt quá số lượng sản phẩm còn lại hay không
+            if (product.ProductType.Equals("Diamond")) //Nếu product là diamond
+            {
+                var leftQuantity = product.Diamond.Quantity;
+                if(quantity > leftQuantity)
+                {
+                    return result;
+                }
+            }
+
+            if (product.ProductType.Equals("Jewelry")) //Nếu product là jewelry
+            {
+                var jewelryID = product.Jewelry.JewelryID;
+                var jewelrySizes = _context.JewelrySizes.SingleOrDefault(js => js.JewelryID.Equals(jewelryID));
+                var leftQuantity = jewelrySizes.Quantity;
+
+                if (quantity > leftQuantity)
+                {
+                    return result;
+                }
+            }
+
+            //Nếu hoàn thành các trường hợp có thể xảy ra
             if (productInOrderDetail == null)
             {
                 //Lấy order detail id lớn nhất
@@ -454,7 +481,23 @@ namespace Diamond.DataAccess.Repositories
             return orderModel;
         }
 
-        public async Task<bool> UpdateStatusByUserId(int userId)
+        public async Task<bool> UpdateStatusToPending(int userId)
+        {
+            bool result = false;
+            var order = await _context.Orders.Include(u => u.User)
+                .FirstOrDefaultAsync(u => u.UserID == userId &&
+            u.Status == "Ordering");
+            if (order == null)
+            {
+                return result;
+            }
+            order.Status = "Pending";
+            _context.Orders.Update(order);
+            result = await _context.SaveChangesAsync() > 0;
+            return result;
+        }
+
+        public async Task<bool> UpdateStatusToShipping(int userId)
         {
             bool result = false;
             var order = await _context.Orders.Include(u => u.User)
@@ -470,8 +513,7 @@ namespace Diamond.DataAccess.Repositories
             return result;
         }
 
-
-		public async Task<ApiResponse> GetOrderByUserIdOrderId(int userId, int orderId)
+        public async Task<ApiResponse> GetOrderByUserIdOrderId(int userId, int orderId)
 		{
 			var userOrders = await _context.Orders
 								   .Include(o => o.OrderDetails)

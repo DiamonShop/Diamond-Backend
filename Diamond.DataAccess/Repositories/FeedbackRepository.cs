@@ -167,4 +167,49 @@ public class FeedbackRepository : IFeedbackRepository
 
         return feedbacks;
     }
+    public async Task<bool> CreateFeedbackByUserIdOrderId(FeedbackModel feedbackModel)
+    {
+        if (feedbackModel == null)
+        {
+            return false;
+        }
+
+        // Check if the user has a completed order for the specified product
+        var completedOrders = await _context.Orders
+            .Include(o => o.OrderDetails)
+            .Where(o => o.UserID == feedbackModel.UserId && o.Status == "Completed")
+            .SelectMany(o => o.OrderDetails)
+            .Where(od => od.ProductId == feedbackModel.ProductId)
+            .ToListAsync();
+
+        if (!completedOrders.Any())
+        {
+            return false;
+        }
+
+        // Check if the user has already commented on the product in the specific completed order
+        var existingFeedback = await _context.Feedbacks
+            .Where(f => f.UserId == feedbackModel.UserId && f.ProductID == feedbackModel.ProductId && f.OrderId == feedbackModel.OrderId)
+            .FirstOrDefaultAsync();
+
+        if (existingFeedback != null)
+        {
+            // If feedback already exists, do not allow another feedback for the same order
+            return false;
+        }
+
+        // Create a new feedback
+        var feedback = new Feedback()
+        {
+            UserId = feedbackModel.UserId,
+            ProductID = feedbackModel.ProductId,
+            OrderId = feedbackModel.OrderId,
+            Description = feedbackModel.Description,
+            DateTime = DateTime.Now,
+            Rating = feedbackModel.Rating
+        };
+
+        await _context.Feedbacks.AddAsync(feedback);
+        return await _context.SaveChangesAsync() > 0;
+    }
 }

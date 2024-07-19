@@ -74,6 +74,23 @@ namespace DiamondShop.Controllers
             }
             return Ok(feedbacks);
         }
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateFeedbackByUserIdOrderId([FromBody] FeedbackModel feedbackModel)
+        {
+            if (feedbackModel == null)
+            {
+                return BadRequest("Invalid feedback data.");
+            }
+
+            var result = await _feedbackRepository.CreateFeedbackByUserIdOrderId(feedbackModel);
+
+            if (result)
+            {
+                return Ok(new { Message = "Feedback created successfully." });
+            }
+
+            return BadRequest("Failed to create feedback. Ensure the order is completed and no existing feedback for the same order and product.");
+        }
     }
 
 }

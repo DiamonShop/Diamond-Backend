@@ -209,19 +209,29 @@ namespace DiamondShop.Controllers
             }
         }
 
-        [HttpPut("UpdateStatusByUserId")]
-        public async Task<IActionResult> UpdateStatusByUserId(int userId)
+        [HttpPut("UpdateStatusToPending")]
+        public async Task<IActionResult> UpdateStatusToPending(int userId)
         {
-            bool result = await _orderRepository.UpdateStatusByUserId(userId);
+            bool result = await _orderRepository.UpdateStatusToPending(userId);
             if (result)
             {
-                return Ok("Update status Order successfully");
+                return Ok("Update status to pending successfully");
             }
             return Ok("Failed to Update status Order");
         }
 
+        [HttpPut("UpdateStatusToShipping")]
+        public async Task<IActionResult> UpdateStatusToShipping(int userId)
+        {
+            bool result = await _orderRepository.UpdateStatusToShipping(userId);
+            if (result)
+            {
+                return Ok("Update status to shipping successfully");
+            }
+            return Ok("Failed to Update status Order");
+        }
 
-		[HttpGet("GetOrderByUserIdOrderId")]
+        [HttpGet("GetOrderByUserIdOrderId")]
 		public async Task<IActionResult> GetOrderByUserIdOrderId(int userId, int orderId)
 		{
 			var apiResponse = await _orderRepository.GetOrderByUserIdOrderId(userId, orderId);

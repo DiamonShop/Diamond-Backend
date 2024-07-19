@@ -26,7 +26,7 @@ namespace DiamondShop.Controllers
 		[Authorize(Roles = "Admin")]
 		public IActionResult GetProtectedResource()
         {
-            // Đây là một ví dụ về một endpoint bảo vệ
+
             return Ok("This is a protected resource");
         }
 
