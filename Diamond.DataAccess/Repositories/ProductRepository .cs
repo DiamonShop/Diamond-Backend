@@ -296,6 +296,26 @@ namespace DiamondShop.Repositories
         }
 
 
+        public async Task<List<ProductViewModel>> GetBestSellingProducts(int topN)
+        {
+            var products = await _context.Products
+                .Include(p => p.OrderDetails) // Bao gồm OrderDetails để lấy số lượng
+                .OrderByDescending(p => p.OrderDetails.Sum(od => od.Quantity))
+                .Take(topN)
+                .Select(p => new ProductViewModel
+                {
+                    ProductId = p.ProductId,
+                    ProductName = p.ProductName,
+                    MarkupRate = p.MarkupRate,
+                    MarkupPrice = p.MarkupPrice,
+                    Description = p.Description,
+                    ProductType = p.ProductType,
+                    IsActive = p.IsActive
+                })
+                .ToListAsync();
+
+            return products;
+        }
 
 
 

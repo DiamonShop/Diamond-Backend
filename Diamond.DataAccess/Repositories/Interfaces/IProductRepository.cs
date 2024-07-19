@@ -16,5 +16,6 @@ namespace DiamondShop.Repositories.Interfaces
         Task<bool> DeleteProduct(string id);
         Task<bool> UpdateMarkupRate(string productId, int newMarkupRate);
         Task<bool> UpdateAllMarkupRates(int newMarkupRate);
+        Task<List<ProductViewModel>> GetBestSellingProducts(int topN);
     }
 }
