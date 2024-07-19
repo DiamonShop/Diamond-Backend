@@ -9,4 +9,5 @@ public interface IFeedbackRepository
     Task<bool> DeleteFeedback(int id);
     Task<bool> UpdateFeedback(int id, FeedbackModel feedbackModel);
     Task<List<FeedbackWithDetailsModel>> GetFeedbackByProductId(string productId);
+    Task<bool> CreateFeedbackByUserIdOrderId(FeedbackModel feedbackModel);
 }

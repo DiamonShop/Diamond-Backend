@@ -167,4 +167,50 @@ public class FeedbackRepository : IFeedbackRepository
 
         return feedbacks;
     }
+    public async Task<bool> CreateFeedbackByUserIdOrderId(FeedbackModel feedbackModel)
+    {
+        if (feedbackModel == null)
+        {
+            return false;
+        }
+
+        // Check if the order đó phải completed
+        var completedOrders = await _context.Orders
+            .Include(o => o.OrderDetails)
+            .Where(o => o.UserID == feedbackModel.UserId && o.Status == "Completed")
+            .SelectMany(o => o.OrderDetails)
+            .Where(od => od.ProductId == feedbackModel.ProductId)
+            .ToListAsync();
+
+        if (!completedOrders.Any())
+        {
+            return false;
+        }
+
+        // Kiểm tra xem người dùng đã nhận xét về sản phẩm  chưa
+        var existingFeedback = await _context.Feedbacks
+            .Where(f => f.UserId == feedbackModel.UserId && f.ProductID == feedbackModel.ProductId && f.OrderId == feedbackModel.OrderId)
+            .FirstOrDefaultAsync();
+
+        if (existingFeedback != null)
+        {
+            // nếu có thì không cho cmt nữa
+            return false;
+        }
+
+        // Create a new feedback
+        var feedback = new Feedback()
+        {
+            UserId = feedbackModel.UserId,
+            ProductID = feedbackModel.ProductId,
+            OrderId = feedbackModel.OrderId,
+            Description = feedbackModel.Description,
+            DateTime = DateTime.Now,
+            Rating = feedbackModel.Rating
+        };
+
+        await _context.Feedbacks.AddAsync(feedback);
+        return await _context.SaveChangesAsync() > 0;
+    }
+
 }
