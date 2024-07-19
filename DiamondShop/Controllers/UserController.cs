@@ -111,10 +111,20 @@ namespace DiamondShop.Controllers
             return BadRequest("Failed To Delete User");
         }
 
+        [HttpPut("UpdateUserLoyalPoint")]
+        public async Task<IActionResult> UpdateUserLoyalPoint(int userId)
+        {
+            bool result = await _userRepository.UpdateUserLoyalPoint(userId);
+            if (result)
+            {
+                return Ok("Update User Successfully");
+            }
+            return BadRequest("Update User Failed");
+        }
 
 
 
-    }
+	}
 }
 
 

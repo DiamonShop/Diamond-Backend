@@ -13,7 +13,7 @@ using System.Text;
 
 namespace DiamondShop.Repositories
 {
-    public class UserRepository : IUserRepository
+	public class UserRepository : IUserRepository
     {
         private readonly DiamondDbContext _context;
         private readonly Jwt _jwtSettings;
@@ -375,12 +375,44 @@ namespace DiamondShop.Repositories
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public async Task<bool> UpdateUserLoyalPoint(int userId)
+        {
+            bool result = false;
 
+            var user = await _context.Users
+                .SingleOrDefaultAsync(x => x.UserId == userId);
+			var latestOrder = await _context.Orders
+								   .Include(o => o.OrderDetails)
+								   .Include(o => o.User) // Ensure User is included
+								   .Where(o => o.UserID == userId)
+								   .OrderByDescending(o => o.OrderDate)
+								   .FirstOrDefaultAsync(); // Get the latest order
+            int loyalPoint = (int)(latestOrder.TotalPrice/1000);
 
+            if(user == null || latestOrder == null) 
+            {
+                return result;
+            }
 
+            var updateUser = new User
+            {
+                UserId = user.UserId,
+                RoleId = user.RoleId,
+                Email = user.Email,
+                FullName = user.FullName,
+                NumberPhone = user.NumberPhone,
+                Username = user.Username,
+                Password = user.Password,
+                Address = user.Address,
+                IsActive = user.IsActive,
+                LoyaltyPoints = user.LoyaltyPoints + loyalPoint,
+            };
 
+			_context.Users.Update(updateUser);
+			result = await _context.SaveChangesAsync() > 0;
 
-
+			return result;
+        } 
 
     }
 }
