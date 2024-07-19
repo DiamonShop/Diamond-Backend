@@ -2,6 +2,7 @@
 using DiamondShop.Repositories.Interfaces;
 using DiamondShop.Model;
 using Microsoft.AspNetCore.Authorization;
+using DiamondShop.Data;
 
 namespace DiamondShop.Controllers
 {
@@ -160,6 +161,12 @@ namespace DiamondShop.Controllers
             {
                 return BadRequest("Failed to update MarkupRate.");
             }
+        }
+        [HttpGet("best-selling")]
+        public async Task<ActionResult<List<ProductViewModel>>> GetBestSellingProducts(int topN = 10)
+        {
+            var products = await _productRepository.GetBestSellingProducts(topN);
+            return Ok(products);
         }
     }
 }
