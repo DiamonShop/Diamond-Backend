@@ -421,10 +421,14 @@ namespace Diamond.DataAccess.Repositories
             return productModel;
         }
 
-        public async Task<bool> UpdateJewelry(JewelryModel jewelryModel)
+        public async Task<bool> UpdateJewelry(JewelryUpdateModel jewelryUpdateModel)
         {
             var jewelry = await _context.Jewelry
-                .FirstOrDefaultAsync(p => p.ProductID.Equals(jewelryModel.ProductID));
+                .Include(j => j.Product)
+                .Include(j => j.MainDiamond)
+                .Include(j => j.SideDiamond)
+                .Include(j => j.JewelrySizes)
+                .FirstOrDefaultAsync(p => p.ProductID.Equals(jewelryUpdateModel.ProductID));
 
             if (jewelry == null)
             {
@@ -433,13 +437,25 @@ namespace Diamond.DataAccess.Repositories
 
             try
             {
-
                 jewelry.JewelryID = jewelry.JewelryID;
                 jewelry.ProductID = jewelry.ProductID;
-                jewelry.BasePrice = jewelryModel.BasePrice;
-                jewelry.CategoryId = jewelryModel.CategoryId;
-                jewelry.JewelrySettingID = jewelryModel.JewelrySettingID;
-
+                jewelry.BasePrice = jewelryUpdateModel.BasePrice;
+                jewelry.CategoryId = jewelryUpdateModel.CategoryId;
+                jewelry.JewelrySettingID = jewelryUpdateModel.JewelrySettingID;
+                jewelry.MainDiamondID = jewelryUpdateModel.MainDiamondID;
+                jewelry.SideDiamondID = jewelryUpdateModel.SideDiamondID;
+                jewelry.MainDiamondQuantity = jewelryUpdateModel.MainDiamondQuantity;
+                jewelry.SideDiamondQuantity = jewelryUpdateModel.SideDiamondQuantity;
+                jewelry.Product.IsActive = jewelryUpdateModel.IsActive;
+                jewelry.Product.Description = jewelryUpdateModel.Description;
+                jewelry.Product.MarkupPrice = jewelryUpdateModel.MarkupPrice;
+                jewelry.Product.MarkupRate = jewelryUpdateModel.MarkupRate;
+                jewelry.JewelrySizes = jewelryUpdateModel.JewelrySizes.Select(j => new JewelrySize
+                {
+                    JewelryID = j.JewelryID,
+                    Quantity = jewelryUpdateModel.Quantity,
+                    Size = jewelryUpdateModel.Size,
+                }).ToList();
                 _context.Jewelry.Update(jewelry);
                 return await _context.SaveChangesAsync() > 0;
             }

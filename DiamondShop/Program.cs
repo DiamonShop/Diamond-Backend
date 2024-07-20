@@ -44,6 +44,7 @@ builder.Services.AddScoped<IJewelrySettingRepository, JewelrySettingRepository>(
 builder.Services.AddScoped<IJewelrySizeRepository, JewelrySizeRepository>();
 builder.Services.AddScoped<IDiamondsRepository, DiamondsRepository>();
 builder.Services.AddScoped<IBillRepository, BillRepository>();
+builder.Services.AddScoped<IWarrantyRepository, WarrantyRepository>();
 builder.Services.AddSingleton<BillService>();
 
 // Add CORS to allow specific origin

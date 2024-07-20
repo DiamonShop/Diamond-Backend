@@ -110,5 +110,12 @@ public class DiamondDbContext : DbContext
                 .WithOne(x => x.Jewelry)
                 .HasForeignKey<Jewelry>(x => x.ProductID);
         });
+
+        modelBuilder.Entity<Warranty>(e =>
+        {
+            e.HasOne(x => x.User)
+                .WithMany(x => x.Warranties)
+                .HasForeignKey(x => x.UserId);
+        });
     }
 }

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diamond.Entities.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    [Migration("20240717055215_DbInit")]
+    [Migration("20240719150806_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -471,13 +471,25 @@ namespace Diamond.Entities.Migrations
 
             modelBuilder.Entity("DiamondShop.Data.Warranty", b =>
                 {
-                    b.Property<string>("WarrantyId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("WarrantyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WarrantyId"));
+
+                    b.Property<DateOnly>("BuyDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ProductId")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -490,6 +502,8 @@ namespace Diamond.Entities.Migrations
 
                     b.HasIndex("ProductId")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Warranties");
                 });
@@ -646,7 +660,15 @@ namespace Diamond.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DiamondShop.Data.User", "User")
+                        .WithMany("Warranties")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Diamond.Entities.Data.Diamonds", b =>
@@ -711,6 +733,8 @@ namespace Diamond.Entities.Migrations
                     b.Navigation("Feedbacks");
 
                     b.Navigation("Orders");
+
+                    b.Navigation("Warranties");
                 });
 #pragma warning restore 612, 618
         }

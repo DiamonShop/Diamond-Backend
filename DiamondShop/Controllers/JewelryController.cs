@@ -125,15 +125,15 @@ namespace DiamondShop.API.Controllers
         // Cập nhật sản phẩm
         [HttpPut("UpdateJewelry")]
         [Authorize(Roles = "Manager")]
-        public async Task<IActionResult> UpdateJewelry(int id, [FromBody] JewelryModel jewelryModel)
+        public async Task<IActionResult> UpdateJewelry([FromBody] JewelryUpdateModel jewelryUpdateModel)
         {
-            bool result = await _jewelryRepository.UpdateJewelry(jewelryModel);
+            bool result = await _jewelryRepository.UpdateJewelry(jewelryUpdateModel);
 
             if (result)
             {
-                return Ok("Create Jewelry Successfully");
+                return Ok("Update Jewelry Successfully");
             }
-            return BadRequest("Failed To Create Jewelry");
+            return Ok("Failed To Update Jewelry");
         }
 
         // Xóa sản phẩm

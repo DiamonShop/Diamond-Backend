@@ -36,17 +36,10 @@ namespace DiamondShop.Data
 
         [Required]
         public bool IsActive { get; set; }
-
-        // Quan hệ với Role 
+        
         public virtual Role Role { get; set; }
-
-        // Quan hệ với Orders
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
-
-        // Quan hệ với Feedbacks
+        public virtual ICollection<Warranty> Warranties { get; set; } = new List<Warranty>();
         public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
-
-        
-        
     }
 }
