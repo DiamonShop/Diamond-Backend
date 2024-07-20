@@ -9,5 +9,7 @@ namespace Diamond.DataAccess.Repositories.Interfaces
         public Task<JewelrySizeModel> GetJewelrySizeById(int id);
         public Task<bool> CreateJewelrySize(JewelrySizeModel jewelrySizeModel);
         public Task<bool> UpdateJewelrySize(int id, JewelrySizeModel jewelrySizeModel);
-    }
+        public Task<bool> UpdateJewelrySizeQuantity(int userId);
+
+	}
 }

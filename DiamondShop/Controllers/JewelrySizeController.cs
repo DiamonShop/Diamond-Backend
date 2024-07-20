@@ -42,5 +42,17 @@ namespace DiamondShop.API.Controllers
             }
             return BadRequest("Failed To Create Jewelry Size");
         }
-    }
+
+        [HttpPut("UpdateJewelryQuantity")]
+        public async Task<IActionResult> UpdateJewelrySizeQuantity(int userId)
+        {
+            bool result = await _jewelrySizeRepository.UpdateJewelrySizeQuantity(userId);
+            if (result)
+            {
+                return Ok("Update quantity successfully.");
+            }
+            return BadRequest("Failed to update quantity");
+        }
+
+	}
 }
