@@ -15,9 +15,7 @@
         public decimal MarkupRate { get; set; }
         public int MarkupPrice { get; set; }
         public string Description { get; set; }
-        public int Size { get; set; }
-        public int Quantity { get; set; }
         public bool IsActive { get; set; }
-
+        public List<JewelrySizeUpdateModel> JewelrySizes { get; set; } = new List<JewelrySizeUpdateModel>();
     }
 }
