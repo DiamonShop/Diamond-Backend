@@ -425,10 +425,9 @@ namespace Diamond.DataAccess.Repositories
         {
             var jewelry = await _context.Jewelry
                 .Include(j => j.Product)
-                .Include(j => j.MainDiamond)
-                .Include(j => j.SideDiamond)
                 .Include(j => j.JewelrySizes)
                 .FirstOrDefaultAsync(p => p.JewelryID == jewelryUpdateModel.JewelryID);
+
             bool result = false;
 
             if (jewelry == null)
@@ -438,14 +437,11 @@ namespace Diamond.DataAccess.Repositories
 
             try
             {
-                jewelry.JewelryID = jewelry.JewelryID;
-                jewelry.ProductID = jewelry.ProductID;
+                // Update basic properties
                 jewelry.Product.ProductName = jewelryUpdateModel.ProductName;
                 jewelry.BasePrice = jewelryUpdateModel.BasePrice;
                 jewelry.CategoryId = jewelryUpdateModel.CategoryId;
                 jewelry.JewelrySettingID = jewelryUpdateModel.JewelrySettingID;
-                jewelry.MainDiamondID = jewelryUpdateModel.MainDiamondID;
-                jewelry.SideDiamondID = jewelryUpdateModel.SideDiamondID;
                 jewelry.MainDiamondQuantity = jewelryUpdateModel.MainDiamondQuantity;
                 jewelry.SideDiamondQuantity = jewelryUpdateModel.SideDiamondQuantity;
                 jewelry.Product.IsActive = jewelryUpdateModel.IsActive;
@@ -453,20 +449,61 @@ namespace Diamond.DataAccess.Repositories
                 jewelry.Product.MarkupPrice = jewelryUpdateModel.MarkupPrice;
                 jewelry.Product.MarkupRate = jewelryUpdateModel.MarkupRate;
 
-                var jewelrySize = jewelry.JewelrySizes.FirstOrDefault(js => js.JewelryID == jewelryUpdateModel.JewelryID);
-                jewelrySize.Size = jewelryUpdateModel.Size;
-                jewelrySize.Quantity = jewelryUpdateModel.Quantity;
+                // Explicitly update the foreign key properties
+                jewelry.MainDiamondID = jewelryUpdateModel.MainDiamondID;
+                jewelry.SideDiamondID = jewelryUpdateModel.SideDiamondID;
 
-                _context.JewelrySizes.Update(jewelrySize);
+                // Update jewelry sizes
+                foreach (var sizeModel in jewelryUpdateModel.JewelrySizes)
+                {
+                    var jewelrySize = jewelry.JewelrySizes.FirstOrDefault(js => js.JewelrySizeID == sizeModel.JewelrySizeID);
+                    if (jewelrySize != null)
+                    {
+                        jewelrySize.Size = sizeModel.Size;
+                        jewelrySize.Quantity = sizeModel.Quantity;
+                        _context.JewelrySizes.Update(jewelrySize);
+                    }
+                    else
+                    {
+                        // Add new size if not exists
+                        var newSize = new JewelrySize
+                        {
+                            JewelryID = jewelryUpdateModel.JewelryID,
+                            Size = sizeModel.Size,
+                            Quantity = sizeModel.Quantity
+                        };
+                        _context.JewelrySizes.Add(newSize);
+                    }
+                }
+
+                // Mark the foreign key properties as modified
+                _context.Entry(jewelry).Property(j => j.MainDiamondID).IsModified = true;
+                _context.Entry(jewelry).Property(j => j.SideDiamondID).IsModified = true;
+
+                // Update the jewelry entity
                 _context.Jewelry.Update(jewelry);
-                result =  await _context.SaveChangesAsync() > 0;
-                return result;
+
+                // Save changes to the database
+                result = await _context.SaveChangesAsync() > 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return result;
+                // Log exception
+                LogError(ex);
+                throw; // Optionally rethrow the exception if needed
             }
+
+            return result;
         }
+
+        private void LogError(Exception ex)
+        {
+            // Implement your logging logic here, for example:
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+            // Or use a logging framework such as NLog, Serilog, etc.
+        }
+
 
         public async Task<int> GetJewelryCountByCategoryId(int categoryId)
         {
