@@ -428,7 +428,7 @@ namespace Diamond.DataAccess.Repositories
                 .Include(j => j.MainDiamond)
                 .Include(j => j.SideDiamond)
                 .Include(j => j.JewelrySizes)
-                .FirstOrDefaultAsync(p => p.ProductID.Equals(jewelryUpdateModel.ProductID));
+                .FirstOrDefaultAsync(p => p.JewelryID == jewelryUpdateModel.JewelryID);
 
             if (jewelry == null)
             {
