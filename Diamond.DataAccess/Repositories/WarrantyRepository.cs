@@ -22,47 +22,58 @@ namespace Diamond.DataAccess.Repositories
 
         public async Task<List<WarrantyModel>> GetAllWarranties()
         {
-            var warranties = await _context.Warranties.ToListAsync();
+            var warranties = await _context.Warranties
+                                .Include(w => w.User)
+                                .ToListAsync();
             var warrantyModel = warranties.Select(wm => new WarrantyModel
             {
                 WarrantyId = wm.WarrantyId,
                 BuyDate = wm.BuyDate,
                 ProductId = wm.ProductId,
-                Username = wm.Username,
                 WarrantyPeriod = wm.WarrantyPeriod,
+                IsAvailable = wm.IsAvailable,
+                Username = wm.User.Username
             }).ToList();
             return warrantyModel;
         }
 
         public async Task<WarrantyModel> GetWarrantyById(int warrantyId)
         {
-            var warranty = await _context.Warranties.SingleOrDefaultAsync(wm => wm.WarrantyId == warrantyId);
+            var warranty = await _context.Warranties
+                .Include(w => w.User)
+                .SingleOrDefaultAsync(wm => wm.WarrantyId == warrantyId);
             if (warranty == null) { return null; }
             var warrantyModel = new WarrantyModel()
             {
                 WarrantyId = warranty.WarrantyId,
                 BuyDate = warranty.BuyDate,
                 ProductId = warranty.ProductId,
-                Username = warranty.Username,
-                WarrantyPeriod = warranty.WarrantyPeriod
+                WarrantyPeriod = warranty.WarrantyPeriod,
+                IsAvailable = warranty.IsAvailable,
+                Username = warranty.User.Username
             };
 
             return warrantyModel;
         }
 
-        public async Task<WarrantyModel> GetWarrantyByUsername(string username)
+        public async Task<List<WarrantyModel>> GetWarrantyByUserId(int userId)
         {
-            var warranty = await _context.Warranties.SingleOrDefaultAsync(wm => wm.Username.Equals(username));
-            if (warranty == null) { return null; }
+            var warranties = await _context.Warranties
+                            .Include(w => w.User)
+                            .Where(wm => wm.UserId == userId)
+                            .ToListAsync();
 
-            var warrantyModel = new WarrantyModel()
+            if (warranties == null) { return null; }
+
+            var warrantyModel = warranties.Select(wm => new WarrantyModel
             {
-                WarrantyId = warranty.WarrantyId,
-                BuyDate = warranty.BuyDate,
-                ProductId = warranty.ProductId,
-                Username = warranty.Username,
-                WarrantyPeriod = warranty.WarrantyPeriod
-            };
+                WarrantyId = wm.WarrantyId,
+                BuyDate = wm.BuyDate,
+                ProductId = wm.ProductId,
+                IsAvailable = wm.IsAvailable,
+                WarrantyPeriod = wm.WarrantyPeriod,
+                Username = wm.User.Username
+            }).ToList();
 
             return warrantyModel;
         }
@@ -79,11 +90,10 @@ namespace Diamond.DataAccess.Repositories
 
             try
             {
-                warranty.ProductId = warrantyModel.ProductId;
                 warranty.BuyDate = warrantyModel.BuyDate;
                 warranty.WarrantyPeriod = warrantyModel.WarrantyPeriod;
-                warranty.Username = warranty.Username;
-
+                warranty.IsAvailable = warrantyModel.IsAvailable;
+                                
                 _context.Warranties.Update(warranty);
                 result = await _context.SaveChangesAsync() > 0;
             }
@@ -94,17 +104,18 @@ namespace Diamond.DataAccess.Repositories
             return result;
         }
 
-        public async Task<bool> CreateWarranty(WarrantyModel warrantyModel)
+        public async Task<bool> CreateWarranty(WarrantyCreateModel warrantyCreateModel)
         {
             bool result = false;
-            if (warrantyModel != null)
+            if (warrantyCreateModel != null)
             {
                 var warranty = new Warranty()
                 {
-                    BuyDate = warrantyModel.BuyDate,
-                    ProductId = warrantyModel.ProductId,
-                    Username = warrantyModel.Username,
-                    WarrantyPeriod = warrantyModel.WarrantyPeriod
+                    BuyDate = warrantyCreateModel.BuyDate,
+                    ProductId = warrantyCreateModel.ProductId,
+                    WarrantyPeriod = warrantyCreateModel.WarrantyPeriod,
+                    IsAvailable = warrantyCreateModel.IsAvailable,
+                    UserId = warrantyCreateModel.UserId
                 };
 
                 _context.Warranties.Add(warranty);
@@ -133,5 +144,7 @@ namespace Diamond.DataAccess.Repositories
 
             return result;
         }
+
+
     }
 }

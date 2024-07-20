@@ -18,7 +18,6 @@ namespace DiamondShop.Data
         [Required]
 		public int WarrantyPeriod { get; set; }
         [Required]
-        public string Username { get; set; }
         public bool IsAvailable { get; set; }
 
         public virtual User User { get; set; } = null!;

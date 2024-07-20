@@ -12,8 +12,8 @@ namespace Diamond.DataAccess.Repositories.Interfaces
     {
         public Task<List<WarrantyModel>> GetAllWarranties();
         public Task<WarrantyModel> GetWarrantyById(int warrantyId);
-        public Task<WarrantyModel> GetWarrantyByUsername(string username);
-        public Task<bool> CreateWarranty(WarrantyModel categoryModel);
+        public Task<List<WarrantyModel>> GetWarrantyByUserId(int userId);
+        public Task<bool> CreateWarranty(WarrantyCreateModel warrantyCreateModel);
         public Task<bool> UpdateWarranty(int warrantyId, WarrantyModel warrantyModel);
         public Task<bool> DeleteWarranty(int warrantyId);
     }

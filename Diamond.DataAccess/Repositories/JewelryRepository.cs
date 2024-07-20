@@ -440,6 +440,7 @@ namespace Diamond.DataAccess.Repositories
             {
                 jewelry.JewelryID = jewelry.JewelryID;
                 jewelry.ProductID = jewelry.ProductID;
+                jewelry.Product.ProductName = jewelryUpdateModel.ProductName;
                 jewelry.BasePrice = jewelryUpdateModel.BasePrice;
                 jewelry.CategoryId = jewelryUpdateModel.CategoryId;
                 jewelry.JewelrySettingID = jewelryUpdateModel.JewelrySettingID;

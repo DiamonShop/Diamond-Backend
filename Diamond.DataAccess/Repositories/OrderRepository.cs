@@ -67,13 +67,21 @@ namespace Diamond.DataAccess.Repositories
             if (product.ProductType.Equals("Jewelry")) //Nếu product là jewelry
             {
                 var jewelryID = product.Jewelry.JewelryID;
-                var jewelrySizes = _context.JewelrySizes.SingleOrDefault(js => js.JewelryID.Equals(jewelryID));
-                var leftQuantity = jewelrySizes.Quantity;
-
-                if (quantity > leftQuantity)
+                var jewelrySizes = _context.JewelrySizes.SingleOrDefault(js => js.JewelryID == jewelryID);
+                if (jewelrySizes == null)
                 {
                     return result;
                 }
+                else
+                {
+                    var leftQuantity = jewelrySizes.Quantity;
+
+                    if (quantity > leftQuantity)
+                    {
+                        return result;
+                    }
+                }
+
             }
 
             //Nếu hoàn thành các trường hợp có thể xảy ra
