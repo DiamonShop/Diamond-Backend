@@ -18,7 +18,6 @@
         public int Size { get; set; }
         public int Quantity { get; set; }
         public bool IsActive { get; set; }
-        public List<JewelrySizeModel> JewelrySizes { get; set; } = new List<JewelrySizeModel>();
 
     }
 }

@@ -429,10 +429,11 @@ namespace Diamond.DataAccess.Repositories
                 .Include(j => j.SideDiamond)
                 .Include(j => j.JewelrySizes)
                 .FirstOrDefaultAsync(p => p.JewelryID == jewelryUpdateModel.JewelryID);
+            bool result = false;
 
             if (jewelry == null)
             {
-                return false;
+                return result;
             }
 
             try
@@ -450,18 +451,19 @@ namespace Diamond.DataAccess.Repositories
                 jewelry.Product.Description = jewelryUpdateModel.Description;
                 jewelry.Product.MarkupPrice = jewelryUpdateModel.MarkupPrice;
                 jewelry.Product.MarkupRate = jewelryUpdateModel.MarkupRate;
-                jewelry.JewelrySizes = jewelryUpdateModel.JewelrySizes.Select(j => new JewelrySize
-                {
-                    JewelryID = j.JewelryID,
-                    Quantity = jewelryUpdateModel.Quantity,
-                    Size = jewelryUpdateModel.Size,
-                }).ToList();
+
+                var jewelrySize = jewelry.JewelrySizes.FirstOrDefault(js => js.JewelryID == jewelryUpdateModel.JewelryID);
+                jewelrySize.Size = jewelryUpdateModel.Size;
+                jewelrySize.Quantity = jewelryUpdateModel.Quantity;
+
+                _context.JewelrySizes.Update(jewelrySize);
                 _context.Jewelry.Update(jewelry);
-                return await _context.SaveChangesAsync() > 0;
+                result =  await _context.SaveChangesAsync() > 0;
+                return result;
             }
             catch (Exception)
             {
-                return false;
+                return result;
             }
         }
 
