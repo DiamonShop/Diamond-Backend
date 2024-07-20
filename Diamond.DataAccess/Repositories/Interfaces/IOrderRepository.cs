@@ -24,6 +24,9 @@ namespace Diamond.DataAccess.Repositories.Interfaces
         public Task<bool> UpdateStatusToShipping(int userId);
         public Task<ApiResponse> GetOrderByUserIdOrderId(int userId, int orderId);
 		public Task<ApiResponse> GetLatestOrderByUserId(int userId);
+        Task<int> GetOrderCountByMonth(int month, int year);
+        Task<decimal> GetRevenueByMonth(int month, int year);
+        Task<Dictionary<string, int>> GetProductSalesByCategory(int month, int year);
 
-	}
+    }
 }

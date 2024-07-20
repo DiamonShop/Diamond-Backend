@@ -244,6 +244,26 @@ namespace DiamondShop.Controllers
 			var apiResponse = await _orderRepository.GetLatestOrderByUserId(userId);
 			return Ok(apiResponse);
 		}
-	}
+        [HttpGet("orders/count")]
+        public async Task<IActionResult> GetOrderCountByMonth([FromQuery] int month, [FromQuery] int year)
+        {
+            var orderCount = await _orderRepository.GetOrderCountByMonth(month, year);
+            return Ok(orderCount);
+        }
+
+        [HttpGet("orders/revenue")]
+        public async Task<IActionResult> GetRevenueByMonth([FromQuery] int month, [FromQuery] int year)
+        {
+            var revenue = await _orderRepository.GetRevenueByMonth(month, year);
+            return Ok(revenue);
+        }
+
+        [HttpGet("orders/sales-by-category")]
+        public async Task<IActionResult> GetProductSalesByCategory([FromQuery] int month, [FromQuery] int year)
+        {
+            var salesByCategory = await _orderRepository.GetProductSalesByCategory(month, year);
+            return Ok(salesByCategory);
+        }
+    }
 
 }
