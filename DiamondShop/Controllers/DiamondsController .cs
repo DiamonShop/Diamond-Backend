@@ -115,9 +115,9 @@ namespace DiamondShop.Controllers
 
             if (result)
             {
-                return Ok("Create Jewelry Successfully");
+                return Ok("Update Jewelry Successfully");
             }
-            return BadRequest("Failed To Create Jewelry");
+            return Ok("Failed To Update Jewelry");
         }
 
         // Xóa sản phẩm

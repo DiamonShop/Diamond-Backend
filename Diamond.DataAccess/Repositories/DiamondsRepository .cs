@@ -328,6 +328,7 @@ namespace DiamondShop.Repositories
                 //Update Product properties
                 existingProduct.ProductId = existingProduct.ProductId;
                 existingProduct.ProductName = diamond.ProductName;
+                existingProduct.IsActive = diamond.IsActive;
                 existingProduct.Description = diamond.Description;
                 existingProduct.MarkupRate = diamond.MarkupRate;
                 existingProduct.MarkupPrice = diamond.MarkupPrice;
