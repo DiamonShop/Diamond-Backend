@@ -168,6 +168,7 @@ namespace DiamondShop.Repositories
             {
                 UserId = user.UserId,
                 Username = user.Username,
+                password = user.Password,
                 FullName = user.FullName,
                 Email = user.Email,
                 NumberPhone = user.NumberPhone,
@@ -246,13 +247,16 @@ namespace DiamondShop.Repositories
                 }
 
                 // Cập nhật thông tin người dùng từ userModel
-
+                user.UserId = userModel.UserId;
                 user.FullName = userModel.FullName;
                 user.Email = userModel.Email;
                 user.NumberPhone = userModel.NumberPhone;
                 user.Address = userModel.Address;
-
-
+                user.Username = userModel.Username;
+                user.Password = userModel.Password;
+                user.IsActive =userModel.IsActive;
+                user.RoleId = userModel.RoleId;
+                user.LoyaltyPoints = userModel.LoyaltyPoints;
                 _context.Users.Update(user);
                 result = await _context.SaveChangesAsync() > 0;
             }
