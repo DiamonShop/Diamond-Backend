@@ -314,7 +314,6 @@ namespace DiamondShop.Repositories
             {
                 var user = await _context.Users
                     .Include(u => u.Role)
-
                     .FirstOrDefaultAsync(u => u.Username == loginModel.UserName && u.Password == loginModel.Password);
 
                 if (user == null)
@@ -322,6 +321,10 @@ namespace DiamondShop.Repositories
                     return new ApiResponse { Success = false, Message = "Invalid login attempt" };
                 }
 
+                if (!user.IsActive)
+                {
+                    return new ApiResponse { Success = false, Message = "Account is not active" };
+                }
 
                 var token = await GenerateJwtToken(user);
 
@@ -344,10 +347,10 @@ namespace DiamondShop.Repositories
             }
             catch (Exception ex)
             {
-
                 return new ApiResponse { Success = false, Message = "An error occurred while processing your request" };
             }
         }
+
 
         public async Task<string> GenerateJwtToken(User user)
         {
