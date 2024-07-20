@@ -610,5 +610,34 @@ namespace Diamond.DataAccess.Repositories
 				Data = orderModel
 			};
 		}
-	}
+        public async Task<int> GetOrderCountByMonth(int month, int year)
+        {
+            return await _context.Orders
+                .Where(o => o.OrderDate.Month == month && o.OrderDate.Year == year && o.Status == "Completed")
+                .CountAsync();
+        }
+
+        public async Task<decimal> GetRevenueByMonth(int month, int year)
+        {
+            return await _context.Orders
+                .Where(o => o.OrderDate.Month == month && o.OrderDate.Year == year && o.Status == "Completed")
+                .SumAsync(o => o.TotalPrice);
+        }
+
+        public async Task<Dictionary<string, int>> GetProductSalesByCategory(int month, int year)
+        {
+            var orderDetails = await _context.OrderDetails
+                .Include(od => od.Product)
+                    .ThenInclude(p => p.Jewelry)
+                        .ThenInclude(j => j.Category)
+                .Where(od => od.Order.OrderDate.Month == month && od.Order.OrderDate.Year == year && od.Order.Status == "Completed")
+                .ToListAsync();
+
+            var categorySales = orderDetails
+                .GroupBy(od => od.Product.Jewelry.Category.CategoryName)
+                .ToDictionary(g => g.Key, g => g.Sum(od => od.Quantity));
+
+            return categorySales;
+        }
+    }
 }

@@ -13,7 +13,7 @@ using System.Text;
 
 namespace DiamondShop.Repositories
 {
-    public class UserRepository : IUserRepository
+	public class UserRepository : IUserRepository
     {
         private readonly DiamondDbContext _context;
         private readonly Jwt _jwtSettings;
@@ -246,15 +246,12 @@ namespace DiamondShop.Repositories
                 }
 
                 // Cập nhật thông tin người dùng từ userModel
-                user.Username = userModel.Username;
-                user.Password = userModel.Password;
+
                 user.FullName = userModel.FullName;
                 user.Email = userModel.Email;
                 user.NumberPhone = userModel.NumberPhone;
                 user.Address = userModel.Address;
-                user.RoleId = user.RoleId;
-                user.LoyaltyPoints = user.LoyaltyPoints;
-                user.IsActive = user.IsActive;
+
 
                 _context.Users.Update(user);
                 result = await _context.SaveChangesAsync() > 0;
@@ -317,7 +314,6 @@ namespace DiamondShop.Repositories
             {
                 var user = await _context.Users
                     .Include(u => u.Role)
-
                     .FirstOrDefaultAsync(u => u.Username == loginModel.UserName && u.Password == loginModel.Password);
 
                 if (user == null)
@@ -325,6 +321,10 @@ namespace DiamondShop.Repositories
                     return new ApiResponse { Success = false, Message = "Invalid login attempt" };
                 }
 
+                if (!user.IsActive)
+                {
+                    return new ApiResponse { Success = false, Message = "Account is not active" };
+                }
 
                 var token = await GenerateJwtToken(user);
 
@@ -347,10 +347,10 @@ namespace DiamondShop.Repositories
             }
             catch (Exception ex)
             {
-
                 return new ApiResponse { Success = false, Message = "An error occurred while processing your request" };
             }
         }
+
 
         public async Task<string> GenerateJwtToken(User user)
         {
@@ -378,12 +378,44 @@ namespace DiamondShop.Repositories
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public async Task<bool> UpdateUserLoyalPoint(int userId)
+        {
+            bool result = false;
 
+            var user = await _context.Users
+                .SingleOrDefaultAsync(x => x.UserId == userId);
+			var latestOrder = await _context.Orders
+								   .Include(o => o.OrderDetails)
+								   .Include(o => o.User) // Ensure User is included
+								   .Where(o => o.UserID == userId)
+								   .OrderByDescending(o => o.OrderDate)
+								   .FirstOrDefaultAsync(); // Get the latest order
+            int loyalPoint = (int)(latestOrder.TotalPrice/1000);
 
+            if(user == null || latestOrder == null) 
+            {
+                return result;
+            }
 
+            var updateUser = new User
+            {
+                UserId = user.UserId,
+                RoleId = user.RoleId,
+                Email = user.Email,
+                FullName = user.FullName,
+                NumberPhone = user.NumberPhone,
+                Username = user.Username,
+                Password = user.Password,
+                Address = user.Address,
+                IsActive = user.IsActive,
+                LoyaltyPoints = user.LoyaltyPoints + loyalPoint,
+            };
 
+			_context.Users.Update(updateUser);
+			result = await _context.SaveChangesAsync() > 0;
 
-
+			return result;
+        } 
 
     }
 }

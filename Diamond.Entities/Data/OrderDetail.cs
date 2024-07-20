@@ -19,7 +19,7 @@ namespace DiamondShop.Data
 		[Required]
 		public int Quantity { get; set; }
 
-        public virtual Order? Order { get; set; } // Order is optional
+        public virtual Order? Order { get; set; } 
         public virtual Product Product { get; set; } = null!;
 	}
 }
