@@ -435,6 +435,7 @@ namespace Diamond.DataAccess.Repositories
             if (order == null)
             {
                 return result;
+
             }
 
             if (string.IsNullOrEmpty(cancelReason))
