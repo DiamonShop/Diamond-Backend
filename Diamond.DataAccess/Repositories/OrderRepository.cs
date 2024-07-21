@@ -67,21 +67,13 @@ namespace Diamond.DataAccess.Repositories
             if (product.ProductType.Equals("Jewelry")) //Nếu product là jewelry
             {
                 var jewelryID = product.Jewelry.JewelryID;
-                var jewelrySizes = _context.JewelrySizes.SingleOrDefault(js => js.JewelryID == jewelryID);
-                if (jewelrySizes == null)
+                var jewelrySizes = _context.JewelrySizes.SingleOrDefault(js => js.JewelryID.Equals(jewelryID));
+                var leftQuantity = jewelrySizes.Quantity;
+
+                if (quantity > leftQuantity)
                 {
                     return result;
                 }
-                else
-                {
-                    var leftQuantity = jewelrySizes.Quantity;
-
-                    if (quantity > leftQuantity)
-                    {
-                        return result;
-                    }
-                }
-
             }
 
             //Nếu hoàn thành các trường hợp có thể xảy ra
@@ -414,18 +406,59 @@ namespace Diamond.DataAccess.Repositories
         public async Task<bool> UpdateStatusCompleted(int orderId)
         {
             bool result = false;
-            var order = await _context.Orders.FindAsync(orderId);
+            var order = await _context.Orders
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .ThenInclude(p => p.Diamond)
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .ThenInclude(p => p.Jewelry)
+                .ThenInclude(j => j.JewelrySizes)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
 
             if (order == null)
             {
                 return result;
             }
+
+            foreach (var orderDetail in order.OrderDetails)
+            {
+                var product = orderDetail.Product;
+                if (product == null) continue;
+
+                if (product.ProductType.Equals("Diamond"))
+                {
+                    var diamond = product.Diamond;
+                    if (diamond != null)
+                    {
+                        diamond.Quantity -= orderDetail.Quantity;
+                        if (diamond.Quantity < 0) diamond.Quantity = 0; // Ensure quantity doesn't go negative
+                        _context.Diamonds.Update(diamond);
+                    }
+                }
+                else if (product.ProductType.Equals("Jewelry"))
+                {
+                    var jewelry = product.Jewelry;
+                    if (jewelry != null)
+                    {
+                        foreach (var jewelrySize in jewelry.JewelrySizes)
+                        {
+                            jewelrySize.Quantity -= orderDetail.Quantity;
+                            if (jewelrySize.Quantity < 0) jewelrySize.Quantity = 0; 
+                            _context.JewelrySizes.Update(jewelrySize);
+                        }
+                    }
+                }
+            }
+
             order.Status = "Completed";
             _context.Orders.Update(order);
             result = await _context.SaveChangesAsync() > 0;
 
             return result;
         }
+
+
 
         public async Task<bool> UpdateStatusCancel(int orderId, string cancelReason)
         {
@@ -435,7 +468,6 @@ namespace Diamond.DataAccess.Repositories
             if (order == null)
             {
                 return result;
-
             }
 
             if (string.IsNullOrEmpty(cancelReason))
