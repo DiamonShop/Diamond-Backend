@@ -239,9 +239,7 @@ namespace DiamondShop.Repositories
             bool result = false;
             try
             {
-                var user = await _context.Users
-                    .Include(r => r.Role)
-                    .SingleOrDefaultAsync(u => u.UserId == userModel.UserId);
+                var user = await _context.Users.SingleOrDefaultAsync(u => u.UserId == userModel.UserId);
 
                 if (user == null)
                 {

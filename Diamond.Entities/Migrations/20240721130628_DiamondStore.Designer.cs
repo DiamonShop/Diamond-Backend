@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diamond.Entities.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    [Migration("20240720082901_DiamondStore")]
+    [Migration("20240721130628_DiamondStore")]
     partial class DiamondStore
     {
         /// <inheritdoc />
@@ -490,10 +490,6 @@ namespace Diamond.Entities.Migrations
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("WarrantyPeriod")
                         .HasColumnType("int");

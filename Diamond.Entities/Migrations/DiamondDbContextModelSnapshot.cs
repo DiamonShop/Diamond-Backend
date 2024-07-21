@@ -488,10 +488,6 @@ namespace Diamond.Entities.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("WarrantyPeriod")
                         .HasColumnType("int");
 
