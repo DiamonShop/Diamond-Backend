@@ -87,7 +87,7 @@ namespace Diamond.DataAccess.Repositories
         {
             var jewelry = await _context.JewelrySizes.FirstOrDefaultAsync(j => j.JewelrySizeID == id);
             bool result = false;
-            if (jewelry == null) // If category is null
+            if (jewelry == null) 
             {
                 return result;
             }
@@ -109,5 +109,55 @@ namespace Diamond.DataAccess.Repositories
             }
             return result; // Update succeeded
         }
-    }
+
+		public async Task<bool> UpdateJewelrySizeQuantity(int userId)
+		{
+			var latestOrder = await _context.Orders
+				.Include(o => o.User) 
+				.Include(o => o.OrderDetails)
+				.ThenInclude(od => od.Product) 
+				.ThenInclude(p => p.Jewelry) 
+				.Where(o => o.UserID == userId)
+				.OrderByDescending(o => o.OrderDate)
+				.FirstOrDefaultAsync(); // Get the latest order
+
+			if (latestOrder == null) // If no order found
+			{
+				return false;
+			}
+
+			bool result = false;
+
+			try
+			{
+				foreach (var orderDetail in latestOrder.OrderDetails)
+				{
+					var jewelry = orderDetail.Product.Jewelry; // Access related Jewelry object
+
+					if (jewelry != null)
+					{
+						var jewelrySize = await _context.JewelrySizes
+							.FirstOrDefaultAsync(js => js.JewelryID == jewelry.JewelryID);
+
+						if (jewelrySize != null)
+						{
+							jewelrySize.Quantity -= orderDetail.Quantity;
+
+							_context.JewelrySizes.Update(jewelrySize);
+						}
+					}
+				}
+
+				
+				result = await _context.SaveChangesAsync() > 0;
+			}
+			catch (Exception ex)
+			{
+				// Log exception 
+				return false;
+			}
+
+			return result; 
+		}
+	}
 }

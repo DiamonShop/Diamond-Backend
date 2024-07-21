@@ -152,6 +152,18 @@ namespace DiamondShop.Controllers
             return Ok(sideDiamonds);
 
         }
-    }
+
+        [HttpPut("UpdateDiamondQuantity")]
+        public async Task<IActionResult> UpdateDiamondQuantity(int userId)
+        {
+            bool result = await _diamondRepository.UpdateDiamondQuantity(userId);
+			if (result)
+			{
+				return Ok("Update quantity successfully.");
+			}
+			return BadRequest("Failed to update quantity");
+		}
+
+	}
 }
 

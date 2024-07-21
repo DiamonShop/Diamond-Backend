@@ -48,6 +48,7 @@ namespace DiamondShop.Repositories
                 Address = user.Address,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
+                roleId = user.RoleId,
                 RoleName = user.Role?.RoleName // Optional chaining for RoleName
             };
 
@@ -175,6 +176,7 @@ namespace DiamondShop.Repositories
                 Address = user.Address,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
+                roleId = user.RoleId,
                 RoleName = user.Role.RoleName // Lấy tên role của người dùng nếu có
             }).ToList();
 
@@ -237,9 +239,7 @@ namespace DiamondShop.Repositories
             bool result = false;
             try
             {
-                var user = await _context.Users
-                    .Include(r => r.Role)
-                    .SingleOrDefaultAsync(u => u.UserId == userModel.UserId);
+                var user = await _context.Users.SingleOrDefaultAsync(u => u.UserId == userModel.UserId);
 
                 if (user == null)
                 {
@@ -419,7 +419,38 @@ namespace DiamondShop.Repositories
 			result = await _context.SaveChangesAsync() > 0;
 
 			return result;
-        } 
+        }
 
-    }
+		public async Task<bool> SetUserLoyalPointToZero(int userId)
+		{
+			bool result = false;
+
+			var user = await _context.Users
+				.SingleOrDefaultAsync(x => x.UserId == userId);
+			if (user == null)
+			{
+				return result;
+			}
+
+			var updateUser = new User
+			{
+				UserId = user.UserId,
+				RoleId = user.RoleId,
+				Email = user.Email,
+				FullName = user.FullName,
+				NumberPhone = user.NumberPhone,
+				Username = user.Username,
+				Password = user.Password,
+				Address = user.Address,
+				IsActive = user.IsActive,
+				LoyaltyPoints = 0,
+			};
+
+			_context.Users.Update(updateUser);
+			result = await _context.SaveChangesAsync() > 0;
+
+			return result;
+		}
+
+	}
 }

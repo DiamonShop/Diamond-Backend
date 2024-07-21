@@ -419,6 +419,37 @@ namespace Diamond.DataAccess.Repositories
             {
                 return result;
             }
+
+            foreach (var orderDetail in order.OrderDetails)
+            {
+                var product = orderDetail.Product;
+                if (product == null) continue;
+
+                if (product.ProductType.Equals("Diamond"))
+                {
+                    var diamond = product.Diamond;
+                    if (diamond != null)
+                    {
+                        diamond.Quantity -= orderDetail.Quantity;
+                        if (diamond.Quantity < 0) diamond.Quantity = 0; 
+                        _context.Diamonds.Update(diamond);
+                    }
+                }
+                else if (product.ProductType.Equals("Jewelry"))
+                {
+                    var jewelry = product.Jewelry;
+                    if (jewelry != null)
+                    {
+                        foreach (var jewelrySize in jewelry.JewelrySizes)
+                        {
+                            jewelrySize.Quantity -= orderDetail.Quantity;
+                            if (jewelrySize.Quantity < 0) jewelrySize.Quantity = 0; 
+                            _context.JewelrySizes.Update(jewelrySize);
+                        }
+                    }
+                }
+            }
+
             order.Status = "Completed";
             _context.Orders.Update(order);
             result = await _context.SaveChangesAsync() > 0;
@@ -441,6 +472,8 @@ namespace Diamond.DataAccess.Repositories
             
             return result;
         }
+
+
 
         public async Task<bool> UpdateStatusCancel(int orderId, string cancelReason)
         {

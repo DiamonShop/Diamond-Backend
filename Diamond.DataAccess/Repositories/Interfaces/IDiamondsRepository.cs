@@ -20,6 +20,7 @@ namespace DiamondShop.Repositories.Interfaces
         Task<int> GetDiamondCountByDiameter(decimal diameterMM);
         IEnumerable<MainDiamondDto> GetAllMainDiamonds();
         IEnumerable<SideDiamondDto> GetAllSideDiamonds();
-        
-    }
+        Task<bool> UpdateDiamondQuantity(int userId);
+
+	}
 }

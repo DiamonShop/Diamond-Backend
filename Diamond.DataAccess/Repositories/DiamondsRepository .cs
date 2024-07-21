@@ -375,5 +375,55 @@ namespace DiamondShop.Repositories
                 }).ToList();
         }
 
-    }
+		public async Task<bool> UpdateDiamondQuantity(int userId)
+		{
+			var latestOrder = await _context.Orders
+				.Include(o => o.User)
+				.Include(o => o.OrderDetails)
+				.ThenInclude(od => od.Product)
+				.ThenInclude(p => p.Diamond)
+				.Where(o => o.UserID == userId)
+				.OrderByDescending(o => o.OrderDate)
+				.FirstOrDefaultAsync(); // Get the latest order
+
+			if (latestOrder == null) // If no order found
+			{
+				return false;
+			}
+
+			bool result = false;
+
+			try
+			{
+				foreach (var orderDetail in latestOrder.OrderDetails)
+				{
+					var diamond = orderDetail.Product.Diamond; // Access related Jewelry object
+
+					if (diamond != null)
+					{
+						var diamondQuantity = await _context.Diamonds
+							.FirstOrDefaultAsync(js => js.DiamondID == diamond.DiamondID);
+
+						if (diamondQuantity != null)
+						{
+							diamondQuantity.Quantity -= orderDetail.Quantity;
+
+							_context.Diamonds.Update(diamondQuantity);
+						}
+					}
+				}
+
+
+				result = await _context.SaveChangesAsync() > 0;
+			}
+			catch (Exception ex)
+			{
+				// Log exception 
+				return false;
+			}
+
+			return result;
+		}
+
+	}
 }
