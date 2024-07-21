@@ -48,6 +48,7 @@ namespace DiamondShop.Repositories
                 Address = user.Address,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
+                roleId = user.RoleId,
                 RoleName = user.Role?.RoleName // Optional chaining for RoleName
             };
 
@@ -175,6 +176,7 @@ namespace DiamondShop.Repositories
                 Address = user.Address,
                 LoyaltyPoints = user.LoyaltyPoints,
                 IsActive = user.IsActive,
+                roleId = user.RoleId,
                 RoleName = user.Role.RoleName // Lấy tên role của người dùng nếu có
             }).ToList();
 
