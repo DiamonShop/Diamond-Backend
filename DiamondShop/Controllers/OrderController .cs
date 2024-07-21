@@ -194,9 +194,9 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPut("UpdateStatusToPending")]
-        public async Task<IActionResult> UpdateStatusToPending(int userId)
+        public async Task<IActionResult> UpdateStatusToPending(int orderId)
         {
-            bool result = await _orderRepository.UpdateStatusToPending(userId);
+            bool result = await _orderRepository.UpdateStatusToPending(orderId);
             if (result)
             {
                 return Ok("Update status to pending successfully");
@@ -205,9 +205,9 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPut("UpdateStatusToShipping")]
-        public async Task<IActionResult> UpdateStatusToShipping(int userId)
+        public async Task<IActionResult> UpdateStatusToShipping(int orderId)
         {
-            bool result = await _orderRepository.UpdateStatusToShipping(userId);
+            bool result = await _orderRepository.UpdateStatusToShipping(orderId);
             if (result)
             {
                 return Ok("Update status to shipping successfully");

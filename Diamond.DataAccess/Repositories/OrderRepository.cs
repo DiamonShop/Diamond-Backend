@@ -43,7 +43,8 @@ namespace Diamond.DataAccess.Repositories
             bool result = false;
             var order = _context.Orders.Include(order => order.OrderDetails).FirstOrDefault(order => order.OrderId == orderId);
             if (order == null) { return result; }
-            //Kiểm tra nếu order đó đã Completed hoặc Shipping thì không thêm sản phẩm được
+
+            // Check if the order is already Completed or Shipping
             if (order.Status.Equals("Completed") || order.Status.Equals("Shipping")) { return result; }
 
             var product = _context.Products
@@ -51,11 +52,12 @@ namespace Diamond.DataAccess.Repositories
                             .Include(product => product.Jewelry)
                             .SingleOrDefault(product => product.ProductId.Equals(productId));
             if (product == null) { return result; }
-            //Kiểm tra xem orderDetail có product đó chưa
+
+            // Check if the product is already in order details
             var productInOrderDetail = order.OrderDetails.FirstOrDefault(od => od.ProductId.Equals(productId));
 
-            //Kiểm tra xem số lượng thêm sản phẩm vào giỏ có bị vượt quá số lượng sản phẩm còn lại hay không
-            if (product.ProductType.Equals("Diamond")) //Nếu product là diamond
+            // Check if adding the quantity exceeds the available product quantity
+            if (product.ProductType.Equals("Diamond")) // If product is diamond
             {
                 var leftQuantity = product.Diamond.Quantity;
                 if (quantity > leftQuantity)
@@ -64,10 +66,10 @@ namespace Diamond.DataAccess.Repositories
                 }
             }
 
-            if (product.ProductType.Equals("Jewelry")) //Nếu product là jewelry
+            if (product.ProductType.Equals("Jewelry")) // If product is jewelry
             {
                 var jewelryID = product.Jewelry.JewelryID;
-                var jewelrySizes = _context.JewelrySizes.SingleOrDefault(js => js.JewelryID == jewelryID);
+                var jewelrySizes = _context.JewelrySizes.FirstOrDefault(js => js.JewelryID == jewelryID);
                 if (jewelrySizes == null)
                 {
                     return result;
@@ -80,10 +82,10 @@ namespace Diamond.DataAccess.Repositories
                 }
             }
 
-            //Nếu hoàn thành các trường hợp có thể xảy ra
+            // If all conditions are met
             if (productInOrderDetail == null)
             {
-                //Lấy order detail id lớn nhất
+                // Get the next available order detail ID
                 var maxOrderDetailId = await GetNextAvailableOrderDetailId();
                 OrderDetail newOrderDetail = new OrderDetail()
                 {
@@ -95,16 +97,16 @@ namespace Diamond.DataAccess.Repositories
                     ProductId = productId
                 };
 
-                // Thêm order detail
+                // Add new order detail
                 _context.OrderDetails.Add(newOrderDetail);
-                //Cập nhật lại total price của order
+                // Update the total price of the order
                 order.TotalPrice += quantity * newOrderDetail.UnitPrice;
                 _context.Orders.Update(order);
                 result = await _context.SaveChangesAsync() > 0;
             }
             else
             {
-                //Trường hợp product đã có thì chỉ cần cập nhật lại quantiy
+                // If the product is already in order details, update the quantity
                 productInOrderDetail.Quantity += quantity;
                 _context.OrderDetails.Update(productInOrderDetail);
                 result = await _context.SaveChangesAsync() > 0;
@@ -112,6 +114,7 @@ namespace Diamond.DataAccess.Repositories
 
             return result;
         }
+
 
         public async Task<ApiResponse> CreateOrder(int userId)
         {
@@ -144,7 +147,7 @@ namespace Diamond.DataAccess.Repositories
             Order order = new Order()
             {
                 UserID = userId,
-                OrderDate = DateOnly.FromDateTime(DateTime.Now),
+                OrderDate = DateTime.Now,
                 OrderNote = "",
                 CancelReason = "",
                 OrderDetails = null!,
@@ -174,7 +177,6 @@ namespace Diamond.DataAccess.Repositories
             };
         }
 
-
         public async Task<List<OrderViewModel>> GetAllOrders()
         {
             var orders = await _context.Orders
@@ -193,7 +195,7 @@ namespace Diamond.DataAccess.Repositories
                 UserName = o.User.FullName,
                 TotalPrice = o.TotalPrice,
                 Status = o.Status,
-                OrderDate = o.OrderDate,
+                OrderDate = DateOnly.FromDateTime(o.OrderDate),
                 CancelReason = o.CancelReason,
                 OrderNote = o.OrderNote,
                 NumberPhone = o.User.NumberPhone,
@@ -237,7 +239,7 @@ namespace Diamond.DataAccess.Repositories
                 UserName = order.User.FullName,
                 TotalPrice = order.TotalPrice,
                 Status = order.Status,
-                OrderDate = order.OrderDate,
+                OrderDate = DateOnly.FromDateTime(order.OrderDate),
                 CancelReason = order.CancelReason,
                 OrderNote = order.OrderNote,
                 OrderDetails = order.OrderDetails.Select(od => new CartItemModel
@@ -282,7 +284,7 @@ namespace Diamond.DataAccess.Repositories
                 UserName = o.User.FullName,
                 TotalPrice = o.TotalPrice,
                 Status = o.Status,
-                OrderDate = o.OrderDate,
+                OrderDate = DateOnly.FromDateTime(o.OrderDate),
                 Address = o.User.Address,
                 NumberPhone = o.User.NumberPhone,
                 CancelReason = o.CancelReason,
@@ -338,7 +340,7 @@ namespace Diamond.DataAccess.Repositories
                 UserName = o.User.FullName,
                 TotalPrice = o.TotalPrice,
                 Status = o.Status,
-                OrderDate = o.OrderDate,
+                OrderDate = DateOnly.FromDateTime(o.OrderDate),
                 Address = o.User.Address,
                 NumberPhone = o.User.NumberPhone,
                 CancelReason = o.CancelReason,
@@ -420,36 +422,6 @@ namespace Diamond.DataAccess.Repositories
                 return result;
             }
 
-            foreach (var orderDetail in order.OrderDetails)
-            {
-                var product = orderDetail.Product;
-                if (product == null) continue;
-
-                if (product.ProductType.Equals("Diamond"))
-                {
-                    var diamond = product.Diamond;
-                    if (diamond != null)
-                    {
-                        diamond.Quantity -= orderDetail.Quantity;
-                        if (diamond.Quantity < 0) diamond.Quantity = 0; 
-                        _context.Diamonds.Update(diamond);
-                    }
-                }
-                else if (product.ProductType.Equals("Jewelry"))
-                {
-                    var jewelry = product.Jewelry;
-                    if (jewelry != null)
-                    {
-                        foreach (var jewelrySize in jewelry.JewelrySizes)
-                        {
-                            jewelrySize.Quantity -= orderDetail.Quantity;
-                            if (jewelrySize.Quantity < 0) jewelrySize.Quantity = 0; 
-                            _context.JewelrySizes.Update(jewelrySize);
-                        }
-                    }
-                }
-            }
-
             order.Status = "Completed";
             _context.Orders.Update(order);
             result = await _context.SaveChangesAsync() > 0;
@@ -460,8 +432,8 @@ namespace Diamond.DataAccess.Repositories
                 if (item.Product.ProductType.Equals("Jewelry"))
                 {
                     Warranty model = new Warranty();
-                    model.StartDate = order.OrderDate;
-                    model.EndDate = order.OrderDate.AddYears(1);
+                    model.StartDate = DateOnly.FromDateTime(order.OrderDate);
+                    model.EndDate = DateOnly.FromDateTime(order.OrderDate.AddYears(1));
                     model.ProductId = item.ProductId;
                     model.UserId = order.UserID;
 
@@ -469,7 +441,7 @@ namespace Diamond.DataAccess.Repositories
                     await _context.SaveChangesAsync();
                 }
             }
-            
+
             return result;
         }
 
@@ -537,11 +509,11 @@ namespace Diamond.DataAccess.Repositories
             return orderModel;
         }
 
-        public async Task<bool> UpdateStatusToPending(int userId)
+        public async Task<bool> UpdateStatusToPending(int orderId)
         {
             bool result = false;
             var order = await _context.Orders.Include(u => u.User)
-                .FirstOrDefaultAsync(u => u.UserID == userId &&
+                .FirstOrDefaultAsync(u => u.OrderId == orderId &&
             u.Status == "Ordering");
             if (order == null)
             {
@@ -553,12 +525,12 @@ namespace Diamond.DataAccess.Repositories
             return result;
         }
 
-        public async Task<bool> UpdateStatusToShipping(int userId)
+        public async Task<bool> UpdateStatusToShipping(int orderId)
         {
             bool result = false;
             var order = await _context.Orders.Include(u => u.User)
-                .FirstOrDefaultAsync(u => u.UserID == userId &&
-            u.Status == "Ordering");
+                .FirstOrDefaultAsync(u => u.OrderId == orderId &&
+            u.Status == "Pending");
             if (order == null)
             {
                 return result;
@@ -594,7 +566,7 @@ namespace Diamond.DataAccess.Repositories
                 UserName = o.User.FullName,
                 TotalPrice = o.TotalPrice,
                 Status = o.Status,
-                OrderDate = o.OrderDate,
+                OrderDate = DateOnly.FromDateTime(o.OrderDate),
                 OrderDetails = o.OrderDetails.Select(od => new CartItemModel
                 {
                     OrderDetailId = od.OrderDetailId,
@@ -648,7 +620,7 @@ namespace Diamond.DataAccess.Repositories
                 UserName = latestOrder.User.FullName,
                 TotalPrice = latestOrder.TotalPrice,
                 Status = latestOrder.Status,
-                OrderDate = latestOrder.OrderDate,
+                OrderDate = DateOnly.FromDateTime(latestOrder.OrderDate),
                 OrderDetails = latestOrder.OrderDetails.Select(od => new CartItemModel
                 {
                     OrderDetailId = od.OrderDetailId,

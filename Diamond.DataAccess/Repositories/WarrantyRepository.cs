@@ -121,8 +121,8 @@ namespace Diamond.DataAccess.Repositories
                 if (item.Product.ProductType.Equals("Jewelry"))
                 {
                     Warranty model = new Warranty();
-                    model.StartDate = order.OrderDate;
-                    model.EndDate = order.OrderDate.AddYears(1);
+                    model.StartDate = DateOnly.FromDateTime(order.OrderDate);
+                    model.EndDate = DateOnly.FromDateTime(order.OrderDate.AddYears(1));
                     model.ProductId = item.ProductId;
                     model.UserId = order.UserID;
 
