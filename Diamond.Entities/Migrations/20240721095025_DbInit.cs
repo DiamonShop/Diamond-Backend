@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Diamond.Entities.Migrations
 {
     /// <inheritdoc />
-    public partial class DiamondStore : Migration
+    public partial class DbInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,7 +59,7 @@ namespace Diamond.Entities.Migrations
                     ProductId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     ProductName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ProductType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(700)", maxLength: 700, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(700)", maxLength: 700, nullable: true),
                     MarkupRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     MarkupPrice = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
@@ -131,10 +131,10 @@ namespace Diamond.Entities.Migrations
                     RoleId = table.Column<int>(type: "int", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    NumberPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    NumberPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Username = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     LoyaltyPoints = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -229,7 +229,7 @@ namespace Diamond.Entities.Migrations
                     UserID = table.Column<int>(type: "int", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OrderDate = table.Column<DateOnly>(type: "date", nullable: false),
                     OrderNote = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CancelReason = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
                 },
@@ -252,10 +252,8 @@ namespace Diamond.Entities.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    BuyDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    WarrantyPeriod = table.Column<int>(type: "int", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsAvailable = table.Column<bool>(type: "bit", nullable: false)
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -437,8 +435,7 @@ namespace Diamond.Entities.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Warranties_ProductId",
                 table: "Warranties",
-                column: "ProductId",
-                unique: true);
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Warranties_UserId",

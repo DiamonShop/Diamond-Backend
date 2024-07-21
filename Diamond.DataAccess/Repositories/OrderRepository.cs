@@ -47,8 +47,8 @@ namespace Diamond.DataAccess.Repositories
             if (order.Status.Equals("Completed") || order.Status.Equals("Shipping")) { return result; }
 
             var product = _context.Products
-                            .Include(product => product.Diamond)      
-                            .Include(product => product.Jewelry)      
+                            .Include(product => product.Diamond)
+                            .Include(product => product.Jewelry)
                             .SingleOrDefault(product => product.ProductId.Equals(productId));
             if (product == null) { return result; }
             //Kiểm tra xem orderDetail có product đó chưa
@@ -58,7 +58,7 @@ namespace Diamond.DataAccess.Repositories
             if (product.ProductType.Equals("Diamond")) //Nếu product là diamond
             {
                 var leftQuantity = product.Diamond.Quantity;
-                if(quantity > leftQuantity)
+                if (quantity > leftQuantity)
                 {
                     return result;
                 }
@@ -72,16 +72,12 @@ namespace Diamond.DataAccess.Repositories
                 {
                     return result;
                 }
-                else
+
+                var leftQuantity = jewelrySizes.Quantity;
+                if (quantity > leftQuantity)
                 {
-                    var leftQuantity = jewelrySizes.Quantity;
-
-                    if (quantity > leftQuantity)
-                    {
-                        return result;
-                    }
+                    return result;
                 }
-
             }
 
             //Nếu hoàn thành các trường hợp có thể xảy ra
@@ -148,7 +144,7 @@ namespace Diamond.DataAccess.Repositories
             Order order = new Order()
             {
                 UserID = userId,
-                OrderDate = DateTime.Now,
+                OrderDate = DateOnly.FromDateTime(DateTime.Now),
                 OrderNote = "",
                 CancelReason = "",
                 OrderDetails = null!,
@@ -414,7 +410,10 @@ namespace Diamond.DataAccess.Repositories
         public async Task<bool> UpdateStatusCompleted(int orderId)
         {
             bool result = false;
-            var order = await _context.Orders.FindAsync(orderId);
+            var order = await _context.Orders
+                        .Include(o => o.OrderDetails)
+                        .ThenInclude(o => o.Product)
+                        .SingleOrDefaultAsync(o => o.OrderId == orderId);
 
             if (order == null)
             {
@@ -423,7 +422,23 @@ namespace Diamond.DataAccess.Repositories
             order.Status = "Completed";
             _context.Orders.Update(order);
             result = await _context.SaveChangesAsync() > 0;
+            //User có Warranty khi completed
+            var orderDetail = order.OrderDetails.ToList();
+            foreach (var item in orderDetail)
+            {
+                if (item.Product.ProductType.Equals("Jewelry"))
+                {
+                    Warranty model = new Warranty();
+                    model.StartDate = order.OrderDate;
+                    model.EndDate = order.OrderDate.AddYears(1);
+                    model.ProductId = item.ProductId;
+                    model.UserId = order.UserID;
 
+                    _context.Warranties.Add(model);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            
             return result;
         }
 
@@ -522,102 +537,102 @@ namespace Diamond.DataAccess.Repositories
         }
 
         public async Task<ApiResponse> GetOrderByUserIdOrderId(int userId, int orderId)
-		{
-			var userOrders = await _context.Orders
-								   .Include(o => o.OrderDetails)
-								   .Include(o => o.User) // Ensure User is included
-								   .Where(u => u.UserID == userId
+        {
+            var userOrders = await _context.Orders
+                                   .Include(o => o.OrderDetails)
+                                   .Include(o => o.User) // Ensure User is included
+                                   .Where(u => u.UserID == userId
                                    && u.OrderId == orderId)
-								   .ToListAsync();
+                                   .ToListAsync();
 
-			if (!userOrders.Any()) // Check if the list is empty
-			{
-				return new ApiResponse()
-				{
-					Message = "Get Order by user id failed",
-					Success = false,
-					Data = null
-				};
-			}
+            if (!userOrders.Any()) // Check if the list is empty
+            {
+                return new ApiResponse()
+                {
+                    Message = "Get Order by user id failed",
+                    Success = false,
+                    Data = null
+                };
+            }
 
-			var orderModel = userOrders.Select(o => new OrderViewModel
-			{
-				OrderId = o.OrderId,
-				UserName = o.User.FullName,
-				TotalPrice = o.TotalPrice,
-				Status = o.Status,
-				OrderDate = o.OrderDate,
-				OrderDetails = o.OrderDetails.Select(od => new CartItemModel
-				{
-					OrderDetailId = od.OrderDetailId,
-					ProductId = od.ProductId,
-					ProductName = od.ProductName,// Assuming ProductName is available in OrderDetails
-					UnitPrice = od.UnitPrice,
-					Quantity = od.Quantity
-				}).ToList()
-			}).ToList();
+            var orderModel = userOrders.Select(o => new OrderViewModel
+            {
+                OrderId = o.OrderId,
+                UserName = o.User.FullName,
+                TotalPrice = o.TotalPrice,
+                Status = o.Status,
+                OrderDate = o.OrderDate,
+                OrderDetails = o.OrderDetails.Select(od => new CartItemModel
+                {
+                    OrderDetailId = od.OrderDetailId,
+                    ProductId = od.ProductId,
+                    ProductName = od.ProductName,// Assuming ProductName is available in OrderDetails
+                    UnitPrice = od.UnitPrice,
+                    Quantity = od.Quantity
+                }).ToList()
+            }).ToList();
 
-			if (orderModel == null)
-			{
-				return new ApiResponse()
-				{
-					Message = "Get Order by user id failed",
-					Success = false,
-					Data = null
-				};
-			}
+            if (orderModel == null)
+            {
+                return new ApiResponse()
+                {
+                    Message = "Get Order by user id failed",
+                    Success = false,
+                    Data = null
+                };
+            }
 
-			return new ApiResponse()
-			{
-				Message = "Get Order by user id successfully",
-				Success = true,
-				Data = orderModel
-			};
-		}
+            return new ApiResponse()
+            {
+                Message = "Get Order by user id successfully",
+                Success = true,
+                Data = orderModel
+            };
+        }
 
-		public async Task<ApiResponse> GetLatestOrderByUserId(int userId)
-		{
-			var latestOrder = await _context.Orders
-								   .Include(o => o.OrderDetails)
-								   .Include(o => o.User) // Ensure User is included
-								   .Where(o => o.UserID == userId)
-								   .OrderByDescending(o => o.OrderDate)
-								   .FirstOrDefaultAsync(); // Get the latest order
+        public async Task<ApiResponse> GetLatestOrderByUserId(int userId)
+        {
+            var latestOrder = await _context.Orders
+                                   .Include(o => o.OrderDetails)
+                                   .Include(o => o.User) // Ensure User is included
+                                   .Where(o => o.UserID == userId)
+                                   .OrderByDescending(o => o.OrderDate)
+                                   .FirstOrDefaultAsync(); // Get the latest order
 
-			if (latestOrder == null)
-			{
-				return new ApiResponse()
-				{
-					Message = "Get Order by user id failed",
-					Success = false,
-					Data = null
-				};
-			}
+            if (latestOrder == null)
+            {
+                return new ApiResponse()
+                {
+                    Message = "Get Order by user id failed",
+                    Success = false,
+                    Data = null
+                };
+            }
 
-			var orderModel = new OrderViewModel
-			{
-				OrderId = latestOrder.OrderId,
-				UserName = latestOrder.User.FullName,
-				TotalPrice = latestOrder.TotalPrice,
-				Status = latestOrder.Status,
-				OrderDate = latestOrder.OrderDate,
-				OrderDetails = latestOrder.OrderDetails.Select(od => new CartItemModel
-				{
-					OrderDetailId = od.OrderDetailId,
-					ProductId = od.ProductId,
-					ProductName = od.ProductName, // Assuming ProductName is available in OrderDetails
-					UnitPrice = od.UnitPrice,
-					Quantity = od.Quantity
-				}).ToList()
-			};
+            var orderModel = new OrderViewModel
+            {
+                OrderId = latestOrder.OrderId,
+                UserName = latestOrder.User.FullName,
+                TotalPrice = latestOrder.TotalPrice,
+                Status = latestOrder.Status,
+                OrderDate = latestOrder.OrderDate,
+                OrderDetails = latestOrder.OrderDetails.Select(od => new CartItemModel
+                {
+                    OrderDetailId = od.OrderDetailId,
+                    ProductId = od.ProductId,
+                    ProductName = od.ProductName, // Assuming ProductName is available in OrderDetails
+                    UnitPrice = od.UnitPrice,
+                    Quantity = od.Quantity
+                }).ToList()
+            };
 
-			return new ApiResponse()
-			{
-				Message = "Get Order by user id successfully",
-				Success = true,
-				Data = orderModel
-			};
-		}
+            return new ApiResponse()
+            {
+                Message = "Get Order by user id successfully",
+                Success = true,
+                Data = orderModel
+            };
+        }
         public async Task<int> GetOrderCountByMonth(int month, int year)
         {
             return await _context.Orders

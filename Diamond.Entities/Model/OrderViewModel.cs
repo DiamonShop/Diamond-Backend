@@ -9,7 +9,7 @@
         public string NumberPhone { get; set; }
         public decimal TotalPrice { get; set; }
         public string Status { get; set; } = null!;
-        public DateTime OrderDate { get; set; }
+        public DateOnly OrderDate { get; set; }
         public string OrderNote { get; set; } = null!;
         public string CancelReason { get; set; } = null!;
 

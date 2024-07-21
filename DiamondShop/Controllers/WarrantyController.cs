@@ -49,7 +49,7 @@ namespace DiamondShop.API.Controllers
 
         // Tìm sản phẩm theo tên sản phẩm
         [HttpGet("GetWarrantyByUserId")]
-        public async Task<IActionResult> GetWarrantyByUsername(int userId)
+        public async Task<IActionResult> GetWarrantyByUserId(int userId)
         {
             var warranty = await _warrantyRepository.GetWarrantyByUserId(userId);
             if (warranty != null)
@@ -62,9 +62,9 @@ namespace DiamondShop.API.Controllers
         // Tạo sản phẩm mới
         [HttpPost("CreateWarranty")]
         [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> CreateCategory([FromBody] WarrantyCreateModel warrantyModel)
+        public async Task<IActionResult> CreateCategory(int orderId, WarrantyCreateModel warrantyModel)
         {
-            bool result = await _warrantyRepository.CreateWarranty(warrantyModel);
+            bool result = await _warrantyRepository.CreateWarranty(orderId, warrantyModel);
 
             if (result)
             {

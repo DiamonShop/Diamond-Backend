@@ -75,10 +75,6 @@ public class DiamondDbContext : DbContext
         modelBuilder.Entity<Product>(e =>
         {
             e.Property(e => e.MarkupRate).HasColumnType("decimal(18,2)");
-
-            e.HasOne(x => x.Warranty)
-                .WithOne(x => x.Product)
-                .HasForeignKey<Warranty>(x => x.ProductId);
         });
 
         modelBuilder.Entity<Feedback>(e =>
@@ -116,6 +112,10 @@ public class DiamondDbContext : DbContext
             e.HasOne(x => x.User)
                 .WithMany(x => x.Warranties)
                 .HasForeignKey(x => x.UserId);
+
+            e.HasOne(w => w.Product)
+            .WithMany(p => p.Warranties)
+            .HasForeignKey(w => w.ProductId);
         });
     }
 }

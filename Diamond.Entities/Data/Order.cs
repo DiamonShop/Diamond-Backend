@@ -20,7 +20,7 @@ namespace DiamondShop.Data
         public string Status { get; set; }
 
         [Required]
-        public DateTime OrderDate { get; set; }
+        public DateOnly OrderDate { get; set; }
 
         [StringLength(100)]
         public string OrderNote { get; set; }

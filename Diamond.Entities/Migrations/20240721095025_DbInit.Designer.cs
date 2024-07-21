@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diamond.Entities.Migrations
 {
     [DbContext(typeof(DiamondDbContext))]
-    [Migration("20240720082901_DiamondStore")]
-    partial class DiamondStore
+    [Migration("20240721095025_DbInit")]
+    partial class DbInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -304,8 +304,8 @@ namespace Diamond.Entities.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("OrderDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("OrderNote")
                         .IsRequired()
@@ -369,7 +369,6 @@ namespace Diamond.Entities.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(700)
                         .HasColumnType("nvarchar(700)");
 
@@ -424,7 +423,6 @@ namespace Diamond.Entities.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -445,7 +443,6 @@ namespace Diamond.Entities.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("NumberPhone")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -477,31 +474,23 @@ namespace Diamond.Entities.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WarrantyId"));
 
-                    b.Property<DateOnly>("BuyDate")
+                    b.Property<DateOnly>("EndDate")
                         .HasColumnType("date");
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
 
                     b.Property<string>("ProductId")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("WarrantyPeriod")
                         .HasColumnType("int");
 
                     b.HasKey("WarrantyId");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique();
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("UserId");
 
@@ -655,8 +644,8 @@ namespace Diamond.Entities.Migrations
             modelBuilder.Entity("DiamondShop.Data.Warranty", b =>
                 {
                     b.HasOne("DiamondShop.Data.Product", "Product")
-                        .WithOne("Warranty")
-                        .HasForeignKey("DiamondShop.Data.Warranty", "ProductId")
+                        .WithMany("Warranties")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -719,8 +708,7 @@ namespace Diamond.Entities.Migrations
 
                     b.Navigation("OrderDetails");
 
-                    b.Navigation("Warranty")
-                        .IsRequired();
+                    b.Navigation("Warranties");
                 });
 
             modelBuilder.Entity("DiamondShop.Data.Role", b =>

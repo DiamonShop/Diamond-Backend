@@ -171,22 +171,6 @@ namespace DiamondShop.Controllers
         [HttpPost("Checkout")]
         public IActionResult CreatePaymentUrl(PaymentInformationModel model)
         {
-            var bill = new BillCreateDTO
-            {
-                BillId = model.billId,
-                UserId = model.userId,
-                FullName = model.fullName,
-                NumberPhone = model.phoneNumber.ToString(),
-                Email = model.email,
-                Address = model.streetAddress,
-                OrderNote = model.orderNote,
-                IsActive = true,
-                Price = model.price,
-                CreatedDate = DateTime.UtcNow,
-            };
-
-            _billService.SaveBill(bill);
-
             var url = _vnPayRepo.CreatePaymentUrl(model, HttpContext);
             return Ok(url);
         }
