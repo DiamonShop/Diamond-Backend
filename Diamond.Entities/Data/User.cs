@@ -30,7 +30,7 @@ namespace DiamondShop.Data
         [StringLength(50)]
         public string Password { get; set; }
 
-        [StringLength(50)]
+        [StringLength(250)]
         public string Address { get; set; }
         public int LoyaltyPoints { get; set; }
 
