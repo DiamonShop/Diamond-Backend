@@ -432,7 +432,7 @@ namespace Diamond.DataAccess.Repositories
                     if (diamond != null)
                     {
                         diamond.Quantity -= orderDetail.Quantity;
-                        if (diamond.Quantity < 0) diamond.Quantity = 0; // Ensure quantity doesn't go negative
+                        if (diamond.Quantity < 0) diamond.Quantity = 0; 
                         _context.Diamonds.Update(diamond);
                     }
                 }
