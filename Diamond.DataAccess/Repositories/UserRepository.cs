@@ -419,7 +419,38 @@ namespace DiamondShop.Repositories
 			result = await _context.SaveChangesAsync() > 0;
 
 			return result;
-        } 
+        }
 
-    }
+		public async Task<bool> SetUserLoyalPointToZero(int userId)
+		{
+			bool result = false;
+
+			var user = await _context.Users
+				.SingleOrDefaultAsync(x => x.UserId == userId);
+			if (user == null)
+			{
+				return result;
+			}
+
+			var updateUser = new User
+			{
+				UserId = user.UserId,
+				RoleId = user.RoleId,
+				Email = user.Email,
+				FullName = user.FullName,
+				NumberPhone = user.NumberPhone,
+				Username = user.Username,
+				Password = user.Password,
+				Address = user.Address,
+				IsActive = user.IsActive,
+				LoyaltyPoints = 0,
+			};
+
+			_context.Users.Update(updateUser);
+			result = await _context.SaveChangesAsync() > 0;
+
+			return result;
+		}
+
+	}
 }

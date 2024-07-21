@@ -122,7 +122,16 @@ namespace DiamondShop.Controllers
             return BadRequest("Update User Failed");
         }
 
-
+        [HttpPut("SetLoyalPointToZero")]
+        public async Task<IActionResult> TSetUserLoyalPointToZero(int userId)
+        {
+            bool result = await _userRepository.SetUserLoyalPointToZero(userId);
+			if (result)
+			{
+				return Ok("Update User Successfully");
+			}
+			return BadRequest("Update User Failed");
+		}
 
 	}
 }

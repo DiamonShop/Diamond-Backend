@@ -22,6 +22,8 @@ namespace DiamondShop.Repositories.Interfaces
         Task<User> FindByEmailAsync(string email);
         Task AddAsync(User user);
         Task<bool> UpdateUserLoyalPoint(int userId);
+        Task<bool> SetUserLoyalPointToZero(int userId);
+
 
 	}
 }
