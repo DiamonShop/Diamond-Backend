@@ -74,6 +74,9 @@ namespace DiamondShop.Repositories
                 DiameterMM = diamond.DiameterMM,
                 ProductName = diamond.Product.ProductName,
                 Description = diamond.Product.Description,
+                MarkupPrice = diamond.Product.MarkupPrice,
+                MarkupRate = diamond.Product.MarkupRate,
+                IsActive = diamond.Product.IsActive,
                 Quantity = diamond.Quantity,
             };
 

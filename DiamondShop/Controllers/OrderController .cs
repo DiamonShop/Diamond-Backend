@@ -14,6 +14,7 @@ using Diamond.DataAccess.Repositories.Interfaces;
 using Microsoft.CodeAnalysis;
 using Diamond.Entities.DTO;
 using DiamondShop.API.Services;
+using Diamond.Entities.Migrations;
 
 namespace DiamondShop.Controllers
 {
@@ -194,9 +195,9 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPut("UpdateStatusToPending")]
-        public async Task<IActionResult> UpdateStatusToPending(int orderId)
+        public async Task<IActionResult> UpdateStatusToPending(int userId)
         {
-            bool result = await _orderRepository.UpdateStatusToPending(orderId);
+            bool result = await _orderRepository.UpdateStatusToPending(userId);
             if (result)
             {
                 return Ok("Update status to pending successfully");

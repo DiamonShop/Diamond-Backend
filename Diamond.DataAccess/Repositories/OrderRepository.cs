@@ -509,11 +509,11 @@ namespace Diamond.DataAccess.Repositories
             return orderModel;
         }
 
-        public async Task<bool> UpdateStatusToPending(int orderId)
+        public async Task<bool> UpdateStatusToPending(int userId)
         {
             bool result = false;
             var order = await _context.Orders.Include(u => u.User)
-                .FirstOrDefaultAsync(u => u.OrderId == orderId &&
+                .FirstOrDefaultAsync(u => u.UserID == userId &&
             u.Status == "Ordering");
             if (order == null)
             {
