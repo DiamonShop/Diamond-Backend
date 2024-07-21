@@ -87,7 +87,7 @@ namespace Diamond.DataAccess.Repositories
         {
             var jewelry = await _context.JewelrySizes.FirstOrDefaultAsync(j => j.JewelrySizeID == id);
             bool result = false;
-            if (jewelry == null) // If category is null
+            if (jewelry == null) 
             {
                 return result;
             }
@@ -113,10 +113,10 @@ namespace Diamond.DataAccess.Repositories
 		public async Task<bool> UpdateJewelrySizeQuantity(int userId)
 		{
 			var latestOrder = await _context.Orders
-				.Include(o => o.User) // Ensure User is included
+				.Include(o => o.User) 
 				.Include(o => o.OrderDetails)
-				.ThenInclude(od => od.Product) // Include Product in OrderDetails
-				.ThenInclude(p => p.Jewelry) // Include Jewelry in Product
+				.ThenInclude(od => od.Product) 
+				.ThenInclude(p => p.Jewelry) 
 				.Where(o => o.UserID == userId)
 				.OrderByDescending(o => o.OrderDate)
 				.FirstOrDefaultAsync(); // Get the latest order
@@ -148,16 +148,16 @@ namespace Diamond.DataAccess.Repositories
 					}
 				}
 
-				// Save the changes to the database
+				
 				result = await _context.SaveChangesAsync() > 0;
 			}
 			catch (Exception ex)
 			{
-				// Log the exception (not shown here)
+				// Log exception 
 				return false;
 			}
 
-			return result; // Update succeeded
+			return result; 
 		}
 	}
 }
