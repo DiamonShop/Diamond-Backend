@@ -254,7 +254,6 @@ namespace Diamond.Entities.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     BuyDate = table.Column<DateOnly>(type: "date", nullable: false),
                     WarrantyPeriod = table.Column<int>(type: "int", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsAvailable = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
