@@ -14,7 +14,6 @@ using Diamond.DataAccess.Repositories.Interfaces;
 using Microsoft.CodeAnalysis;
 using Diamond.Entities.DTO;
 using DiamondShop.API.Services;
-using Diamond.Entities.Migrations;
 
 namespace DiamondShop.Controllers
 {
