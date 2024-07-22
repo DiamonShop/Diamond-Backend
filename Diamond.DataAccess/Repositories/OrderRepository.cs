@@ -667,5 +667,21 @@ namespace Diamond.DataAccess.Repositories
 
             return categorySales;
         }
-    }
+
+		public async Task<bool> UpdateOrderTotalPrice(int userId, decimal price)
+		{
+			bool result = false;
+			var order = await _context.Orders.Include(u => u.User)
+				.FirstOrDefaultAsync(u => u.UserID == userId &&
+			u.Status == "Ordering");
+			if (order == null)
+			{
+				return result;
+			}
+			order.TotalPrice = price;
+			_context.Orders.Update(order);
+			result = await _context.SaveChangesAsync() > 0;
+			return result;
+		}
+	}
 }

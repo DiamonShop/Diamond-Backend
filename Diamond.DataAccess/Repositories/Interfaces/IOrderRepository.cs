@@ -27,6 +27,8 @@ namespace Diamond.DataAccess.Repositories.Interfaces
         Task<int> GetOrderCountByMonth(int month, int year);
         Task<decimal> GetRevenueByMonth(int month, int year);
         Task<Dictionary<string, int>> GetProductSalesByCategory(int month, int year);
+        Task<bool> UpdateOrderTotalPrice(int userId, decimal price);
 
-    }
+
+	}
 }

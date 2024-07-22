@@ -248,6 +248,17 @@ namespace DiamondShop.Controllers
             var salesByCategory = await _orderRepository.GetProductSalesByCategory(month, year);
             return Ok(salesByCategory);
         }
-    }
+
+		[HttpPut("UpdateTotalPriceByUserId")]
+		public async Task<IActionResult> UpdateOrderTotalPrice(int userId, decimal price)
+		{
+			bool result = await _orderRepository.UpdateOrderTotalPrice(userId, price);
+			if (result)
+			{
+				return Ok("Update total price successfully.");
+			}
+			return BadRequest("Update total price failed.");
+		}
+	}
 
 }
