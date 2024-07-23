@@ -21,7 +21,7 @@ namespace DiamondShop.Repositories.Interfaces
         Task<string> GenerateJwtToken(User user);
         Task<User> FindByEmailAsync(string email);
         Task AddAsync(User user);
-        Task<bool> UpdateUserLoyalPoint(int userId);
+        Task<bool> UpdateUserLoyalPoint(int userId, int price);
         Task<bool> SetUserLoyalPointToZero(int userId);
 
 

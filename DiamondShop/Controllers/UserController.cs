@@ -112,9 +112,9 @@ namespace DiamondShop.Controllers
         }
 
         [HttpPut("UpdateUserLoyalPoint")]
-        public async Task<IActionResult> UpdateUserLoyalPoint(int userId)
+        public async Task<IActionResult> UpdateUserLoyalPoint(int userId, int price)
         {
-            bool result = await _userRepository.UpdateUserLoyalPoint(userId);
+            bool result = await _userRepository.UpdateUserLoyalPoint(userId, price);
             if (result)
             {
                 return Ok("Update User Successfully");

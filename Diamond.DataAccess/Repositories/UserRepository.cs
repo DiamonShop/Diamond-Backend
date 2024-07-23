@@ -382,21 +382,16 @@ namespace DiamondShop.Repositories
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<bool> UpdateUserLoyalPoint(int userId)
+        public async Task<bool> UpdateUserLoyalPoint(int userId, int price)
         {
             bool result = false;
 
             var user = await _context.Users
                 .SingleOrDefaultAsync(x => x.UserId == userId);
-			var latestOrder = await _context.Orders
-								   .Include(o => o.OrderDetails)
-								   .Include(o => o.User) // Ensure User is included
-								   .Where(o => o.UserID == userId)
-								   .OrderByDescending(o => o.OrderDate)
-								   .FirstOrDefaultAsync(); // Get the latest order
-            int loyalPoint = (int)(latestOrder.TotalPrice/1000);
+			
+            int loyalPoint = price / 1000;
 
-            if(user == null || latestOrder == null) 
+            if(user == null) 
             {
                 return result;
             }
