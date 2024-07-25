@@ -389,7 +389,7 @@ namespace DiamondShop.Repositories
             var user = await _context.Users
                 .SingleOrDefaultAsync(x => x.UserId == userId);
 			
-            int loyalPoint = price / 1000;
+            int loyalPoint = price / 100000;
 
             if(user == null) 
             {
