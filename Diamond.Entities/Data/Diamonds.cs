@@ -30,5 +30,7 @@ namespace Diamond.Entities.Data
 
         public virtual Certification Certification { get; set; }
         public virtual Product Product { get; set; } = null!;
+
+
     }
 }

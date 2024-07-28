@@ -1,4 +1,6 @@
-﻿using Diamond.Entities.Data;
+﻿using Diamond.DataAccess.Repositories;
+using Diamond.DataAccess.Repositories.Interfaces;
+using Diamond.Entities.Data;
 using Diamond.Entities.DTO;
 using Diamond.Entities.Model;
 using DiamondShop.Data;
@@ -13,9 +15,12 @@ namespace DiamondShop.Repositories
     {
         private readonly DiamondDbContext _context;
 
-        public DiamondsRepository(DiamondDbContext context)
+        private readonly IDiamondPriceRepository _diamondPriceRepository;
+
+        public DiamondsRepository(DiamondDbContext context, IDiamondPriceRepository diamondPriceRepository)
         {
             _context = context;
+            _diamondPriceRepository = diamondPriceRepository;
         }
 
         public async Task<List<DiamondModel>> GetAllDiamonds()
@@ -124,26 +129,6 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
-
-        /*private async Task<string> GenerateProductIDAsync(decimal diameterMM)
-        {
-            string prefix = $"KC-{diameterMM:F1}-";
-            var maxIdNumberQuery = await _context.Diamonds
-                .Where(d => d.ProductID.StartsWith(prefix))
-                .Select(d => d.ProductID.Substring(prefix.Length))
-                .ToListAsync();
-
-            int maxIdNumber = 0;
-            if (maxIdNumberQuery.Any())
-            {
-                maxIdNumber = maxIdNumberQuery
-                    .Select(id => int.TryParse(id, out int num) ? num : 0)
-                    .Max();
-            }
-
-            int newIdNumber = maxIdNumber + 1;
-            return $"{prefix}{newIdNumber:D3}";
-        }*/
 
         public async Task<DiamondModel> GetDiamondById(int id)
         {
@@ -288,13 +273,6 @@ namespace DiamondShop.Repositories
             try
             {
                 diamond.Product.IsActive = false;
-                diamond.DiamondID = diamond.DiamondID;
-                diamond.ProductID = diamond.ProductID;
-                diamond.BasePrice = diamond.BasePrice;
-                diamond.Cut = diamond.Cut;
-                diamond.Color = diamond.Color;
-                diamond.Clarity = diamond.Clarity;
-                diamond.Carat = diamond.Carat;
                 _context.Diamonds.Update(diamond);
                 return await _context.SaveChangesAsync() > 0;
             }
@@ -306,12 +284,10 @@ namespace DiamondShop.Repositories
 
         public async Task<int> GetDiamondCountByDiameter(decimal diameterMM)
         {
-            var count = await _context.Diamonds
+            return await _context.Diamonds
                 .Where(d => d.DiameterMM == diameterMM)
                 .CountAsync();
-            return count;
         }
-
 
         public async Task<bool> UpdateDiamond(DiamondModel diamond)
         {
@@ -328,14 +304,13 @@ namespace DiamondShop.Repositories
 
             try
             {
-                //Update Product properties
                 existingProduct.ProductId = existingProduct.ProductId;
                 existingProduct.ProductName = diamond.ProductName;
                 existingProduct.IsActive = diamond.IsActive;
                 existingProduct.Description = diamond.Description;
                 existingProduct.MarkupRate = diamond.MarkupRate;
                 existingProduct.MarkupPrice = diamond.MarkupPrice;
-                //Update Diamond properties
+
                 existingDiamond.ProductID = existingDiamond.ProductID;
                 existingDiamond.Carat = diamond.Carat;
                 existingDiamond.Clarity = diamond.Clarity;
@@ -354,18 +329,17 @@ namespace DiamondShop.Repositories
                 return false;
             }
         }
-       
-            public IEnumerable<MainDiamondDto> GetAllMainDiamonds()
-            {
-                return _context.MainDiamonds
-                    .Select(md => new MainDiamondDto
-                    {
-                        MainDiamondID = md.MainDiamondID,
-                        MainDiamondName = md.MainDiamondName,
-                        Price = md.Price
-                    }).ToList();
-            }
 
+        public IEnumerable<MainDiamondDto> GetAllMainDiamonds()
+        {
+            return _context.MainDiamonds
+                .Select(md => new MainDiamondDto
+                {
+                    MainDiamondID = md.MainDiamondID,
+                    MainDiamondName = md.MainDiamondName,
+                    Price = md.Price
+                }).ToList();
+        }
 
         public IEnumerable<SideDiamondDto> GetAllSideDiamonds()
         {
@@ -378,55 +352,155 @@ namespace DiamondShop.Repositories
                 }).ToList();
         }
 
-		public async Task<bool> UpdateDiamondQuantity(int userId)
-		{
-			var latestOrder = await _context.Orders
-				.Include(o => o.User)
-				.Include(o => o.OrderDetails)
-				.ThenInclude(od => od.Product)
-				.ThenInclude(p => p.Diamond)
-				.Where(o => o.UserID == userId)
-				.OrderByDescending(o => o.OrderDate)
-				.FirstOrDefaultAsync(); // Get the latest order
+        public async Task<bool> UpdateDiamondQuantity(int userId)
+        {
+            var latestOrder = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .ThenInclude(p => p.Diamond)
+                .Where(o => o.UserID == userId)
+                .OrderByDescending(o => o.OrderDate)
+                .FirstOrDefaultAsync();
 
-			if (latestOrder == null) // If no order found
-			{
-				return false;
-			}
+            if (latestOrder == null)
+            {
+                return false;
+            }
 
-			bool result = false;
+            try
+            {
+                foreach (var orderDetail in latestOrder.OrderDetails)
+                {
+                    var diamond = orderDetail.Product.Diamond;
 
-			try
-			{
-				foreach (var orderDetail in latestOrder.OrderDetails)
-				{
-					var diamond = orderDetail.Product.Diamond; // Access related Jewelry object
+                    if (diamond != null)
+                    {
+                        var diamondQuantity = await _context.Diamonds
+                            .FirstOrDefaultAsync(js => js.DiamondID == diamond.DiamondID);
 
-					if (diamond != null)
-					{
-						var diamondQuantity = await _context.Diamonds
-							.FirstOrDefaultAsync(js => js.DiamondID == diamond.DiamondID);
+                        if (diamondQuantity != null)
+                        {
+                            diamondQuantity.Quantity -= orderDetail.Quantity;
+                            _context.Diamonds.Update(diamondQuantity);
+                        }
+                    }
+                }
 
-						if (diamondQuantity != null)
-						{
-							diamondQuantity.Quantity -= orderDetail.Quantity;
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch (Exception ex)
+            {
+                // Log exception 
+                return false;
+            }
+        }
 
-							_context.Diamonds.Update(diamondQuantity);
-						}
-					}
-				}
+        public async Task<List<DiamondModel>> GetDiamondsBySize(decimal size)
+        {
+            var diamondList = await _context.Diamonds
+                .Include(d => d.Product)
+                .Where(d => d.DiameterMM == size && d.Product.ProductType.Equals("Diamond"))
+                .ToListAsync();
 
+            if (diamondList == null || diamondList.Count == 0)
+            {
+                return null;
+            }
 
-				result = await _context.SaveChangesAsync() > 0;
-			}
-			catch (Exception ex)
-			{
-				// Log exception 
-				return false;
-			}
+            var diamondModels = diamondList.Select(d => new DiamondModel
+            {
+                DiamondID = d.DiamondID,
+                ProductID = d.ProductID,
+                Carat = d.Carat,
+                BasePrice = d.BasePrice,
+                Clarity = d.Clarity,
+                Color = d.Color,
+                Cut = d.Cut,
+                Quantity = d.Quantity,
+                DiameterMM = d.DiameterMM,
+                Description = d.Product.Description,
+                ProductName = d.Product.ProductName,
+                MarkupPrice = d.Product.MarkupPrice,
+                MarkupRate = d.Product.MarkupRate,
+                IsActive = d.Product.IsActive
+            }).ToList();
 
-			return result;
-		}
+            return diamondModels;
+        }
 
-	}
+        public async Task<bool> CreateDiamondWithPrice(DiamondModel diamondModel)
+        {
+            if (diamondModel == null)
+            {
+                throw new ArgumentNullException(nameof(diamondModel));
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var diamondPrice = await _context.DiamondPrices
+                    .FirstOrDefaultAsync(dp => dp.Carat == diamondModel.Carat && dp.Clarity == diamondModel.Clarity && dp.Color == diamondModel.Color && dp.Cut == diamondModel.Cut);
+                if (diamondPrice == null)
+                {
+                    throw new Exception("Price not found for the specified properties");
+                }
+
+                var newProduct = new Product()
+                {
+                    ProductId = diamondModel.ProductID,
+                    ProductName = diamondModel.ProductName,
+                    Description = diamondModel.Description,
+                    MarkupRate = diamondModel.MarkupRate,
+                    MarkupPrice = diamondModel.MarkupPrice,
+                    ProductType = "Diamond",
+                    IsActive = true
+                };
+
+                var diamond = new Diamonds()
+                {
+                    Quantity = diamondModel.Quantity,
+                    Carat = diamondModel.Carat,
+                    Clarity = diamondModel.Clarity,
+                    Color = diamondModel.Color,
+                    Cut = diamondModel.Cut,
+                    DiameterMM = diamondModel.DiameterMM,
+                    BasePrice = diamondPrice.Price,
+                    ProductID = newProduct.ProductId
+                };
+
+                await _context.Products.AddAsync(newProduct);
+                await _context.Diamonds.AddAsync(diamond);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception("Error creating diamond: " + ex.Message);
+            }
+        }
+
+        public async Task<IEnumerable<Diamonds>> GetDiamondProductsByProperties(decimal carat, string clarity, string color, string cut)
+        {
+            return await _context.Diamonds
+                .Include(d => d.Product)
+                .Where(dp => dp.Carat == carat && dp.Clarity == clarity && dp.Color == color && dp.Cut == cut)
+                .ToListAsync();
+        }
+
+        public async Task<bool> UpdateDiamonds(IEnumerable<Diamonds> diamonds)
+        {
+            foreach (var diamond in diamonds)
+            {
+                _context.Entry(diamond).State = EntityState.Modified;
+                _context.Entry(diamond.Product).State = EntityState.Modified;
+            }
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+    }
 }

@@ -21,7 +21,7 @@ namespace DiamondShop.Data
         [StringLength(700)]
         public string? Description { get; set; }
 
-        public decimal MarkupRate { get; set; }
+        public decimal MarkupRate { get; set; } 
 
         public int MarkupPrice { get; set; }
 
@@ -35,5 +35,4 @@ namespace DiamondShop.Data
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
         public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
     }
-
 }

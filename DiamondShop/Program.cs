@@ -46,7 +46,8 @@ builder.Services.AddScoped<IDiamondsRepository, DiamondsRepository>();
 builder.Services.AddScoped<IBillRepository, BillRepository>();
 builder.Services.AddScoped<IWarrantyRepository, WarrantyRepository>();
 builder.Services.AddSingleton<BillService>();
-
+builder.Services.AddScoped<IDiamondPriceRepository, DiamondPriceRepository>();
+builder.Services.AddScoped<IDiamondUpdateService, DiamondUpdateService>();
 // Add CORS to allow specific origin
 builder.Services.AddCors(options =>
 {
