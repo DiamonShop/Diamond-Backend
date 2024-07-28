@@ -6,6 +6,7 @@ using DiamondShop.Model;
 using Microsoft.AspNetCore.Authorization;
 using Diamond.Entities.Model;
 using Diamond.Entities.Data;
+using DiamondShop.Repositories;
 namespace DiamondShop.Controllers
 {
     [Route("api/[controller]")]
@@ -163,7 +164,43 @@ namespace DiamondShop.Controllers
 			}
 			return BadRequest("Failed to update quantity");
 		}
+        [HttpGet("GetDiamondsBySize")]
+        public async Task<IActionResult> GetDiamondsBySize(decimal size)
+        {
+            var diamonds = await _diamondRepository.GetDiamondsBySize(size);
 
-	}
+            if (diamonds == null || diamonds.Count == 0)
+            {
+                return NotFound(new { message = "Diamonds not found for the specified size." });
+            }
+
+            return Ok(diamonds);
+        }
+        [HttpPost("CreateDiamondWithPrice")]
+        public async Task<IActionResult> CreateDiamondWithPrice([FromBody] DiamondModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var result = await _diamondRepository.CreateDiamondWithPrice(model);
+                    if (result)
+                    {
+                        return Ok("Diamond created successfully");
+                    }
+                    return BadRequest("Error creating diamond");
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest($"Error creating diamond: {ex.Message}");
+                }
+            }
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(errors);
+        }
+
+
+
+    }
 }
 

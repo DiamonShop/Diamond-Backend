@@ -35,5 +35,4 @@ namespace DiamondShop.Data
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
         public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
     }
-
 }

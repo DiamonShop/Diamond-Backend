@@ -1,4 +1,6 @@
-﻿using Diamond.Entities.Data;
+﻿using Diamond.DataAccess.Repositories;
+using Diamond.DataAccess.Repositories.Interfaces;
+using Diamond.Entities.Data;
 using Diamond.Entities.DTO;
 using Diamond.Entities.Model;
 using DiamondShop.Data;
@@ -12,10 +14,12 @@ namespace DiamondShop.Repositories
     public class DiamondsRepository : IDiamondsRepository
     {
         private readonly DiamondDbContext _context;
+        private readonly IDiamondPriceRepository _diamondPriceRepository;
 
-        public DiamondsRepository(DiamondDbContext context)
+        public DiamondsRepository(DiamondDbContext context, IDiamondPriceRepository diamondPriceRepository)
         {
             _context = context;
+            _diamondPriceRepository = diamondPriceRepository;
         }
 
         public async Task<List<DiamondModel>> GetAllDiamonds()
@@ -427,6 +431,92 @@ namespace DiamondShop.Repositories
 
 			return result;
 		}
+        public async Task<List<DiamondModel>> GetDiamondsBySize(decimal size)
+        {
+            var diamondList = await _context.Diamonds
+                .Include(d => d.Product)
+                .Where(d => d.DiameterMM == size && d.Product.ProductType.Equals("Diamond"))
+                .ToListAsync();
 
-	}
+            if (diamondList == null || diamondList.Count == 0)
+            {
+                return null;
+            }
+
+            var diamondModels = diamondList.Select(d => new DiamondModel
+            {
+                DiamondID = d.DiamondID,
+                ProductID = d.ProductID,
+                Carat = d.Carat,
+                BasePrice = d.BasePrice,
+                Clarity = d.Clarity,
+                Color = d.Color,
+                Cut = d.Cut,
+                Quantity = d.Quantity,
+                DiameterMM = d.DiameterMM,
+                Description = d.Product.Description,
+                ProductName = d.Product.ProductName,
+                MarkupPrice = d.Product.MarkupPrice,
+                MarkupRate = d.Product.MarkupRate,
+                IsActive = d.Product.IsActive
+            }).ToList();
+
+            return diamondModels;
+        }
+
+        public async Task<bool> CreateDiamondWithPrice(DiamondModel diamondModel)
+        {
+            if (diamondModel == null)
+            {
+                throw new ArgumentNullException(nameof(diamondModel));
+            }
+
+            try
+            {
+                // Tìm giá kim cương dựa trên carat, clarity, color và cut
+                var diamondPrice = await _diamondPriceRepository.GetDiamondPrice(diamondModel.Carat, diamondModel.Clarity, diamondModel.Color, diamondModel.Cut);
+                if (diamondPrice == null)
+                {
+                    throw new Exception("Price not found for the specified properties");
+                }
+
+                // Tạo đối tượng Product mới
+                var newProduct = new Product()
+                {
+                    ProductId = diamondModel.ProductID,
+                    ProductName = diamondModel.ProductName,
+                    Description = diamondModel.Description,
+                    MarkupRate = diamondModel.MarkupRate,
+                    MarkupPrice = diamondModel.MarkupPrice,
+                    ProductType = "Diamond",
+                    IsActive = true
+                };
+
+                // Tạo đối tượng Diamonds mới
+                var diamond = new Diamonds()
+                {
+                    Quantity = diamondModel.Quantity,
+                    Carat = diamondModel.Carat,
+                    Clarity = diamondModel.Clarity,
+                    Color = diamondModel.Color,
+                    Cut = diamondModel.Cut,
+                    DiameterMM = diamondModel.DiameterMM,
+                    BasePrice = diamondPrice.Price, // Sử dụng giá tìm được từ bảng giá kim cương
+                    ProductID = newProduct.ProductId
+                };
+
+                // Thêm đối tượng mới vào cơ sở dữ liệu
+                await _context.Products.AddAsync(newProduct);
+                await _context.Diamonds.AddAsync(diamond);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error creating diamond: " + ex.Message);
+            }
+        }
+
+
+
+    }
 }
