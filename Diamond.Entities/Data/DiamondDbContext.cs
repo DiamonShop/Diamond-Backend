@@ -14,7 +14,6 @@ public class DiamondDbContext : DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<OrderDetail> OrderDetails { get; set; }
     public DbSet<Order> Orders { get; set; }
-    public DbSet<Certification> Certificates { get; set; }
     public DbSet<Diamonds> Diamonds { get; set; }
     public DbSet<Warranty> Warranties { get; set; }
     public DbSet<Feedback> Feedbacks { get; set; }
@@ -34,11 +33,14 @@ public class DiamondDbContext : DbContext
                 .HasForeignKey(x => x.RoleId);
         });
 
-        modelBuilder.Entity<Certification>(e =>
+        modelBuilder.Entity<DiamondPrice>(e =>
         {
-            e.HasOne(x => x.Diamond)
-                .WithOne(x => x.Certification)
-                .HasForeignKey<Certification>(x => x.DiamondID);
+            e.Property(dp => dp.Carat).HasColumnType("decimal(18,2)").IsRequired();
+            e.Property(dp => dp.Clarity).HasMaxLength(50).IsRequired();
+            e.Property(dp => dp.Cut).HasMaxLength(50).IsRequired();
+            e.Property(dp => dp.Color).HasMaxLength(50).IsRequired();
+            e.Property(dp => dp.Price).HasColumnType("decimal(18,2)").IsRequired();
+            e.Property(dp => dp.DiameterMM).HasColumnType("decimal(18,2)").IsRequired();
         });
 
         modelBuilder.Entity<DiamondPrice>(e =>

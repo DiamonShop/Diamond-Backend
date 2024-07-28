@@ -79,7 +79,7 @@ namespace DiamondShop.API.Controllers
             }
             return BadRequest("Failed to delete diamond price");
         }
-
+  
         [HttpGet("Pricesdiamonds")]
         public async Task<ActionResult<IEnumerable<object>>> GetDiamondsWithPrices()
         {
@@ -94,7 +94,7 @@ namespace DiamondShop.API.Controllers
                     d.Cut,
                     d.Color,
                     d.Price,
-                    d.Carat
+                    d.Carat 
                 })
             });
 

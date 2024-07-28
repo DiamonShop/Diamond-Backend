@@ -662,13 +662,14 @@ namespace Diamond.DataAccess.Repositories
                 .ToListAsync();
 
             var categorySales = orderDetails
+                .Where(od => od.Product?.Jewelry?.Category != null) // Lọc ra những OrderDetails mà Category không bị null
                 .GroupBy(od => od.Product.Jewelry.Category.CategoryName)
                 .ToDictionary(g => g.Key, g => g.Sum(od => od.Quantity));
 
             return categorySales;
         }
 
-		public async Task<bool> UpdateOrderTotalPrice(int userId, decimal price)
+        public async Task<bool> UpdateOrderTotalPrice(int userId, decimal price)
 		{
 			bool result = false;
 			var order = await _context.Orders.Include(u => u.User)

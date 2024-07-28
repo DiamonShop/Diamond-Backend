@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Diamond.Entities.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Diamond.Entities.Data;
 
@@ -15,4 +19,5 @@ namespace DiamondShop.Repositories.Interfaces
         Task<DiamondPrice> GetDiamondPrice(decimal carat, string clarity, string color, string cut);
 
     }
+
 }
