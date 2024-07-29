@@ -16,8 +16,6 @@ namespace DiamondShop.Repositories
         private readonly DiamondDbContext _context;
         private readonly IDiamondPriceRepository _diamondPriceRepository;
 
-        private readonly IDiamondPriceRepository _diamondPriceRepository;
-
         public DiamondsRepository(DiamondDbContext context, IDiamondPriceRepository diamondPriceRepository)
         {
             _context = context;
