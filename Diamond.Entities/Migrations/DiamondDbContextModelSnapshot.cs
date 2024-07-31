@@ -260,33 +260,6 @@ namespace Diamond.Entities.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("DiamondShop.Data.Certification", b =>
-                {
-                    b.Property<int>("CertificationID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CertificationID"));
-
-                    b.Property<DateTime>("CertificationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CertificationDetails")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("DiamondID")
-                        .HasColumnType("int");
-
-                    b.HasKey("CertificationID");
-
-                    b.HasIndex("DiamondID")
-                        .IsUnique();
-
-                    b.ToTable("Certificates");
-                });
-
             modelBuilder.Entity("DiamondShop.Data.Feedback", b =>
                 {
                     b.Property<int>("FeedbackId")
@@ -596,17 +569,6 @@ namespace Diamond.Entities.Migrations
                     b.Navigation("Jewelry");
                 });
 
-            modelBuilder.Entity("DiamondShop.Data.Certification", b =>
-                {
-                    b.HasOne("Diamond.Entities.Data.Diamonds", "Diamond")
-                        .WithOne("Certification")
-                        .HasForeignKey("DiamondShop.Data.Certification", "DiamondID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Diamond");
-                });
-
             modelBuilder.Entity("DiamondShop.Data.Feedback", b =>
                 {
                     b.HasOne("DiamondShop.Data.Order", "Order")
@@ -692,12 +654,6 @@ namespace Diamond.Entities.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Diamond.Entities.Data.Diamonds", b =>
-                {
-                    b.Navigation("Certification")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Diamond.Entities.Data.Jewelry", b =>

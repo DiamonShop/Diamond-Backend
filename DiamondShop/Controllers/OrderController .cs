@@ -249,15 +249,15 @@ namespace DiamondShop.Controllers
             return Ok(salesByCategory);
         }
 
-		[HttpPut("UpdateTotalPriceByUserId")]
-		public async Task<IActionResult> UpdateOrderTotalPrice(int userId, decimal price)
+		[HttpPut("UpdateOrderNoteByUserId")]
+		public async Task<IActionResult> UpdateOrderNote(int userId, string note)
 		{
-			bool result = await _orderRepository.UpdateOrderTotalPrice(userId, price);
+			bool result = await _orderRepository.UpdateOrderNote(userId, note);
 			if (result)
 			{
-				return Ok("Update total price successfully.");
+				return Ok("Update note successfully.");
 			}
-			return BadRequest("Update total price failed.");
+			return BadRequest("Update note failed.");
 		}
 	}
 

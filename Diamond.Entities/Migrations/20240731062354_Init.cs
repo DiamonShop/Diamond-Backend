@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Diamond.Entities.Migrations
 {
     /// <inheritdoc />
-    public partial class DbInit : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -218,27 +218,6 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Certificates",
-                columns: table => new
-                {
-                    CertificationID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DiamondID = table.Column<int>(type: "int", nullable: false),
-                    CertificationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CertificationDetails = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Certificates", x => x.CertificationID);
-                    table.ForeignKey(
-                        name: "FK_Certificates_Diamonds_DiamondID",
-                        column: x => x.DiamondID,
-                        principalTable: "Diamonds",
-                        principalColumn: "DiamondID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -373,12 +352,6 @@ namespace Diamond.Entities.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Certificates_DiamondID",
-                table: "Certificates",
-                column: "DiamondID",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Diamonds_ProductID",
                 table: "Diamonds",
                 column: "ProductID",
@@ -465,10 +438,10 @@ namespace Diamond.Entities.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Certificates");
+                name: "DiamondPrices");
 
             migrationBuilder.DropTable(
-                name: "DiamondPrices");
+                name: "Diamonds");
 
             migrationBuilder.DropTable(
                 name: "Feedbacks");
@@ -481,9 +454,6 @@ namespace Diamond.Entities.Migrations
 
             migrationBuilder.DropTable(
                 name: "Warranties");
-
-            migrationBuilder.DropTable(
-                name: "Diamonds");
 
             migrationBuilder.DropTable(
                 name: "Jewelry");

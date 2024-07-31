@@ -669,7 +669,7 @@ namespace Diamond.DataAccess.Repositories
             return categorySales;
         }
 
-        public async Task<bool> UpdateOrderTotalPrice(int userId, decimal price)
+        public async Task<bool> UpdateOrderNote(int userId, string note)
 		{
 			bool result = false;
 			var order = await _context.Orders.Include(u => u.User)
@@ -679,7 +679,7 @@ namespace Diamond.DataAccess.Repositories
 			{
 				return result;
 			}
-			order.TotalPrice = price;
+			order.OrderNote = note;
 			_context.Orders.Update(order);
 			result = await _context.SaveChangesAsync() > 0;
 			return result;
