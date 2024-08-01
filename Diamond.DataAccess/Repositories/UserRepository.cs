@@ -42,6 +42,7 @@ namespace DiamondShop.Repositories
             {
                 UserId = user.UserId,
                 Username = user.Username,
+                Password = user.Password,
                 FullName = user.FullName,
                 Email = user.Email,
                 NumberPhone = user.NumberPhone,
